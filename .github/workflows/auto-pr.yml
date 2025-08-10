@@ -24,7 +24,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # 1. Define a todo el equipo en una lista (array de bash)
-          ALL_REVIEWERS=("Frasquito3" "LucaTvl")
+          ALL_REVIEWERS=("Frasquito3" "LucaTvl" "NiconiKimg" "carlex74")
 
           # 2. Obtén el autor del PR desde las variables de GitHub
           PR_AUTHOR="${{ github.actor }}"
