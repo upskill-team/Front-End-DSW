@@ -1,43 +1,64 @@
-name: Create Pull Request to Develop
+name: Create Pull Request
 
 on:
   push:
     branches:
-      - 'feature/**' # Se activa con pushes a ramas que empiezan con 'feature/'
-      - 'bugfix/**' # También puedes añadir otros prefijos como 'bugfix/'
+      - 'feature/**'
+      - 'bugfix/**'
 
 jobs:
-  create-pull-request:
+  create_pull_request:
     runs-on: ubuntu-latest
     steps:
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+      # Paso 1: Descargar el código.
+      # fetch-depth: 0 es crucial para tener todo el historial y evitar problemas.
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          # El título del PR usará el mensaje del último commit
-          title: 'PR para ${{ github.ref_name }}'
-          # El cuerpo del PR, puedes personalizarlo como quieras
-          body: |
-            **Pull Request Automático**
+          fetch-depth: 0
 
-            Esta PR fue generada automáticamente desde la rama: `${{ github.ref_name }}`.
+      # Paso 2: Crear el Pull Request usando la CLI oficial de GitHub
+      - name: Create Pull Request
+        env:
+          # El token de GitHub se pasa como una variable de entorno segura.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 1. Define a todo el equipo en una lista (array de bash)
+          ALL_REVIEWERS=("Frasquito3" "LucaTvl")
 
-            **Autor:** @${{ github.actor }}
+          # 2. Obtén el autor del PR desde las variables de GitHub
+          PR_AUTHOR="${{ github.actor }}"
 
-            Por favor, revisa los cambios antes de fusionar en `develop`.
-          # La rama base para la fusión será 'develop'
-          base: develop
-          # La rama que contiene los cambios es la que activó el workflow
-          branch: ${{ github.ref_name }}
-          # Asigna la PR a la persona que hizo el push
-          assignees: ${{ github.actor }}
-          # Pide revisión a otros miembros del equipo (cambia los usernames)
-          reviewers: |
-            Frasquito3
-            carlex74
-            LucaTvl
-            NiconiKimg
-          # Añade etiquetas para una mejor organización
-          labels: |
-            automated-pr
-            needs-review
+          # 3. Construye la lista final de revisores, excluyendo al autor
+          FINAL_REVIEWERS=""
+          for reviewer in "${ALL_REVIEWERS[@]}"; do
+            if [[ "$reviewer" != "$PR_AUTHOR" ]]; then
+              # Si la lista final no está vacía, añade una coma primero
+              if [[ -n "$FINAL_REVIEWERS" ]]; then
+                FINAL_REVIEWERS+=",${reviewer}"
+              else
+                FINAL_REVIEWERS+="${reviewer}"
+              fi
+            fi
+          done
+
+          echo "Autor del PR: ${PR_AUTHOR}"
+          echo "Revisores finales asignados: ${FINAL_REVIEWERS}"
+
+          # Le decimos a la CLI que la rama base es 'develop'
+          BASE_BRANCH="develop"
+
+          # Obtenemos el nombre de nuestra rama feature (ej: 'feature/mi-trabajo')
+          HEAD_BRANCH="${{ github.ref_name }}"
+
+          # Creamos un título y cuerpo para el PR
+          TITLE="PR: Merge ${HEAD_BRANCH} into ${BASE_BRANCH}"
+          BODY="Pull Request automático creado para la rama \`${HEAD_BRANCH}\`. Por favor, revisar."
+
+          gh pr create \
+            --base "${BASE_BRANCH}" \
+            --head "${HEAD_BRANCH}" \
+            --title "${TITLE}" \
+            --body "${BODY}" \
+            --reviewer "${FINAL_REVIEWERS}" \
+            --label 'automated-pr,needs-review'
