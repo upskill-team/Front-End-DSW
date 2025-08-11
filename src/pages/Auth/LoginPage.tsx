@@ -4,19 +4,20 @@ import { useAuth } from '../../hooks/useAuth';
 import { authService } from '../../api/services/auth.service';
 import type React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash, faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
+import Button from '../../components/ui/Button.tsx';
+import Input from '../../components/ui/Input.tsx';
+import AuthCard from '../../components/ui/AuthCard.tsx';
 
-  const LoginPage = () => {
+const LoginPage = () => {
   const [credentials, setCredentials] = useState({ mail: '', password: '' });
   const [error, setError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const auth = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setCredentials((prev) => ({ ...prev, [name]: value }));
+    setCredentials((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -25,98 +26,75 @@ import { faEye, faEyeSlash, faEnvelope, faLock } from '@fortawesome/free-solid-s
     setError(null);
 
     try {
-      const payload = {
-        mail: credentials.mail,
-        password_plaintext: credentials.password,
-      };
-
+      const payload = { mail: credentials.mail, password_plaintext: credentials.password };
       const { user, token } = await authService.login(payload);
-    
       auth.login(user, token);
-      navigate('/'); 
-
+      navigate('/');
     } catch (err) {
       setError('Incorrect credentials. Please try again.');
       console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-title">
-          <h1>Welcome</h1>
-          <p className="auth-description">Please enter your credentials to continue</p>
+    // auth-container y auth-card fusionados en el layout
+    <AuthCard
+      title='Welcome'
+      description='Please enter your credentials to continue'
+    >
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <Input
+          id="mail"
+          label="Email"
+          name="mail"
+          type="mail"
+          placeholder="your@email.com"
+          value={credentials.mail}
+          onChange={handleChange}
+          icon={<FontAwesomeIcon icon={faEnvelope} />}
+          error={error && error.includes('mail') ? error : null}
+          required
+        />
+
+        <Input
+          id="password"
+          label="Password"
+          name="password"
+          type="password" // El componente se encarga del toggle!
+          placeholder="••••••••"
+          value={credentials.password}
+          onChange={handleChange}
+          icon={<FontAwesomeIcon icon={faLock} />}
+          required
+        />
+
+        <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center gap-2">
+            <input id="remember" name="remember" type="checkbox" className="h-4 w-4 rounded accent-primary-600" />
+            <label htmlFor="remember" className="text-sm text-neutral-600 font-bold cursor-pointer">Remember me</label>
+          </div>
+          <a href="#" className="text-sm text-primary-600 hover:text-primary-800 hover:underline font-medium">
+            Forgot your password?
+          </a>
         </div>
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="mail" className="form-label">Email</label>
-            <div className="input-container">
-              <span className="input-icon left" aria-hidden="true">
-                <FontAwesomeIcon icon={faEnvelope} />
-              </span>
-              <input
-                id="mail"
-                name="mail"
-                type="email"
-                required
-                placeholder="your@email.com"
-                value={credentials.mail}
-                onChange={handleChange}
-                className="form-input with-icon-left"
-              />
-            </div>
-          </div>
+        {error && <p className="text-sm text-error mt-1">{error}</p>}
 
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">Password</label>
-            <div className="input-container">
-              <span className="input-icon left" aria-hidden="true">
-                <FontAwesomeIcon icon={faLock} />
-              </span>
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                required
-                placeholder="••••••••"
-                value={credentials.password}
-                onChange={handleChange}
-                className="form-input with-icon-left with-icon-right"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="input-icon right"
-              >
-                {showPassword ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye}/>}
-              </button>
-            </div>
-          </div>
-
-          <div className="form-options">
-            <div className="checkbox-container">
-              <input id="remember" name="remember" type="checkbox" className="checkbox" />
-              <label htmlFor="remember" className="checkbox-label">Remember me</label>
-            </div>
-            <a href="#" className="forgot-password">Forgot your password?</a>
-          </div>
-
-          {error && <p className="error-message">{error}</p>}
-
-          <button type="submit" disabled={isLoading} className="btn btn-primary">
-            {isLoading ? "Starting session..." : "Login"}
-          </button>
-          <div className="form-switch">
-            <p>
-              You dont have an account?
-              <Link to="/register" className="switch-link">Create one</Link>
-            </p>
-          </div>
-        </form>
-      </div>
-    </div>
+        <Button type="submit" isLoading={isLoading}>
+          Login
+        </Button>
+        
+        <div className="text-center mt-2">
+          <p className="text-neutral-600">
+            You don't have an account?
+            <Link to="/register" className="text-primary-600 hover:text-primary-800 font-medium ml-2 hover:underline">Create one</Link>
+          </p>
+        </div>
+      </form>
+    </AuthCard>
   );
 };
 
