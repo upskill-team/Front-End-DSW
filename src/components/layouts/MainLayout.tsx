@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Outlet } from 'react-router-dom'; // <-- ¡IMPORTANTE!
+import { Outlet } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
 const MainLayout = () => {
@@ -11,29 +11,30 @@ const MainLayout = () => {
     navigate('/login');
   };
 
-  // Este header es el que ya tenías, perfecto para las páginas principales
   const headerContent = (
-    <header style={{ background: '#eee', padding: '1rem', marginBottom: '1rem' }}>
-      <nav style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <Link to="/">Courses</Link>
+    <header className="bg-gray-100 p-4 mb-4 shadow-md">
+      <nav className="container mx-auto flex gap-4 items-center">
+        <Link to="/" className="text-gray-700 hover:text-primary-600 font-semibold">Courses</Link>
         
         {isAuthenticated ? (
           <>
-            {user?.role === 'admin' && <Link to="/admin/dashboard">Admin</Link>}
+            {user?.role === 'admin' && <Link to="/admin/dashboard" className="text-gray-700 hover:text-primary-600 font-semibold">Admin</Link>}
             {(user?.role === 'admin' || user?.role === 'professor') && (
-              <Link to="/professor/dashboard">Professor</Link>
+              <Link to="/professor/dashboard" className="text-gray-700 hover:text-primary-600 font-semibold">Professor</Link>
             )}
-            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <span>Welcome</span>
-              <Link to="/" onClick={handleLogout}>Logout</Link>
+            <div className="ml-auto flex items-center gap-4">
+              <span className="text-gray-800">Welcome, {user?.name || 'User'}</span>
+              <button onClick={handleLogout} className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors">
+                Logout
+              </button>
             </div>
           </>
         ) : (
-          // En teoría, un usuario no autenticado no debería llegar a este layout,
-          // pero es bueno tener un fallback.
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: '1rem' }}>
-            <Link to="/login">Login</Link>
-            <Link to="/register">Register</Link>
+          <div className="ml-auto flex items-center gap-4">
+            <Link to="/login" className="text-gray-700 hover:text-primary-600 font-semibold">Login</Link>
+            <Link to="/register" className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors">
+              Register
+            </Link>
           </div>
         )}
       </nav>
@@ -41,10 +42,9 @@ const MainLayout = () => {
   );
 
   return (
-    <div>
+    <div className="bg-neutral-50 min-h-screen">
       {headerContent}
-      <main style={{ backgroundColor: 'var(--neutral-50)', minHeight: '100vh' }}>
-        {/* Outlet le dice a React Router: "Renderiza aquí la página específica (hija)" */}
+      <main className="container mx-auto p-4">
         <Outlet />
       </main>
     </div>

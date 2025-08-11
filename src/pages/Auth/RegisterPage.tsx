@@ -3,212 +3,130 @@ import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../../api/services/auth.service';
 import type React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash, faEnvelope, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import Button from '../../components/ui/Button.tsx';
+import Input from '../../components/ui/Input.tsx';
+import AuthCard from '../../components/ui/AuthCard.tsx';
 
-const initialFormState = {
-  name: '',
-  surname: '',
-  mail: '',
-  password: '',
-  confirmPassword: '',
-};
+const initialFormState = { name: '', surname: '', mail: '', password: '', confirmPassword: '' };
 
 const RegisterPage = () => {
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState(initialFormState);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
+    if (formData.password !== formData.confirmPassword) return setError('Passwords do not match');
+    if (formData.password.length < 6) return setError('The password must have at least 6 characters');
+    if (!/\S+@\S+\.\S+/.test(formData.mail)) return setError('Please enter a valid email address');
     
-    if (formData.password.length < 6) {
-      setError('The password must have at least 6 characters');
-      return;
-    }
-
-    if (!/\S+@\S+\.\S+/.test(formData.mail)) {
-      setError('Please enter a valid email address');
-      return;
-    }
-
     setIsLoading(true);
-
     try {
-      const payload = {
-        name: formData.name,
-        surname: formData.surname,
-        mail: formData.mail,
-        password_plaintext: formData.password,
-      };
-
+      const payload = { name: formData.name, surname: formData.surname, mail: formData.mail, password_plaintext: formData.password };
       await authService.register(payload);
-
-      navigate('/');
-
+      navigate('/login'); // Redirigir a login tras registro exitoso
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        // Dentro de este bloque, TypeScript sabe que 'err' es un AxiosError
-        const message = err.response?.data?.message || 'A network error occurred.';
-        setError(message);
-      } else {
-        // Manejamos cualquier otro tipo de error
-        setError('An unexpected error occurred.');
-        console.error('Error not related to Axios:', err);
-      }
+      const message = axios.isAxiosError(err) ? err.response?.data?.message : 'An unexpected error occurred.';
+      setError(message || 'A network error occurred.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-title">
-          <h1>Create Account</h1>
-          <p className="auth-description">Please enter your credentials to register</p>
+    <AuthCard
+      title='Create Account'
+      description='Please enter your credentials to register'
+    >
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            id="name"
+            label="Name"
+            name="name"
+            type="name"
+            placeholder="John"
+            value={formData.name}
+            onChange={handleChange}
+            icon={<FontAwesomeIcon icon={faUser} />}
+            error={error && error.includes('name') ? error : null}
+            required
+          />
+          <Input
+            id="surname"
+            label="Surname"
+            name="surname"
+            type="surname"
+            placeholder="Doe"
+            value={formData.surname}
+            onChange={handleChange}
+            icon={<FontAwesomeIcon icon={faUser} />}
+            error={error && error.includes('surname') ? error : null}
+            required
+          />
         </div>
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="name" className="form-label">Name</label>
-              <div className="input-container">
-                <span className="input-icon left" aria-hidden="true">
-                  <FontAwesomeIcon icon={faUser} />
-                </span>
-                <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                placeholder="John"
-                value={formData.name}
-                onChange={handleChange}
-                className="form-input with-icon-left"
-                />
-              </div>
-            </div>
+        <Input
+          id="mail"
+          label="Email"
+          name="mail"
+          type="mail"
+          placeholder="your@email.com"
+          value={formData.mail}
+          onChange={handleChange}
+          icon={<FontAwesomeIcon icon={faEnvelope} />}
+          error={error && error.includes('mail') ? error : null}
+          required
+        />
 
-            <div className="form-group">
-              <label htmlFor="surname" className="form-label">Surname</label>
-              <div className="input-container">
-                <span className="input-icon left" aria-hidden="true">
-                  <FontAwesomeIcon icon={faUser} />
-                </span>
-                <input
-                id="surname"
-                name="surname"
-                type="text"
-                required
-                placeholder="Doe"
-                value={formData.surname}
-                onChange={handleChange}
-                className="form-input with-icon-left"
-                />
-              </div>
-            </div>
-          </div>
+        <Input
+          id="password"
+          label="Password"
+          name="password"
+          type="password"
+          placeholder="••••••••"
+          value={formData.password}
+          onChange={handleChange}
+          icon={<FontAwesomeIcon icon={faLock} />}
+          required
+        />
 
-          <div className="form-group">
-            <label htmlFor="mail" className="form-label">Email</label>
-            <div className="input-container">
-              <span className="input-icon left" aria-hidden="true">
-                <FontAwesomeIcon icon={faEnvelope} />
-              </span>
-              <input
-                id="mail"
-                name="mail"
-                type="email"
-                required
-                placeholder="your@email.com"
-                value={formData.mail}
-                onChange={handleChange}
-                className="form-input with-icon-left"
-              />
-            </div>
-          </div>
+        <Input
+          id="confirmPassword"
+          label="Confirm Password"
+          name="confirmPassword"
+          type="password"
+          placeholder="••••••••"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          icon={<FontAwesomeIcon icon={faLock} />}
+          required
+        />
 
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">Password</label>
-            <div className="input-container">
-              <span className="input-icon left" aria-hidden="true">
-                <FontAwesomeIcon icon={faLock} />
-              </span>
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                required
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
-                className="form-input with-icon-left with-icon-right"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="input-icon right"
-              >
-                {showPassword ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye}/>}
-              </button>
-            </div>
-          </div>
+        {error && <p className="text-sm text-error mt-1">{error}</p>}
 
-          <div className="form-group">
-            <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
-            <div className="input-container">
-              <span className="input-icon left" aria-hidden="true">
-                <FontAwesomeIcon icon={faLock} />
-              </span>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                required
-                placeholder="••••••••"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="form-input with-icon-left with-icon-right"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="input-icon right"
-              >
-                {showConfirmPassword ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye}/>}
-              </button>
-            </div>
-          </div>
+        <Button type="submit" isLoading={isLoading}>
+          Login
+        </Button>
 
-          {error && <p className="error-message">{error}</p>}
-
-          <button type="submit" disabled={isLoading} className="btn btn-primary">
-            {isLoading ? <span className="loading-spinner"></span> : "Register"}
-          </button>
-          <div className="form-switch">
-            <p>
-              You alredy have an account?
-              <Link to="/login" className="switch-link">Login</Link>
-            </p>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className="text-center mt-2">
+          <p className="text-neutral-600">
+            You already have an account?
+            <Link to="/login" className="text-primary-600 hover:text-primary-800 font-medium ml-2 hover:underline">Login</Link>
+          </p>
+        </div>
+      </form>
+    </AuthCard>
   );
 };
 

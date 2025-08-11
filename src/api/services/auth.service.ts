@@ -1,7 +1,7 @@
 import apiClient from '../apiClient';
 import type { User } from '../../types/entities';
 
-type LoginPayload = {email: string; password_plaintext: string};
+type LoginPayload = {mail: string; password_plaintext: string};
 type RegisterPayload = Omit<User, 'password' | 'id' | 'role' | 'studentProfile' | 'professorProfile' | 'profile_picture'> & { password_plaintext: string };
 
 interface AuthResponse {

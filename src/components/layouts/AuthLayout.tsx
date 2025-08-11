@@ -1,22 +1,18 @@
 import { Outlet, Link } from 'react-router-dom';
 
 const AuthLayout = () => {
-  // Este layout no tiene un header complejo, solo centra el contenido.
   return (
-    <div className="auth-container">
-      <Link to="/" style={{
-        position: 'absolute',
-        top: 'var(--spacing-8)',
-        left: 'var(--spacing-8)',
-        color: 'var(--primary-100)',
-        textDecoration: 'none',
-        fontWeight: '600',
-      }}>
+    // Reemplaza .auth-container con clases de Tailwind
+    <div className="min-h-screen w-full flex items-center justify-center p-4 bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
+      <Link 
+        to="/" 
+        className="absolute top-8 left-8 text-primary-100 no-underline font-semibold hover:text-white transition-colors"
+      >
         Home
       </Link>
 
       <main>
-        {/* Aquí se renderizará LoginPage o RegisterPage */}
+        {/* Outlet renderizará LoginPage o RegisterPage, que ahora tienen su propio card-style */}
         <Outlet />
       </main>
     </div>
