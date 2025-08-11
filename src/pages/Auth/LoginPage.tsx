@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
 import Button from '../../components/ui/Button.tsx';
 import Input from '../../components/ui/Input.tsx';
-import AuthCard from '../../components/ui/AuthCard.tsx';
+import AuthCard from '../../components/layouts/AuthCard.tsx';
 
 const LoginPage = () => {
   const [credentials, setCredentials] = useState({ mail: '', password: '' });
@@ -39,7 +39,6 @@ const LoginPage = () => {
   };
 
   return (
-    // auth-container y auth-card fusionados en el layout
     <AuthCard
       title='Welcome'
       description='Please enter your credentials to continue'
@@ -63,7 +62,7 @@ const LoginPage = () => {
           id="password"
           label="Password"
           name="password"
-          type="password" // El componente se encarga del toggle!
+          type="password"
           placeholder="••••••••"
           value={credentials.password}
           onChange={handleChange}

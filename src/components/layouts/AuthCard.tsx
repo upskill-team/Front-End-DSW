@@ -3,7 +3,7 @@ import React from 'react';
 interface AuthCardProps {
   title: string;
   description: string;
-  children: React.ReactNode; // 'children' recibirá el <form>
+  children: React.ReactNode; 
 }
 
 const AuthCard = ({ title, description, children }: AuthCardProps) => {

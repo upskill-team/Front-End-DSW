@@ -19,7 +19,18 @@ const register = async (payload: RegisterPayload): Promise<User> => {
   return response.data;
 };
 
+const getProfile = async (): Promise<User> => {
+  try {
+    const response = await apiClient.get<User>('/auth/profile');
+    return response.data;
+  } catch (error) {
+    console.error('Failed to get user profile', error);
+    throw error;
+  }
+};
+
 export const authService = {
   login,
   register,
+  getProfile,
 };

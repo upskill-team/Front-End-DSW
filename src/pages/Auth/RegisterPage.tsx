@@ -7,7 +7,7 @@ import { faEnvelope, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import Button from '../../components/ui/Button.tsx';
 import Input from '../../components/ui/Input.tsx';
-import AuthCard from '../../components/ui/AuthCard.tsx';
+import AuthCard from '../../components/layouts/AuthCard.tsx';
 
 const initialFormState = { name: '', surname: '', mail: '', password: '', confirmPassword: '' };
 
@@ -33,7 +33,7 @@ const RegisterPage = () => {
     try {
       const payload = { name: formData.name, surname: formData.surname, mail: formData.mail, password_plaintext: formData.password };
       await authService.register(payload);
-      navigate('/login'); // Redirigir a login tras registro exitoso
+      navigate('/login');
     } catch (err) {
       const message = axios.isAxiosError(err) ? err.response?.data?.message : 'An unexpected error occurred.';
       setError(message || 'A network error occurred.');
