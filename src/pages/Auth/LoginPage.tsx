@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type React from 'react';
+import axios from 'axios';
 import { Mail, Lock } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { authService } from '../../api/services/auth.service';
@@ -26,12 +27,20 @@ const LoginPage = () => {
         mail: credentials.mail,
         password_plaintext: credentials.password,
       };
-      const { user, token } = await authService.login(payload);
-      auth.login(user, token);
+       const token = await authService.login(payload);
+      if (!token || typeof token !== 'string') {
+      throw new Error("No se recibió un token válido del servidor.");
+    }
+      auth.login(null, token);
       navigate('/');
+
     } catch (err) {
-      setError('Credenciales incorrectas. Por favor, inténtalo de nuevo.');
-      console.error(err);
+    if (axios.isAxiosError(err)) {
+      setError(err.response?.data?.message || 'Credenciales incorrectas.');
+    } else {
+      setError('Ocurrió un error inesperado. Por favor, intenta de nuevo.');
+    }
+    console.error(err);
     } finally {
       setIsLoading(false);
     }
