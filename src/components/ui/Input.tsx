@@ -2,21 +2,18 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
-// Las props que aceptará nuestro Input
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
-  icon?: React.ReactNode; // Un nodo de React para el ícono (ej. <FontAwesomeIcon ... />)
-  error?: string | null;  // El mensaje de error a mostrar
+  icon?: React.ReactNode; 
+  error?: string | null; 
 }
 
 const Input = ({ label, id, type, icon, error, ...props }: InputProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === 'password';
 
-  // Determinamos el tipo de input a renderizar (para el toggle de la contraseña)
   const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
 
-  // Clases base para el input. La lógica del padding izquierdo se aplica si hay un ícono.
   const inputClasses = `w-full ${icon ? 'pl-10' : 'pl-4'} ${isPassword ? 'pr-10' : 'pr-4'} py-3 border rounded-lg text-base bg-white focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all`;
 
   return (

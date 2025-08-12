@@ -2,35 +2,55 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Estilos base globales que aún necesitas */
-body {
-  /* Usando clases de Tailwind, el fondo se aplicará en el componente raíz (App.tsx o AuthLayout.tsx) */
-  @apply font-sans text-neutral-900 leading-normal;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  :root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --destructive-foreground: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --radius: 0.625rem;
+
+    --font-inter: "Inter", sans-serif;
+    --font-poppins: "Poppins", sans-serif;
+  }
+
+  .dark {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: var(--font-inter);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
-/* Scrollbar personalizada con utilidades de Tailwind si es posible, o CSS normal */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: theme('colors.neutral.100');
-}
-
-::-webkit-scrollbar-thumb {
-  background: theme('colors.neutral.300');
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: theme('colors.neutral.400');
-}
-
-/* Selección de texto */
-::selection {
-  background: theme('colors.primary.200');
-  color: theme('colors.primary.900');
+.bg-clip-text {
+  -webkit-background-clip: text;
+  background-clip: text;
 }
