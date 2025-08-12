@@ -1,6 +1,5 @@
-import React from 'react';
 import { Header } from '../components/landing/Header';
-import { HeroSection } from '../components/landing/HeroSection';
+import HeroSection from '../components/landing/HeroSection';
 import { TrendingCourses } from '../components/landing/TrendingCourses';
 import { BenefitsSection } from '../components/landing/BenefitsSection';
 import { PopularRanking } from '../components/landing/PopularRanking';
