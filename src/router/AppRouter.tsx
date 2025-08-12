@@ -1,19 +1,13 @@
 import { Routes, Route } from 'react-router-dom';
-
-// Layouts
 import MainLayout from '../components/layouts/MainLayout';
 import AuthLayout from '../components/layouts/AuthLayout';
-
-// Pages
-import LandingPage from '../pages/LandingPage'; // <-- ¡Importante!
+import LandingPage from '../pages/LandingPage';
 import LoginPage from '../pages/Auth/LoginPage';
 import RegisterPage from '../pages/Auth/RegisterPage';
 import CourseListPage from '../pages/Course/CourseListPage';
 import AdminDashboard from '../pages/Admin/AdminDashboard';
 import ProfessorDashboard from '../pages/Professor/ProfessorDashboard';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
-
-// Security
 import ProtectedRoute from './ProtectedRoute';
 
 const AppRouter = () => {
