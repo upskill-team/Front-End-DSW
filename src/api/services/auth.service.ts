@@ -4,14 +4,16 @@ import type { User } from '../../types/entities';
 type LoginPayload = {mail: string; password_plaintext: string};
 type RegisterPayload = Omit<User, 'password' | 'id' | 'role' | 'studentProfile' | 'professorProfile' | 'profile_picture'> & { password_plaintext: string };
 
-interface AuthResponse {
-  token: string;
-  user: User;
-}
+const login = async (payload: LoginPayload): Promise<string> => {
+  const response = await apiClient.post<{ data: { token: string }}>('/auth/login', payload);
 
-const login = async (payload: LoginPayload): Promise<AuthResponse> => {
-  const response = await apiClient.post<AuthResponse>('/auth/login', payload);
-  return response.data;
+  const token = response.data?.data?.token;
+  
+  if (typeof token !== 'string' || token.length === 0) {
+    throw new Error('Token no fue recibido en la respuesta del servidor.');
+  }
+
+  return token;
 };
 
 const register = async (payload: RegisterPayload): Promise<User> => {

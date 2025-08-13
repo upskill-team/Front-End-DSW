@@ -1,48 +1,28 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import type { User } from '../types/entities.ts';
-import { authService } from '../api/services/auth.service.ts';
 import { AuthContext } from './AuthContext';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const validateSession = async () => {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        try {
-          const userData = await authService.getProfile(); 
-          setUser(userData);
-        } catch (error) {
-          console.error("Session validation failed:", error);
-          localStorage.removeItem('authToken');
-          setUser(null);
-        }
-      }
-      setIsLoading(false);
-    };
-    validateSession();
-  }, []);
-
-  const login = (userData: User, token: string) => {
+  const login = useCallback((userData: User | null, token: string) => {
     localStorage.setItem('authToken', token);
     setUser(userData);
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('authToken');
     setUser(null);
-  };
+  }, []);
 
   const value = useMemo(() => ({
-    isAuthenticated: !!user,
+    isAuthenticated: !!user || !!localStorage.getItem('authToken'),
     user,
-    isLoading,
+    isLoading: false,
     login,
     logout,
-  }), [user, isLoading]);
+  }), [user, login, logout]);
 
   return (
     <AuthContext.Provider value={value}>
