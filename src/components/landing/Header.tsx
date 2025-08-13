@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, LogIn, UserPlus, GraduationCap } from 'lucide-react';
+import NavBar from '../layouts/NavBar.tsx';
 
-export function Header() {
+export function Header({token}: { token?: string | null }) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-blue-100 shadow-sm">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+{ /*     <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity">
           <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-green-400 rounded-lg flex items-center justify-center">
             <BookOpen className="w-5 h-5 text-white" />
@@ -37,7 +38,9 @@ export function Header() {
             Register
           </Link>
         </div>
-      </div>
+      </div>*/}
+
+      <NavBar token={token} />
     </header>
   );
 }
