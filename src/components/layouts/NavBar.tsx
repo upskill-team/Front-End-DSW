@@ -27,6 +27,15 @@ export function NavBar() {
     navigate('/login');
   };
 
+  const handleApplyClick = () => {
+    if (!isAuthenticated) {
+      alert("Debes iniciar sesión para poder aplicar.");
+      navigate('/login');
+      return; 
+    }
+      navigate('/professor/apply');
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-blue-100 shadow-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -43,13 +52,15 @@ export function NavBar() {
         </Link>
 
         <div className="flex items-center space-x-2 md:space-x-4">
-          <button
-            className="hidden sm:flex items-center space-x-2 border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300 bg-transparent px-4 py-2 rounded-lg border text-sm font-medium"
-            onClick={() => alert('Formulario para profesores próximamente!')}
-          >
-            <GraduationCap className="w-4 h-4" />
-            <span className="ml-2">Quiero ser profesor</span>
-          </button>
+          {(!user || user.role === 'student') && (
+            <button
+              className="hidden sm:flex items-center space-x-2 border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300 bg-transparent px-4 py-2 rounded-lg border text-sm font-medium"
+              onClick={handleApplyClick}
+            >
+              <GraduationCap className="w-4 h-4" />
+              <span className="ml-2">Quiero ser profesor</span>
+            </button>
+          )}
 
           {isLoading ? (
             <div className="flex items-center space-x-2">

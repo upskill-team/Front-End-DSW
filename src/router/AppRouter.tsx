@@ -9,6 +9,7 @@ import AdminDashboard from '../pages/Admin/AdminDashboard';
 import ProfessorDashboard from '../pages/Professor/ProfessorDashboard';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
 import ProtectedRoute from './ProtectedRoute';
+import { ProfessorApplication } from '../pages/Professor/ProfessorApplication'
 
 const AppRouter = () => {
   return (
@@ -42,6 +43,14 @@ const AppRouter = () => {
           element={
             <ProtectedRoute allowedRoles={['admin', 'professor']}>
               <ProfessorDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/professor/apply"
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'student']}>
+              <ProfessorApplication />
             </ProtectedRoute>
           }
         />
