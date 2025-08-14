@@ -11,36 +11,50 @@ import AuthCard from '../../components/layouts/AuthCard';
 
 const LoginPage = () => {
   const [credentials, setCredentials] = useState({ mail: '', password: '' });
+
   const [error, setError] = useState<string | null>(null);
+
   const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
+
   const auth = useAuth();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     setIsLoading(true);
+
     setError(null);
+
     try {
       const payload = {
         mail: credentials.mail,
         password_plaintext: credentials.password,
       };
-       const token = await authService.login(payload);
-      if (!token || typeof token !== 'string') {
-      throw new Error("No se recibió un token válido del servidor.");
-    }
-      auth.login(null, token);
-      navigate('/');
 
+
+      const token = await authService.login(payload);
+
+
+      if (!token || typeof token !== 'string') {
+        throw new Error('No se recibió un token válido del servidor.');
+      }
+
+      await auth.login(token);
+
+      navigate('/'); // In this case, it redirects to the home page. In a future we should change this to redirect to... courses maybe.
     } catch (err) {
-    if (axios.isAxiosError(err)) {
-      setError(err.response?.data?.message || 'Credenciales incorrectas.');
-    } else {
-      setError('Ocurrió un error inesperado. Por favor, intenta de nuevo.');
-    }
-    console.error(err);
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || 'Credenciales incorrectas.');
+      } else {
+        setError('Ocurrió un error inesperado. Por favor, intenta de nuevo.');
+      }
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
