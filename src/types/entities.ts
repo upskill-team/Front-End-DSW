@@ -52,9 +52,10 @@ export interface Institution {
 
 export interface Appeal {
   id: string;
-  date: Date;
-  text: string;
-  state: string;
-  professor: Professor;
+  expertise: string;
+  experienceMotivation: string;
+  documentUrl?: string;
+  state: 'pending' | 'approved' | 'rejected';
   user: User;
+  createdAt: Date;
 }
