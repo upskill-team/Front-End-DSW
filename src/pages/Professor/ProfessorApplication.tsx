@@ -1,13 +1,13 @@
 import type React from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
 import  Button  from "../../components/ui/Button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/Card";
 import  Input  from "../../components/ui/Input";
 import { Label } from "../../components/ui/Label";
 import { Textarea } from "../../components/ui/TextArea";
 import { BookOpen, ArrowLeft, GraduationCap, BookOpenCheck, FileText, Upload } from "lucide-react";
+import { appealService } from "../../api/services/appeal.service";
 
 export const ProfessorApplication = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +15,10 @@ export const ProfessorApplication = () => {
     experienceMotivation: "",
     document: null as File | null,
   });
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [error, setError] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -32,11 +36,35 @@ export const ProfessorApplication = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Teacher application:", formData);
-    alert("¡Solicitud enviada! Te contactaremos pronto.");
-  };
+    setIsLoading(true);
+    setError(null);
+
+    const data = new FormData();
+    data.append("expertise", formData.expertise);
+    data.append("experienceMotivation", formData.experienceMotivation);
+    if (formData.document) {
+      data.append("document", formData.document);
+    }
+
+    try {
+      await appealService.createAppeal(data);
+
+      alert("¡Solicitud enviada con éxito! Te contactaremos pronto.");
+
+      setFormData({
+          expertise: "",
+          experienceMotivation: "",
+          document: null,
+      });
+    }catch (err) {
+      console.error("Error al enviar la solicitud:", err)
+      setError("Hubo un problema al enviar tu solicitud. Por favor, inténtalo de nuevo más tarde.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center p-4">
@@ -56,8 +84,8 @@ export const ProfessorApplication = () => {
         <div className="hidden lg:block">
           <div className="relative">
             <img
-              src="/placeholder.svg"
-              alt="Dos profesores colaborando"
+              src="/professor_appeal_image.svg"
+              alt="Imagen de profesor enseñando"
               className="w-full h-auto rounded-2xl shadow-2xl"
             />
             <div className="absolute -bottom-4 -right-4 w-full h-full bg-gradient-to-br from-green-200 to-blue-200 rounded-2xl -z-10"></div>
@@ -149,9 +177,19 @@ export const ProfessorApplication = () => {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full bg-green-500 hover:bg-green-600 text-white py-2.5">
-                Enviar solicitud
+              <Button 
+                type="submit" 
+                className="w-full bg-green-500 hover:bg-green-600 text-white py-2.5"
+                disabled={isLoading}
+              >
+                {isLoading ? "Enviando..." : "Enviar solicitud"}
               </Button>
+
+              {error && (
+                <div className="text-center text-sm text-red-600 mt-4">
+                  <p>{error}</p>
+                </div>
+              )}
 
               <div className="text-center text-sm text-slate-600 mt-4">
                 <p>Revisaremos tu solicitud y te contactaremos en un plazo de 2-3 días hábiles.</p>
