@@ -3,7 +3,7 @@ import { BookOpen, ArrowLeft } from 'lucide-react';
 
 const AuthLayout = () => {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="relative min-h-screen w-full flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 via-white to-green-50">
       <div className="absolute top-6 left-6">
         <Link
           to="/"
