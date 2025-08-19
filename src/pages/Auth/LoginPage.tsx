@@ -104,7 +104,7 @@ const LoginPage = () => {
           </div>
           <Link
             to="/forgot-password"
-            className="font-medium text-blue-500 hover:underline"
+            className="font-medium text-blue-500 hover:underline text-right"
           >
             ¿Olvidaste tu contraseña?
           </Link>
@@ -122,8 +122,10 @@ const LoginPage = () => {
           </Button>
         </div>
 
-        <div className="text-center text-sm text-slate-500 pt-6">
-          ¿No tienes una cuenta?{' '}
+        <div className="flex flex-col items-center text-sm text-slate-500 pt-6 gap-1">
+          <span>
+            ¿No tienes una cuenta?
+          </span>
           <Link
             to="/register"
             className="font-semibold text-blue-500 hover:underline"

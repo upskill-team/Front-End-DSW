@@ -11,11 +11,11 @@ export function TrendingCourses() {
   return (
     <section className="py-20 px-4 bg-white/50">
       <div className="container mx-auto max-w-6xl">
-        <div className="text-center mb-12">
+        <div className="text-center lg:text-left mb-12">
           <h2 className="text-3xl lg:text-4xl font-poppins font-bold text-slate-800 mb-4">Cursos en Tendencia</h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">Los cursos más populares y mejor valorados por nuestra comunidad</p>
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0">Los cursos más populares y mejor valorados por nuestra comunidad</p>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {trendingCourses.map((course) => (
             <div key={course.id} className="group rounded-lg overflow-hidden bg-white/80 backdrop-blur-sm shadow-md hover:shadow-xl transition-all duration-300 border border-transparent hover:border-blue-200">
               <div className="relative overflow-hidden">

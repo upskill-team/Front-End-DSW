@@ -20,11 +20,11 @@ export function PopularRanking() {
           <p className="text-lg text-slate-600">Los cursos con mayor crecimiento esta semana</p>
         </div>
 
-        <div className="space-y-4 rounded-lg bg-white/80 backdrop-blur-sm shadow-lg border border-slate-200 p-6">
+        <div className="space-y-4 rounded-lg bg-white/80 backdrop-blur-sm shadow-lg border border-slate-200 p-4 sm:p-6">
           {topCourses.map((course) => (
-            <div key={course.rank} className="flex items-center space-x-4 p-4 hover:bg-blue-50/50 rounded-lg transition-colors duration-200">
+            <div key={course.rank} className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 hover:bg-blue-50/50 rounded-lg transition-colors duration-200">
               <div
-                className={`w-12 h-12 flex-shrink-0 rounded-full flex items-center justify-center font-bold text-white text-lg shadow-md ${
+                className={`w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 rounded-full flex items-center justify-center font-bold text-white text-md sm:text-lg shadow-md ${
                   course.rank === 1 ? "bg-gradient-to-br from-yellow-400 to-yellow-600"
                   : course.rank === 2 ? "bg-gradient-to-br from-gray-400 to-gray-600"
                   : course.rank === 3 ? "bg-gradient-to-br from-orange-500 to-orange-700"
@@ -35,12 +35,12 @@ export function PopularRanking() {
               </div>
 
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-slate-800 text-base md:text-lg line-clamp-1">{course.title}</h3>
+                <h3 className="font-semibold text-slate-800 text-sm sm:text-base md:text-lg line-clamp-1">{course.title}</h3>
               </div>
 
               <div className="flex items-center space-x-1 text-slate-600">
                 <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                <span className="font-medium">{course.rating}</span>
+                <span className="font-medium text-sm sm:text-base">{course.rating}</span>
               </div>
             </div>
           ))}
