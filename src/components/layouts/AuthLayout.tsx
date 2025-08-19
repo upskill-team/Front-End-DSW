@@ -3,11 +3,11 @@ import { BookOpen, ArrowLeft } from 'lucide-react';
 
 const AuthLayout = () => {
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 via-white to-green-50">
-      <div className="absolute top-6 left-6">
+    <div className="relative min-h-screen w-full flex flex-col p-4 sm:p-6 bg-gradient-to-br from-blue-50 via-white to-green-50 gap-y-8">
+      <header className="w-full">
         <Link
           to="/"
-          className="flex items-center gap-4 text-slate-800 hover:text-blue-600 transition-colors group"
+          className="inline-flex items-center gap-4 text-slate-800 hover:text-blue-600 transition-colors group"
         >
           <ArrowLeft className="w-6 h-6" />
           <div className="flex items-center gap-2">
@@ -17,9 +17,9 @@ const AuthLayout = () => {
             <span className="text-xl font-bold">UpSkill</span>
           </div>
         </Link>
-      </div>
+      </header>
       
-      <main className="w-full flex justify-center">
+      <main className="w-full flex-grow flex items-center justify-center">
         <Outlet />
       </main>
     </div>

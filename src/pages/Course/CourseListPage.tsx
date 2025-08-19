@@ -1,8 +1,6 @@
-import { Clock, Eye, ShoppingCart, Star, Users } from "lucide-react";
 import CardList from "../../components/ui/CardList.tsx";
 
 const CourseListPage = () => {
-  // Lista completa de cursos
   const allCourses = [
     {
       id: 1,
@@ -159,8 +157,7 @@ const CourseListPage = () => {
   ];
   return (
     <div className="container mx-auto max-w-7xl">
-      <div className="mb-8">
-        {/* Header */}
+      <div className="mb-8 text-center sm:text-left">
         <h1 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-2">
           Todos los Cursos
         </h1>

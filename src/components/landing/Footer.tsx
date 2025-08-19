@@ -6,8 +6,9 @@ export function Footer() {
     <footer className="bg-slate-800 text-white">
       <div className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="space-y-4">
-            <Link to="/" className="flex items-center space-x-2">
+          {/* Columna 1: Logo e info. Centrado en móvil, a la izquierda en tablet y más grandes */}
+          <div className="space-y-4 text-center md:text-left">
+            <Link to="/" className="flex items-center space-x-2 justify-center md:justify-start">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-green-400 rounded-lg flex items-center justify-center">
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
@@ -18,7 +19,8 @@ export function Footer() {
             </p>
           </div>
 
-          <div className="space-y-4">
+          {/* Columna 2: Enlaces. Centrado en móvil, a la izquierda en tablet y más grandes */}
+          <div className="space-y-4 text-center md:text-left">
             <h3 className="font-semibold text-lg">Enlaces</h3>
             <ul className="space-y-2 text-sm">
               <li><Link to="/courses" className="text-slate-300 hover:text-white transition-colors">Explorar Cursos</Link></li>
@@ -28,9 +30,10 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="space-y-4">
+          {/* Columna 3: Contacto. Centrado en móvil, a la izquierda en tablet y más grandes */}
+          <div className="space-y-4 text-center md:text-left">
             <h3 className="font-semibold text-lg">Contacto</h3>
-            <div className="space-y-3 text-sm">
+            <div className="space-y-3 text-sm flex flex-col items-center md:items-start">
               <a href="mailto:info@educursos.com" className="flex items-center space-x-2 text-slate-300 hover:text-white">
                 <Mail className="w-4 h-4" /><span>info@upskill.com</span>
               </a>
@@ -43,9 +46,10 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="space-y-4">
+          {/* Columna 4: Redes sociales. Centrado en móvil, a la izquierda en tablet y más grandes */}
+          <div className="space-y-4 text-center md:text-left">
             <h3 className="font-semibold text-lg">Síguenos</h3>
-            <div className="flex space-x-3">
+            <div className="flex space-x-3 justify-center md:justify-start">
               <a href="#" aria-label="Facebook" className="w-9 h-9 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors"><Facebook className="w-5 h-5" /></a>
               <a href="#" aria-label="Twitter" className="w-9 h-9 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-sky-500 transition-colors"><Twitter className="w-5 h-5" /></a>
               <a href="#" aria-label="Instagram" className="w-9 h-9 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-pink-600 transition-colors"><Instagram className="w-5 h-5" /></a>

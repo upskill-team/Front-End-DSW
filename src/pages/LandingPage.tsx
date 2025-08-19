@@ -7,7 +7,7 @@ import { NavBar } from '../components/layouts/NavBar';
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 font-sans overflow-x-hidden">
       <NavBar />
       <main>
         <HeroSection />
