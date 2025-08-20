@@ -3,7 +3,7 @@ name: "\U0001F680 Nueva Funcionalidad"
 about: Crea una nueva funcionalidad para la aplicación.
 title: 'feat: [Título conciso de la funcionalidad]'
 labels: feature, needs-triage
-assignees: LucaTvl
+assignees: ''
 
 ---
 
