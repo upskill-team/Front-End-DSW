@@ -55,7 +55,7 @@ export interface Appeal {
   expertise: string;
   experienceMotivation: string;
   documentUrl?: string;
-  state: 'pending' | 'approved' | 'rejected';
+  state: 'pending' | 'accepted' | 'rejected';
   user: User;
-  createdAt: Date;
+  date: Date;
 }

@@ -1,0 +1,56 @@
+import React, { useEffect } from 'react';
+import { X } from 'lucide-react';
+
+interface DialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  children: React.ReactNode;
+}
+
+const DialogHeader = ({ children }: { children: React.ReactNode }) => <div className="mb-4 text-center">{children}</div>;
+const DialogTitle = ({ children }: { children: React.ReactNode }) => <h2 className="text-lg font-semibold text-slate-900">{children}</h2>;
+
+const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onOpenChange(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open, onOpenChange]);
+
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fadeIn"
+      onClick={() => onOpenChange(false)}
+    >
+      <div
+        className="relative w-full max-w-lg bg-white rounded-lg shadow-xl p-6 m-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={() => onOpenChange(false)}
+          className="absolute top-4 right-4 text-slate-500 hover:text-slate-800 transition-colors"
+          aria-label="Cerrar modal"
+        >
+          <X className="w-5 h-5" />
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+export { Dialog, DialogHeader, DialogTitle };

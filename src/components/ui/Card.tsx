@@ -1,7 +1,7 @@
 import type React from 'react';
 
 const Card = ({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={`rounded-lg border bg-card text-card-foreground shadow-sm ${className}`} {...props}>
+  <div className={`rounded-xl bg-white/80 backdrop-blur-sm shadow-lg ${className}`} {...props}>
     {children}
   </div>
 );
@@ -13,7 +13,7 @@ const CardHeader = ({ className, children, ...props }: React.HTMLAttributes<HTML
 );
 
 const CardTitle = ({ className, children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-  <h3 className={`text-2xl font-semibold leading-none tracking-tight ${className}`} {...props}>
+  <h3 className={`text-xl font-semibold leading-none tracking-tight text-slate-800 ${className}`} {...props}>
     {children}
   </h3>
 );

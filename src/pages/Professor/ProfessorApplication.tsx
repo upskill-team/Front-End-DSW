@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 import  Button  from "../../components/ui/Button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/Card";
 import  Input  from "../../components/ui/Input";
-import { Label } from "../../components/ui/Label";
-import { Textarea } from "../../components/ui/TextArea";
+import Label from "../../components/ui/Label";
+import Textarea from "../../components/ui/TextArea";
 import { BookOpen, ArrowLeft, GraduationCap, BookOpenCheck, FileText, Upload } from "lucide-react";
 import { appealService } from "../../api/services/appeal.service";
 
@@ -75,7 +75,7 @@ export const ProfessorApplication = () => {
             <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-green-400 rounded-lg flex items-center justify-center">
               <BookOpen className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold">EduCursos</span>
+            <span className="text-xl font-bold">UpSkill</span>
           </div>
         </Link>
       </div>
@@ -122,18 +122,15 @@ export const ProfessorApplication = () => {
               </div>
 
             <div className="space-y-2">
-                <Label htmlFor="experienceMotivation" className="text-slate-700">
-                    Experiencia y motivación
-                </Label>
                 <div className="relative">
-                    <FileText className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                     <Textarea
                         id="experienceMotivation"
                         name="experienceMotivation"
+                        label="Experiencia y motivacion"
+                        icon={<FileText className="h-4 w-4" />}
                         placeholder="Cuéntanos sobre tu experiencia profesional..."
                         value={formData.experienceMotivation}
                         onChange={handleInputChange}
-                        className="pl-10 pt-10 min-h-[120px] border-slate-200 focus:border-green-400 focus:ring-green-400 resize-none"
                         required
                     />
                 </div>
@@ -193,14 +190,6 @@ export const ProfessorApplication = () => {
 
               <div className="text-center text-sm text-slate-600 mt-4">
                 <p>Revisaremos tu solicitud y te contactaremos en un plazo de 2-3 días hábiles.</p>
-              </div>
-
-              <div className="text-center text-sm text-slate-600">
-                ¿Ya tienes una cuenta?{" "}
-
-                <Link to="/login" className="text-green-600 hover:text-green-700 hover:underline font-medium">
-                  Inicia sesión aquí
-                </Link>
               </div>
             </form>
           </CardContent>
