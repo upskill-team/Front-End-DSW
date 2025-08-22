@@ -1,6 +1,6 @@
 import React from 'react';
 
-type ButtonVariant = 'primary' | 'outline' | 'circle' | 'ghost';
+type ButtonVariant = 'primary' | 'outline' | 'circle' | 'ghost' | 'destructive';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
@@ -27,6 +27,7 @@ const Button = ({
       'bg-transparent border border-slate-300 text-slate-700 hover:bg-slate-50 focus:ring-slate-400',
     circle:' bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 rounded-full p-2',
     ghost: 'bg-transparent text-slate-700 hover:bg-slate-50 focus:ring-slate-400',
+    destructive: 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-500',
   };
 
   return (
