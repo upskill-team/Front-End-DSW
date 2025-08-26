@@ -76,30 +76,34 @@ export default function UsersPage() {
         <p className="text-slate-600">Administra todos los usuarios de la plataforma.</p>
       </div>
       
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-grow">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input type="text" placeholder="Buscar por nombre o email..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50" />
-        </div>
-        <select value={roleFilter} onChange={e => setRoleFilter(e.target.value)} className="px-3 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
-          <option value="all">Todos los Roles</option>
-          <option value="student">Estudiantes</option>
-          <option value="professor">Profesores</option>
-          <option value="admin">Administradores</option>
-        </select>
-        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="px-3 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
-          <option value="all">Todos los Estados</option>
-          <option value="active">Activo</option>
-          <option value="suspended">Suspendido</option>
-          <option value="pending">Pendiente</option>
-        </select>
-      </div>
-
       <Card>
         <CardHeader>
-            <CardTitle>Usuarios ({filteredUsers.length})</CardTitle>
-            <CardDescription>Lista de todos los usuarios registrados</CardDescription>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <CardTitle>Usuarios ({filteredUsers.length})</CardTitle>
+              <CardDescription>Lista de todos los usuarios registrados</CardDescription>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+              <div className="relative flex-grow w-full sm:w-auto">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input type="text" placeholder="Buscar por nombre o email..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50" />
+              </div>
+              <select value={roleFilter} onChange={e => setRoleFilter(e.target.value)} className="w-full sm:w-auto px-3 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                <option value="all">Todos los Roles</option>
+                <option value="admin">Administradores</option>
+                <option value="professor">Profesor</option>
+                <option value="student">Estudiante</option>
+              </select>
+              <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="w-full sm:w-auto px-3 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                <option value="all">Todos los Estados</option>
+                <option value="active">Activo</option>
+                <option value="suspended">Suspendido</option>
+                <option value="pending">Pendiente</option>
+              </select>
+            </div>
+          </div>
         </CardHeader>
+
         <CardContent>
             <div className="space-y-4">
                 {filteredUsers.map(user => (

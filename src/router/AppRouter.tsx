@@ -14,6 +14,7 @@ import ProfessorRequestsPage from '../pages/Admin/ProfessorRequestsPage.tsx';
 import UsersPage from '../pages/Admin/UsersPage.tsx';
 import AnalyticsPage from '../pages/Admin/AnalyticsPage.tsx';
 import CoursesPage from '../pages/Admin/CoursesPage.tsx';
+import CourseTypesPage from '../pages/Admin/CourseTypesPage.tsx';
 import ProfessorCoursesPage from '../pages/Professor/ProfessorCoursesPage.tsx';
 import ProfessorAnalyticsPage from '../pages/Professor/ProfessorAnalyticsPage.tsx';
 import ProfessorStudentsPage from '../pages/Professor/ProfessorStudentsPage.tsx';
@@ -47,6 +48,7 @@ const AppRouter = () => {
         <Route path="/admin/courses" element={<ProtectedRoute allowedRoles={['admin']}><CoursesPage /></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute allowedRoles={['admin']}><UsersPage /></ProtectedRoute>} />
         <Route path="/admin/analytics" element={<ProtectedRoute allowedRoles={['admin']}><AnalyticsPage /></ProtectedRoute>} />
+        <Route path="/admin/courseTypes" element={<ProtectedRoute allowedRoles={['admin']}><CourseTypesPage /></ProtectedRoute>} />
 
       </Route>
 

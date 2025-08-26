@@ -6,7 +6,6 @@ export function Footer() {
     <footer className="bg-slate-800 text-white">
       <div className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Columna 1: Logo e info. Centrado en móvil, a la izquierda en tablet y más grandes */}
           <div className="space-y-4 text-center md:text-left">
             <Link to="/" className="flex items-center space-x-2 justify-center md:justify-start">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-green-400 rounded-lg flex items-center justify-center">
@@ -19,7 +18,6 @@ export function Footer() {
             </p>
           </div>
 
-          {/* Columna 2: Enlaces. Centrado en móvil, a la izquierda en tablet y más grandes */}
           <div className="space-y-4 text-center md:text-left">
             <h3 className="font-semibold text-lg">Enlaces</h3>
             <ul className="space-y-2 text-sm">
@@ -30,7 +28,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Columna 3: Contacto. Centrado en móvil, a la izquierda en tablet y más grandes */}
           <div className="space-y-4 text-center md:text-left">
             <h3 className="font-semibold text-lg">Contacto</h3>
             <div className="space-y-3 text-sm flex flex-col items-center md:items-start">
@@ -46,7 +43,6 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Columna 4: Redes sociales. Centrado en móvil, a la izquierda en tablet y más grandes */}
           <div className="space-y-4 text-center md:text-left">
             <h3 className="font-semibold text-lg">Síguenos</h3>
             <div className="flex space-x-3 justify-center md:justify-start">

@@ -1,5 +1,3 @@
-// src/components/layouts/NavBar.tsx
-
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -54,7 +52,7 @@ export function NavBar() {
           <span className="text-xl font-poppins font-bold text-slate-800">UpSkill</span>
         </Link>
 
-        <div className="hidden md:flex items-center space-x-2 md:space-x-4">
+        <div className="hidden lg:flex items-center space-x-2 md:space-x-4">
           {isLoading ? (
             <div className="flex items-center space-x-2">
               <div className="h-8 w-20 bg-slate-200 rounded-lg animate-pulse"></div>
@@ -75,6 +73,9 @@ export function NavBar() {
                     </Link>
                     <Link to="/admin/courses" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/courses') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <BookOpen className="w-4 h-4 mr-2" /> Cursos
+                    </Link>
+                    <Link to="/admin/courseTypes" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/courseTypes') ? activeLinkClasses : inactiveLinkClasses}`}>
+                        <BookOpen className="w-4 h-4 mr-2" /> Tipos de Cursos
                     </Link>
                     <Link to="/admin/appeals" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/appeals') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <GraduationCap className="w-4 h-4 mr-2" /> Solicitudes
@@ -128,7 +129,7 @@ export function NavBar() {
           )}
         </div>
         
-        <div className="md:hidden">
+        <div className="lg:hidden">
           <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2">
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -136,7 +137,7 @@ export function NavBar() {
       </div>
 
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-blue-100 px-4 pt-2 pb-4 space-y-2">
+        <div className="lg:hidden bg-white border-t border-blue-100 px-4 pt-2 pb-4 space-y-2">
           {isLoading ? (
             <div className="h-8 w-full bg-slate-200 rounded-lg animate-pulse"></div>
           ) : isAuthenticated ? (
@@ -157,6 +158,9 @@ export function NavBar() {
                     </Link>
                     <Link to="/admin/courses" onClick={() => setIsMobileMenuOpen(false)} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/courses') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <BookOpen className="w-4 h-4 mr-2" /> Cursos
+                    </Link>
+                    <Link to="/admin/courseTypes" onClick={() => setIsMobileMenuOpen(false)} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/courseTypes') ? activeLinkClasses : inactiveLinkClasses}`}>
+                        <BookOpen className="w-4 h-4 mr-2" /> Tipos de Cursos
                     </Link>
                     <Link to="/admin/appeals" onClick={() => setIsMobileMenuOpen(false)} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/appeals') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <GraduationCap className="w-4 h-4 mr-2" /> Solicitudes

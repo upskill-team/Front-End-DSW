@@ -60,59 +60,70 @@ export default function CoursesPage() {
         <p className="text-slate-600">Administra todos los cursos de la plataforma.</p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-grow">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input type="text" placeholder="Buscar por título o instructor..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50" />
-        </div>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
-          <option value="all">Todos los Estados</option>
-          <option value="active">Activos</option>
-          <option value="inactive">Inactivos</option>
-          <option value="draft">Borrador</option>
-        </select>
-        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="px-3 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
-          <option value="all">Todas las Categorías</option>
-          {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-        </select>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCourses.map(course => (
-          <Card key={course.id} className="flex flex-col justify-between">
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <div className="relative">
-                <img src="/img/noImage.jpg" alt={course.title} className="w-full h-40 object-cover rounded-t-xl" />
-                <div className="absolute top-3 right-3">{getStatusBadge(course.status)}</div>
+              <CardTitle>Cursos ({filteredCourses.length})</CardTitle>
+              <CardDescription>Lista de todos los cursos de la plataforma</CardDescription>
+            </div>
+            <div className = "flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+              <div className="relative flex-grow w-full sm:w-auto">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input type="text" placeholder="Buscar por título..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50" />
               </div>
-              <CardHeader>
-                <CardTitle className="line-clamp-2 h-14">{course.title}</CardTitle>
-                <CardDescription>Por: {course.instructor}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t">
-                  <div className="flex items-center gap-1"><Users size={12} /><span>{course.students.toLocaleString()}</span></div>
-                  <div className="flex items-center gap-1"><Star size={12} className="fill-yellow-400 text-yellow-400" /><span>{course.rating}</span></div>
-                  <div className="flex items-center gap-1"><Clock size={12} /><span>{course.duration}</span></div>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-full sm:w-auto px-3 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                <option value="all">Todos los Estados</option>
+                <option value="active">Activos</option>
+                <option value="inactive">Inactivos</option>
+                <option value="draft">Borrador</option>
+              </select>
+              <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="w-full sm:w-auto px-3 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                <option value="all">Todas las Categorías</option>
+                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+              </select>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredCourses.map(course => (
+              <Card key={course.id} className="flex flex-col justify-between">
+                <div>
+                  <div className="relative">
+                    <img src="/img/noImage.jpg" alt={course.title} className="w-full h-40 object-cover rounded-t-xl" />
+                    <div className="absolute top-3 right-3">{getStatusBadge(course.status)}</div>
+                  </div>
+                  <CardHeader>
+                    <CardTitle className="line-clamp-2 h-14">{course.title}</CardTitle>
+                    <CardDescription>Por: {course.instructor}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t">
+                      <div className="flex items-center gap-1"><Users size={12} /><span>{course.students.toLocaleString()}</span></div>
+                      <div className="flex items-center gap-1"><Star size={12} className="fill-yellow-400 text-yellow-400" /><span>{course.rating}</span></div>
+                      <div className="flex items-center gap-1"><Clock size={12} /><span>{course.duration}</span></div>
+                    </div>
+                  </CardContent>
                 </div>
-              </CardContent>
-            </div>
-            <div className="p-4 pt-0">
-              <Button variant="destructive" onClick={() => handleDelete(course.id)}>
-                <Trash2 className="w-4 h-4 mr-2" />
-                Eliminar
-              </Button>
-            </div>
-          </Card>
-        ))}
-      </div>
+                <div className="p-4 pt-0">
+                  <Button variant="destructive" onClick={() => handleDelete(course.id)}>
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Eliminar
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
       
-      {filteredCourses.length === 0 && (
-        <div className="col-span-full text-center text-slate-500 py-10">
-          <p className="font-semibold">No se encontraron cursos</p>
-          <p className="text-sm">Intenta ajustar los filtros o el término de búsqueda.</p>
-        </div>
-      )}
+          {filteredCourses.length === 0 && (
+            <div className="col-span-full text-center text-slate-500 py-10">
+              <p className="font-semibold">No se encontraron cursos</p>
+              <p className="text-sm">Intenta ajustar los filtros o el término de búsqueda.</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
