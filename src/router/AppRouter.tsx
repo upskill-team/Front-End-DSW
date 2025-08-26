@@ -14,6 +14,9 @@ import ProfessorRequestsPage from '../pages/Admin/ProfessorRequestsPage.tsx';
 import UsersPage from '../pages/Admin/UsersPage.tsx';
 import AnalyticsPage from '../pages/Admin/AnalyticsPage.tsx';
 import CoursesPage from '../pages/Admin/CoursesPage.tsx';
+import ProfessorCoursesPage from '../pages/Professor/ProfessorCoursesPage.tsx';
+import ProfessorAnalyticsPage from '../pages/Professor/ProfessorAnalyticsPage.tsx';
+import ProfessorStudentsPage from '../pages/Professor/ProfessorStudentsPage.tsx';
 
 const AppRouter = () => {
   return (
@@ -29,7 +32,12 @@ const AppRouter = () => {
 
         <Route path="/courses" element={<ProtectedRoute allowedRoles={['admin', 'professor', 'student']}><CourseListPage /></ProtectedRoute>} />
 
-        <Route path="/professor/dashboard" element={<ProtectedRoute allowedRoles={['admin', 'professor']}><ProfessorDashboard /></ProtectedRoute>} />
+        <Route path="/professor/dashboard" element={<ProtectedRoute allowedRoles={['professor']}><ProfessorDashboard /></ProtectedRoute>}>
+            <Route index element={<Navigate to="courses" replace />} />
+            <Route path="courses" element={<ProfessorCoursesPage />} />
+            <Route path="analytics" element={<ProfessorAnalyticsPage />} />
+            <Route path="students" element={<ProfessorStudentsPage />} />
+        </Route>
 
         <Route path="/professor/apply" element={<ProtectedRoute allowedRoles={['admin', 'student']}><ProfessorApplication /></ProtectedRoute>} />
 
