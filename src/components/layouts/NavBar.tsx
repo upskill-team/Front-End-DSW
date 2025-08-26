@@ -40,6 +40,7 @@ export function NavBar() {
   };
 
   const isProfessorDashboard = location.pathname.startsWith('/professor/dashboard');
+  const isAdminDashboard = location.pathname.startsWith('/admin');
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-blue-100 shadow-sm">
@@ -103,7 +104,7 @@ export function NavBar() {
                  </div>
               )}
 
-              {!isProfessorDashboard && (
+              {!isProfessorDashboard && !isAdminDashboard &&(
                 <>
                   <button className="relative p-2 text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg"><Bell className="w-5 h-5" /></button>
                 </>
