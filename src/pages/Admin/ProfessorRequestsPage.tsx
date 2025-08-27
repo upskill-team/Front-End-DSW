@@ -22,7 +22,6 @@ import {
 import { appealService } from '../../api/services/appeal.service';
 import type { Appeal } from '../../types/entities';
 
-// Renders a modal overlay for viewing attached documents. Closing is handled by clicking outside or the close button.
 const DocumentViewer = ({
   url,
   onClose,
@@ -32,16 +31,16 @@ const DocumentViewer = ({
 }) => (
   <div
     className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fadeIn"
-    onClick={onClose} // Allows closing the modal by clicking the background.
+    onClick={onClose} 
   >
     <div
       className="relative w-11/12 h-5/6 max-w-5xl bg-white rounded-lg shadow-xl flex flex-col"
-      onClick={(e) => e.stopPropagation()} // Prevents modal from closing when clicking inside.
+      onClick={(e) => e.stopPropagation()} 
     >
       <div className="flex justify-between items-center p-3 border-b bg-slate-50 rounded-t-lg">
         <h3 className="font-semibold text-slate-700">Visor de Documento</h3>
         <button
-          onClick={onClose} // Explicit close button for accessibility.
+          onClick={onClose} 
           className="p-1 rounded-full text-slate-500 hover:bg-slate-200"
         >
           <X className="w-5 h-5" />
@@ -59,12 +58,10 @@ const DocumentViewer = ({
 type StatusFilter = 'all' | 'pending' | 'accepted' | 'rejected';
 
 export default function ProfessorRequestsPage() {
-  // State variables drive UI and API interactions; each controls a distinct aspect of the request management workflow.
   const [requests, setRequests] = useState<Appeal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedRequest, setSelectedRequest] = useState<Appeal | null>(null);
-  // Controls the visibility and content of the document viewer modal. Set to a URL to show, null to hide.
   const [documentUrlToShow, setDocumentUrlToShow] = useState<string | null>(
     null
   );
@@ -72,7 +69,6 @@ export default function ProfessorRequestsPage() {
   const [sortOrder, setSortOrder] = useState('newest');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
-  // Fetches all requests only once on mount to initialize the page data.
   useEffect(() => {
     const fetchRequests = async () => {
       try {
@@ -89,9 +85,8 @@ export default function ProfessorRequestsPage() {
       }
     };
     fetchRequests();
-  }, []); // Empty dependency: only runs once on initial render.
+  }, []);
 
-  // useMemo avoids unnecessary recalculation of filtered/sorted requests unless dependencies change, improving performance for large lists.
   const filteredAndSortedRequests = useMemo(() => {
     return requests
       .filter((req) => {
@@ -109,7 +104,6 @@ export default function ProfessorRequestsPage() {
       });
   }, [requests, searchTerm, sortOrder, statusFilter]);
 
-  // Optimistically updates UI for status changes; rolls back if API call fails to keep UI consistent with backend.
   const handleStatusChange = async (
     requestId: string,
     newStatus: 'accepted' | 'rejected'
@@ -128,7 +122,6 @@ export default function ProfessorRequestsPage() {
     }
   };
 
-  // Show loading or error states before rendering main content.
   if (isLoading)
     return <div className="text-center p-8">Cargando solicitudes...</div>;
   if (error) return <div className="text-center p-8 text-red-600">{error}</div>;
@@ -193,7 +186,6 @@ export default function ProfessorRequestsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {/* Render each request row; conditional actions only shown for 'pending' requests. */}
             {filteredAndSortedRequests.map((request) => {
               const date = new Date(request.date);
               const formattedDate = !isNaN(date.getTime())
@@ -238,7 +230,6 @@ export default function ProfessorRequestsPage() {
                       <FileText className="w-4 h-4 mr-1" />
                       Detalles
                     </Button>
-                    {/* Only show approve/reject buttons for requests that are still pending. */}
                     {request.state === 'pending' && (
                       <>
                         <Button
@@ -297,7 +288,6 @@ export default function ProfessorRequestsPage() {
               );
             })}
           </div>
-          {/* Show message if no requests match current filters/search. */}
           {filteredAndSortedRequests.length === 0 && (
             <p className="text-center text-slate-500 py-8">
               No se encontraron solicitudes que coincidan con la búsqueda.
@@ -310,7 +300,6 @@ export default function ProfessorRequestsPage() {
         open={!!selectedRequest}
         onOpenChange={() => setSelectedRequest(null)}
       >
-        {/* Dialog only renders if a request is selected. */}
         {selectedRequest && (
           <>
             <DialogHeader>
@@ -337,7 +326,6 @@ export default function ProfessorRequestsPage() {
                   {selectedRequest.experienceMotivation}
                 </p>
               </div>
-              {/* If the request has a document, show a button to open the viewer modal. */}
               {selectedRequest.documentUrl && (
                 <div>
                   <p className="text-sm font-medium text-slate-700 mb-1">
@@ -345,7 +333,6 @@ export default function ProfessorRequestsPage() {
                   </p>
                   <button
                     onClick={() =>
-                      // Triggers the document viewer modal with the selected document URL.
                       setDocumentUrlToShow(selectedRequest.documentUrl!)
                     }
                     className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline text-sm font-medium"
@@ -360,8 +347,6 @@ export default function ProfessorRequestsPage() {
         )}
       </Dialog>
 
-      {/* Document viewer modal only appears if a document URL is set. */}
-      {/* Renders the document viewer modal if a document URL is set. Closing resets the state to hide the modal. */}
       {documentUrlToShow && (
         <DocumentViewer
           url={documentUrlToShow}
