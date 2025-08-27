@@ -53,6 +53,11 @@ export function NavBar() {
         </Link>
 
         <div className="hidden lg:flex items-center space-x-2 md:space-x-4">
+
+          <Link to="/courses" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname === '/courses' ? activeLinkClasses : inactiveLinkClasses}`}>
+            <BookOpen className="w-4 h-4 mr-2" /> Cursos
+          </Link>
+          
           {isLoading ? (
             <div className="flex items-center space-x-2">
               <div className="h-8 w-20 bg-slate-200 rounded-lg animate-pulse"></div>

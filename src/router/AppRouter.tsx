@@ -31,7 +31,7 @@ const AppRouter = () => {
 
       <Route element={<MainLayout />}>
 
-        <Route path="/courses" element={<ProtectedRoute allowedRoles={['admin', 'professor', 'student']}><CourseListPage /></ProtectedRoute>} />
+        <Route path="/courses" element={<CourseListPage />} />
 
         <Route path="/professor/dashboard" element={<ProtectedRoute allowedRoles={['professor']}><ProfessorDashboard /></ProtectedRoute>}>
             <Route index element={<Navigate to="courses" replace />} />
