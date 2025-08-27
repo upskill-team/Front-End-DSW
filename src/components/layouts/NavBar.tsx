@@ -89,11 +89,13 @@ return (
                         <BookOpen className="w-4 h-4 mr-2" /> Cursos
                     </Link>
 
+
                     <Link to="/admin/courseTypes" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/courseTypes') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <BookOpen className="w-4 h-4 mr-2" /> Tipos de Cursos
                     </Link>
                     
                     <Link to="/admin/appeals" onClick={() => handleLinkClick('/admin/appeals')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/appeals') ? activeLinkClasses : inactiveLinkClasses}`}>
+
                         <GraduationCap className="w-4 h-4 mr-2" /> Solicitudes
                     </Link>
                  </div>
@@ -176,10 +178,12 @@ return (
                         <BookOpen className="w-4 h-4 mr-2" /> Cursos
                     </Link>
 
+
                     <Link to="/admin/courseTypes" onClick={() => setIsMobileMenuOpen(false)} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/courseTypes') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <BookOpen className="w-4 h-4 mr-2" /> Tipos de Cursos
                     </Link>
                     <Link to="/admin/appeals" onClick={() => handleLinkClick('/admin/appeals')} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/appeals') ? activeLinkClasses : inactiveLinkClasses}`}>
+
                         <GraduationCap className="w-4 h-4 mr-2" /> Solicitudes
                     </Link>
                  </div>
