@@ -39,13 +39,22 @@ export function NavBar() {
     setIsMobileMenuOpen(false);
   };
 
+  const handleLinkClick = (path: string) => {
+    setIsMobileMenuOpen(false);
+    if (location.pathname === path) {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   const isProfessorDashboard = location.pathname.startsWith('/professor/dashboard');
   const isAdminDashboard = location.pathname.startsWith('/admin');
-
-  return (
+return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-blue-100 shadow-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-2">
+        <Link to="/" onClick={() => handleLinkClick('/')} className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-green-400 rounded-lg flex items-center justify-center">
             <BookOpen className="w-5 h-5 text-white" />
           </div>
@@ -67,22 +76,26 @@ export function NavBar() {
             <>
               {user?.role === 'admin' && (
                  <div className="flex items-center space-x-2 bg-slate-100 p-1 rounded-lg">
-                    <Link to="/admin/dashboard" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/dashboard') ? activeLinkClasses : inactiveLinkClasses}`}>
+                    <Link to="/admin/dashboard" onClick={() => handleLinkClick('/admin/dashboard')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/dashboard') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <LayoutDashboard className="w-4 h-4 mr-2" /> Panel General
                     </Link>
-                    <Link to="/admin/analytics" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/analytics') ? activeLinkClasses : inactiveLinkClasses}`}>
+                    <Link to="/admin/analytics" onClick={() => handleLinkClick('/admin/analytics')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/analytics') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <BarChart3 className="w-4 h-4 mr-2" /> Analíticas
                     </Link>
-                    <Link to="/admin/users" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/users') ? activeLinkClasses : inactiveLinkClasses}`}>
+                    <Link to="/admin/users" onClick={() => handleLinkClick('/admin/users')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/users') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <Users className="w-4 h-4 mr-2" /> Usuarios
                     </Link>
-                    <Link to="/admin/courses" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/courses') ? activeLinkClasses : inactiveLinkClasses}`}>
+                    <Link to="/admin/courses" onClick={() => handleLinkClick('/admin/courses')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/courses') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <BookOpen className="w-4 h-4 mr-2" /> Cursos
                     </Link>
+
+
                     <Link to="/admin/courseTypes" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/courseTypes') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <BookOpen className="w-4 h-4 mr-2" /> Tipos de Cursos
                     </Link>
-                    <Link to="/admin/appeals" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/appeals') ? activeLinkClasses : inactiveLinkClasses}`}>
+                    
+                    <Link to="/admin/appeals" onClick={() => handleLinkClick('/admin/appeals')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/appeals') ? activeLinkClasses : inactiveLinkClasses}`}>
+
                         <GraduationCap className="w-4 h-4 mr-2" /> Solicitudes
                     </Link>
                  </div>
@@ -100,13 +113,13 @@ export function NavBar() {
               
               {user?.role === 'professor' && (
                  <div className="flex items-center space-x-2 bg-slate-100 p-1 rounded-lg">
-                    <Link to="/professor/dashboard/courses" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/professor/dashboard/courses') ? activeLinkClasses : inactiveLinkClasses}`}>
+                    <Link to="/professor/dashboard/courses" onClick={() => handleLinkClick('/professor/dashboard/courses')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/professor/dashboard/courses') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <BookOpen className="w-4 h-4 mr-2" /> Mis Cursos
                     </Link>
-                    <Link to="/professor/dashboard/analytics" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/professor/dashboard/analytics') ? activeLinkClasses : inactiveLinkClasses}`}>
+                    <Link to="/professor/dashboard/analytics" onClick={() => handleLinkClick('/professor/dashboard/analytics')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/professor/dashboard/analytics') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <BarChart3 className="w-4 h-4 mr-2" /> Analíticas
                     </Link>
-                    <Link to="/professor/dashboard/students" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/professor/dashboard/students') ? activeLinkClasses : inactiveLinkClasses}`}>
+                    <Link to="/professor/dashboard/students" onClick={() => handleLinkClick('/professor/dashboard/students')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/professor/dashboard/students') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <Users className="w-4 h-4 mr-2" /> Estudiantes
                     </Link>
                  </div>
@@ -128,8 +141,8 @@ export function NavBar() {
                 <GraduationCap className="w-4 h-4" />
                 <span>Quiero ser profesor</span>
               </button>
-              <Link to="/login" className="flex items-center text-slate-700 hover:text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium text-sm"><LogIn className="w-4 h-4 mr-2" />Login</Link>
-              <Link to="/register" className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm"><UserPlus className="w-4 h-4 mr-2" />Register</Link>
+              <Link to="/login" onClick={() => handleLinkClick('/login')} className="flex items-center text-slate-700 hover:text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium text-sm"><LogIn className="w-4 h-4 mr-2" />Login</Link>
+              <Link to="/register" onClick={() => handleLinkClick('/register')} className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm"><UserPlus className="w-4 h-4 mr-2" />Register</Link>
             </>
           )}
         </div>
@@ -152,22 +165,25 @@ export function NavBar() {
               </div>
               {user?.role === 'admin' && (
                  <div className="space-y-2 border-b pb-4 mb-2">
-                    <Link to="/admin/dashboard" onClick={() => setIsMobileMenuOpen(false)} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/dashboard') ? activeLinkClasses : inactiveLinkClasses}`}>
+                    <Link to="/admin/dashboard" onClick={() => handleLinkClick('/admin/dashboard')} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/dashboard') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <LayoutDashboard className="w-4 h-4 mr-2" /> Panel General
                     </Link>
-                    <Link to="/admin/analytics" onClick={() => setIsMobileMenuOpen(false)} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/analytics') ? activeLinkClasses : inactiveLinkClasses}`}>
+                    <Link to="/admin/analytics" onClick={() => handleLinkClick('/admin/analytics')} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/analytics') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <BarChart3 className="w-4 h-4 mr-2" /> Analíticas
                     </Link>
-                    <Link to="/admin/users" onClick={() => setIsMobileMenuOpen(false)} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/users') ? activeLinkClasses : inactiveLinkClasses}`}>
+                    <Link to="/admin/users" onClick={() => handleLinkClick('/admin/users')} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/users') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <Users className="w-4 h-4 mr-2" /> Usuarios
                     </Link>
-                    <Link to="/admin/courses" onClick={() => setIsMobileMenuOpen(false)} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/courses') ? activeLinkClasses : inactiveLinkClasses}`}>
+                    <Link to="/admin/courses" onClick={() => handleLinkClick('/admin/courses')} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/courses') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <BookOpen className="w-4 h-4 mr-2" /> Cursos
                     </Link>
+
+
                     <Link to="/admin/courseTypes" onClick={() => setIsMobileMenuOpen(false)} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/courseTypes') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <BookOpen className="w-4 h-4 mr-2" /> Tipos de Cursos
                     </Link>
-                    <Link to="/admin/appeals" onClick={() => setIsMobileMenuOpen(false)} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/appeals') ? activeLinkClasses : inactiveLinkClasses}`}>
+                    <Link to="/admin/appeals" onClick={() => handleLinkClick('/admin/appeals')} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/appeals') ? activeLinkClasses : inactiveLinkClasses}`}>
+
                         <GraduationCap className="w-4 h-4 mr-2" /> Solicitudes
                     </Link>
                  </div>
@@ -180,13 +196,13 @@ export function NavBar() {
               )}
               {user?.role === 'professor' && (
                  <div className="space-y-2 border-b pb-4 mb-2">
-                    <Link to="/professor/dashboard/courses" onClick={() => setIsMobileMenuOpen(false)} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/professor/dashboard/courses') ? activeLinkClasses : inactiveLinkClasses}`}>
+                    <Link to="/professor/dashboard/courses" onClick={() => handleLinkClick('/professor/dashboard/courses')} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/professor/dashboard/courses') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <BookOpen className="w-4 h-4 mr-2" /> Mis Cursos
                     </Link>
-                    <Link to="/professor/dashboard/analytics" onClick={() => setIsMobileMenuOpen(false)} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/professor/dashboard/analytics') ? activeLinkClasses : inactiveLinkClasses}`}>
+                    <Link to="/professor/dashboard/analytics" onClick={() => handleLinkClick('/professor/dashboard/analytics')} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/professor/dashboard/analytics') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <BarChart3 className="w-4 h-4 mr-2" /> Analíticas
                     </Link>
-                    <Link to="/professor/dashboard/students" onClick={() => setIsMobileMenuOpen(false)} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/professor/dashboard/students') ? activeLinkClasses : inactiveLinkClasses}`}>
+                    <Link to="/professor/dashboard/students" onClick={() => handleLinkClick('/professor/dashboard/students')} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/professor/dashboard/students') ? activeLinkClasses : inactiveLinkClasses}`}>
                         <Users className="w-4 h-4 mr-2" /> Estudiantes
                     </Link>
                  </div>
@@ -195,8 +211,8 @@ export function NavBar() {
             </>
           ) : (
             <>
-              <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center text-slate-700 hover:text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium text-sm"><LogIn className="w-4 h-4 mr-2" />Login</Link>
-              <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm"><UserPlus className="w-4 h-4 mr-2" />Register</Link>
+              <Link to="/login" onClick={() => handleLinkClick('/login')} className="flex items-center justify-center text-slate-700 hover:text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium text-sm"><LogIn className="w-4 h-4 mr-2" />Login</Link>
+              <Link to="/register" onClick={() => handleLinkClick('/register')} className="flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm"><UserPlus className="w-4 h-4 mr-2" />Register</Link>
               <button onClick={handleApplyClick} className="w-full flex items-center justify-center space-x-2 border-green-200 text-green-700 hover:bg-green-50 bg-transparent px-4 py-2 rounded-lg border text-sm font-medium mt-2">
                 <GraduationCap className="w-4 h-4" />
                 <span>Quiero ser profesor</span>

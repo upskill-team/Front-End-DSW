@@ -18,9 +18,12 @@ import CourseTypesPage from '../pages/Admin/CourseTypesPage.tsx';
 import ProfessorCoursesPage from '../pages/Professor/ProfessorCoursesPage.tsx';
 import ProfessorAnalyticsPage from '../pages/Professor/ProfessorAnalyticsPage.tsx';
 import ProfessorStudentsPage from '../pages/Professor/ProfessorStudentsPage.tsx';
+import ScrollToTop from '../components/layouts/ScrollToTop';
 
 const AppRouter = () => {
   return (
+    <>
+    <ScrollToTop />
     <Routes>
       <Route path="/" element={<LandingPage />} />
 
@@ -54,6 +57,7 @@ const AppRouter = () => {
 
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
     </Routes>
+    </>
   );
 };
 
