@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   BarChart3,
   Users,
+  ClipboardList,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -61,10 +62,10 @@ return (
           <span className="text-xl font-poppins font-bold text-slate-800">UpSkill</span>
         </Link>
 
-        <div className="hidden lg:flex items-center space-x-2 md:space-x-4">
+        <div className="hidden md:flex items-center space-x-2 md:space-x-4">
 
           <Link to="/courses" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname === '/courses' ? activeLinkClasses : inactiveLinkClasses}`}>
-            <BookOpen className="w-4 h-4 mr-2" /> Cursos
+            <BookOpen className="w-4 h-4" /> <span className="xl:inline ml-2">Cursos</span>
           </Link>
           
           {isLoading ? (
@@ -75,28 +76,24 @@ return (
           ) : isAuthenticated ? (
             <>
               {user?.role === 'admin' && (
-                 <div className="flex items-center space-x-2 bg-slate-100 p-1 rounded-lg">
-                    <Link to="/admin/dashboard" onClick={() => handleLinkClick('/admin/dashboard')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/dashboard') ? activeLinkClasses : inactiveLinkClasses}`}>
-                        <LayoutDashboard className="w-4 h-4 mr-2" /> Panel General
+                 <div className="flex items-center space-x-1 bg-slate-100 p-1 rounded-lg">
+                    <Link to="/admin/dashboard" title="Panel General" onClick={() => handleLinkClick('/admin/dashboard')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/dashboard') ? activeLinkClasses : inactiveLinkClasses}`}>
+                        <LayoutDashboard className="w-4 h-4" /> <span className="hidden xl:inline ml-2">Panel General</span>
                     </Link>
-                    <Link to="/admin/analytics" onClick={() => handleLinkClick('/admin/analytics')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/analytics') ? activeLinkClasses : inactiveLinkClasses}`}>
-                        <BarChart3 className="w-4 h-4 mr-2" /> Analíticas
+                    <Link to="/admin/analytics" title="Analíticas" onClick={() => handleLinkClick('/admin/analytics')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/analytics') ? activeLinkClasses : inactiveLinkClasses}`}>
+                        <BarChart3 className="w-4 h-4" /> <span className="hidden xl:inline ml-2">Analíticas</span>
                     </Link>
-                    <Link to="/admin/users" onClick={() => handleLinkClick('/admin/users')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/users') ? activeLinkClasses : inactiveLinkClasses}`}>
-                        <Users className="w-4 h-4 mr-2" /> Usuarios
+                    <Link to="/admin/users" title="Usuarios" onClick={() => handleLinkClick('/admin/users')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/users') ? activeLinkClasses : inactiveLinkClasses}`}>
+                        <Users className="w-4 h-4" /> <span className="hidden xl:inline ml-2">Usuarios</span>
                     </Link>
-                    <Link to="/admin/courses" onClick={() => handleLinkClick('/admin/courses')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/courses') ? activeLinkClasses : inactiveLinkClasses}`}>
-                        <BookOpen className="w-4 h-4 mr-2" /> Cursos
+                    <Link to="/admin/courses" title="Gestion de Cursos" onClick={() => handleLinkClick('/admin/courses')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/courses') ? activeLinkClasses : inactiveLinkClasses}`}>
+                        <BookOpen className="w-4 h-4" /> <span className="hidden xl:inline ml-2">Gestion de Cursos</span>
                     </Link>
-
-
-                    <Link to="/admin/courseTypes" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/courseTypes') ? activeLinkClasses : inactiveLinkClasses}`}>
-                        <BookOpen className="w-4 h-4 mr-2" /> Tipos de Cursos
+                    <Link to="/admin/courseTypes" title="Tipos de Cursos" className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/courseTypes') ? activeLinkClasses : inactiveLinkClasses}`}>
+                        <ClipboardList className="w-4 h-4" /> <span className="hidden xl:inline ml-2">Tipos de Cursos</span>
                     </Link>
-                    
-                    <Link to="/admin/appeals" onClick={() => handleLinkClick('/admin/appeals')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/appeals') ? activeLinkClasses : inactiveLinkClasses}`}>
-
-                        <GraduationCap className="w-4 h-4 mr-2" /> Solicitudes
+                    <Link to="/admin/appeals" title="Solicitudes" onClick={() => handleLinkClick('/admin/appeals')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/admin/appeals') ? activeLinkClasses : inactiveLinkClasses}`}>
+                        <GraduationCap className="w-4 h-4" /> <span className="hidden xl:inline ml-2">Solicitudes</span>
                     </Link>
                  </div>
               )}
@@ -112,15 +109,15 @@ return (
               )}
               
               {user?.role === 'professor' && (
-                 <div className="flex items-center space-x-2 bg-slate-100 p-1 rounded-lg">
-                    <Link to="/professor/dashboard/courses" onClick={() => handleLinkClick('/professor/dashboard/courses')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/professor/dashboard/courses') ? activeLinkClasses : inactiveLinkClasses}`}>
-                        <BookOpen className="w-4 h-4 mr-2" /> Mis Cursos
+                 <div className="flex items-center space-x-1 bg-slate-100 p-1 rounded-lg">
+                    <Link to="/professor/dashboard/courses" title="Mis Cursos" onClick={() => handleLinkClick('/professor/dashboard/courses')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/professor/dashboard/courses') ? activeLinkClasses : inactiveLinkClasses}`}>
+                        <BookOpen className="w-4 h-4" /> <span className="hidden xl:inline ml-2">Mis Cursos</span>
                     </Link>
-                    <Link to="/professor/dashboard/analytics" onClick={() => handleLinkClick('/professor/dashboard/analytics')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/professor/dashboard/analytics') ? activeLinkClasses : inactiveLinkClasses}`}>
-                        <BarChart3 className="w-4 h-4 mr-2" /> Analíticas
+                    <Link to="/professor/dashboard/analytics" title="Analíticas" onClick={() => handleLinkClick('/professor/dashboard/analytics')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/professor/dashboard/analytics') ? activeLinkClasses : inactiveLinkClasses}`}>
+                        <BarChart3 className="w-4 h-4" /> <span className="hidden xl:inline ml-2">Analíticas</span>
                     </Link>
-                    <Link to="/professor/dashboard/students" onClick={() => handleLinkClick('/professor/dashboard/students')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/professor/dashboard/students') ? activeLinkClasses : inactiveLinkClasses}`}>
-                        <Users className="w-4 h-4 mr-2" /> Estudiantes
+                    <Link to="/professor/dashboard/students" title="Estudiantes" onClick={() => handleLinkClick('/professor/dashboard/students')} className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${location.pathname.startsWith('/professor/dashboard/students') ? activeLinkClasses : inactiveLinkClasses}`}>
+                        <Users className="w-4 h-4" /> <span className="hidden xl:inline ml-2">Estudiantes</span>
                     </Link>
                  </div>
               )}
@@ -147,7 +144,7 @@ return (
           )}
         </div>
         
-        <div className="lg:hidden">
+        <div className="md:hidden">
           <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2">
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -155,13 +152,19 @@ return (
       </div>
 
       {isMobileMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-blue-100 px-4 pt-2 pb-4 space-y-2">
+        <div className="md:hidden bg-white border-t border-blue-100 px-4 pt-2 pb-4 space-y-2">
           {isLoading ? (
             <div className="h-8 w-full bg-slate-200 rounded-lg animate-pulse"></div>
           ) : isAuthenticated ? (
             <>
-              <div className="flex items-center gap-4 mb-4 border-b pb-4">
-                <span className="text-sm font-medium text-slate-700">Hola, {user?.name}</span>
+              <div className="px-3 py-2 border-b mb-2">
+                <span className="text-sm font-medium text-slate-800">Hola, {user?.name}</span>
+              </div>
+              <div className="space-y-1 border-b pb-2 mb-2">
+                <Link to="/courses" onClick={() => handleLinkClick('/courses')} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/courses') ? activeLinkClasses : inactiveLinkClasses}`}>
+                <BookOpen className="w-4 h-4 mr-2" /> 
+                Cursos
+                </Link>
               </div>
               {user?.role === 'admin' && (
                  <div className="space-y-2 border-b pb-4 mb-2">
@@ -175,12 +178,10 @@ return (
                         <Users className="w-4 h-4 mr-2" /> Usuarios
                     </Link>
                     <Link to="/admin/courses" onClick={() => handleLinkClick('/admin/courses')} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/courses') ? activeLinkClasses : inactiveLinkClasses}`}>
-                        <BookOpen className="w-4 h-4 mr-2" /> Cursos
+                        <BookOpen className="w-4 h-4 mr-2" /> Gestion de Cursos
                     </Link>
-
-
-                    <Link to="/admin/courseTypes" onClick={() => setIsMobileMenuOpen(false)} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/courseTypes') ? activeLinkClasses : inactiveLinkClasses}`}>
-                        <BookOpen className="w-4 h-4 mr-2" /> Tipos de Cursos
+                    <Link to="/admin/courseTypes" onClick={() => handleLinkClick('/admin/courseTypes')} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/courseTypes') ? activeLinkClasses : inactiveLinkClasses}`}>
+                        <ClipboardList className="w-4 h-4 mr-2" /> Tipos de Cursos
                     </Link>
                     <Link to="/admin/appeals" onClick={() => handleLinkClick('/admin/appeals')} className={`px-3 py-2 text-sm font-medium rounded-md flex items-center w-full justify-center transition-colors ${location.pathname.startsWith('/admin/appeals') ? activeLinkClasses : inactiveLinkClasses}`}>
 
@@ -211,6 +212,7 @@ return (
             </>
           ) : (
             <>
+              <Link to="/courses" onClick={() => handleLinkClick('/courses')} className="flex items-center justify-center text-slate-700 hover:text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium text-sm"> <BookOpen className="w-4 h-4 mr-2" />Cursos</Link>
               <Link to="/login" onClick={() => handleLinkClick('/login')} className="flex items-center justify-center text-slate-700 hover:text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium text-sm"><LogIn className="w-4 h-4 mr-2" />Login</Link>
               <Link to="/register" onClick={() => handleLinkClick('/register')} className="flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm"><UserPlus className="w-4 h-4 mr-2" />Register</Link>
               <button onClick={handleApplyClick} className="w-full flex items-center justify-center space-x-2 border-green-200 text-green-700 hover:bg-green-50 bg-transparent px-4 py-2 rounded-lg border text-sm font-medium mt-2">

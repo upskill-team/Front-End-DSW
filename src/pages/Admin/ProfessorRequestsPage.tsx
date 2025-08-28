@@ -139,17 +139,13 @@ export default function ProfessorRequestsPage() {
 
       <Card>
         <CardHeader>
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div>
-              <CardTitle>
-                Solicitudes ({filteredAndSortedRequests.length})
-              </CardTitle>
-              <CardDescription>
-                Lista de todas las solicitudes de profesores
-              </CardDescription>
+              <CardTitle>Solicitudes ({filteredAndSortedRequests.length})</CardTitle>
+              <CardDescription>Lista de todas las solicitudes de profesores</CardDescription>
             </div>
-            <div className="flex flex-wrap items-center justify-start sm:justify-end gap-2 w-full sm:w-auto">
-              <div className="relative w-full sm:w-48">
+            <div className="flex flex-col sm:flex-row items-center gap-2 w-full lg:w-auto">
+              <div className="relative flex-grow w-full">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
@@ -159,15 +155,13 @@ export default function ProfessorRequestsPage() {
                   className="w-full pl-10 pr-4 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                 />
               </div>
-              <div className="flex gap-2 w-full sm:w-auto">
+              <div className="flex gap-2 w-full">
                 <select
                   value={statusFilter}
-                  onChange={(e) =>
-                    setStatusFilter(e.target.value as StatusFilter)
-                  }
-                  className="flex-1 px-3 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
+                  className="flex-1 w-full px-3 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                 >
-                  <option value="all">Todos los Estados</option>
+                  <option value="all">Todas</option>
                   <option value="pending">Pendientes</option>
                   <option value="accepted">Aceptadas</option>
                   <option value="rejected">Rechazadas</option>
@@ -175,7 +169,7 @@ export default function ProfessorRequestsPage() {
                 <select
                   value={sortOrder}
                   onChange={(e) => setSortOrder(e.target.value)}
-                  className="flex-1 px-3 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  className="flex-1 w-full px-3 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                 >
                   <option value="newest">Más nuevas</option>
                   <option value="oldest">Más antiguas</option>
@@ -189,117 +183,46 @@ export default function ProfessorRequestsPage() {
             {filteredAndSortedRequests.map((request) => {
               const date = new Date(request.date);
               const formattedDate = !isNaN(date.getTime())
-                ? date.toLocaleDateString('es-ES', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric',
-                  })
-                : 'Fecha no disponible';
+                ? date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+                : 'Fecha inválida';
+
               return (
-                <div
-                  key={request.id}
-                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50/50"
-                >
-                  <div className="flex-1 space-y-2 mb-4 sm:mb-0">
-                    <div className="flex items-center flex-wrap gap-x-3 gap-y-2">
-                      <h3 className="font-semibold text-slate-800">
-                        {request.user.name} {request.user.surname}
-                      </h3>
-                      <StatusBadge status={request.state} />
-                    </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-sm text-slate-600">
-                      <div className="flex items-center space-x-1">
-                        <Mail className="w-3 h-3" />
-                        <span>{request.user.mail}</span>
+                <div key={request.id} className="p-4 rounded-lg border border-slate-200 space-y-4">
+                  <div className="flex flex-col lg:flex-row justify-between lg:items-start gap-4">
+                    <div className="flex-1 space-y-3">
+                      <div className="flex items-center flex-wrap gap-x-3 gap-y-2">
+                        <h3 className="font-semibold text-lg text-slate-800">{request.user.name} {request.user.surname}</h3>
+                        <StatusBadge status={request.state} />
                       </div>
-                      <div className="flex items-center space-x-1">
-                        <GraduationCap className="w-3 h-3" />
-                        <span>{request.expertise}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Clock className="w-3 h-3" />
-                        <span>{formattedDate}</span>
+                      <div className="flex flex-col sm:flex-row sm:flex-wrap text-sm text-slate-600 gap-x-4 gap-y-1 pl-1">
+                        <span className="flex items-center gap-2"><Mail className="w-4 h-4 flex-shrink-0" />{request.user.mail}</span>
+                        <span className="flex items-center gap-2"><GraduationCap className="w-4 h-4 flex-shrink-0" />{request.expertise}</span>
+                        <span className="flex items-center gap-2"><Clock className="w-4 h-4 flex-shrink-0" />{formattedDate}</span>
                       </div>
                     </div>
-                  </div>
-                  <div className="hidden sm:flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => setSelectedRequest(request)}
-                    >
-                      <FileText className="w-4 h-4 mr-1" />
-                      Detalles
-                    </Button>
-                    {request.state === 'pending' && (
-                      <>
-                        <Button
-                          onClick={() =>
-                            handleStatusChange(request.id, 'accepted')
-                          }
-                        >
-                          <Check className="w-4 h-4 mr-1" />
-                          Aprobar
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          onClick={() =>
-                            handleStatusChange(request.id, 'rejected')
-                          }
-                        >
-                          <X className="w-4 h-4 mr-1" />
-                          Rechazar
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                  <div className="flex sm:hidden flex-col gap-2 w-full">
-                    <Button
-                      variant="outline"
-                      onClick={() => setSelectedRequest(request)}
-                    >
-                      <FileText className="w-4 h-4 mr-1" />
-                      Detalles
-                    </Button>
-                    {request.state === 'pending' && (
-                      <div className="flex gap-2">
-                        <Button
-                          className="flex-1"
-                          onClick={() =>
-                            handleStatusChange(request.id, 'accepted')
-                          }
-                        >
-                          <Check className="w-4 h-4 mr-1" />
-                          Aprobar
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          className="flex-1"
-                          onClick={() =>
-                            handleStatusChange(request.id, 'rejected')
-                          }
-                        >
-                          <X className="w-4 h-4 mr-1" />
-                          Rechazar
-                        </Button>
-                      </div>
-                    )}
+                    <div className="flex flex-col lg:flex-row lg:items-start gap-2 w-full lg:w-auto">
+                      <Button variant="outline" className="w-full lg:w-auto" onClick={() => setSelectedRequest(request)}>
+                        <FileText className="w-4 h-4 mr-2" />Detalles
+                      </Button>
+                      {request.state === 'pending' && (
+                        <div className="flex gap-2 w-full">
+                          <Button className="flex-1" onClick={() => handleStatusChange(request.id, 'accepted')}><Check className="w-4 h-4 mr-2" />Aprobar</Button>
+                          <Button variant="destructive" className="flex-1" onClick={() => handleStatusChange(request.id, 'rejected')}><X className="w-4 h-4 mr-2" />Rechazar</Button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
             })}
           </div>
           {filteredAndSortedRequests.length === 0 && (
-            <p className="text-center text-slate-500 py-8">
-              No se encontraron solicitudes que coincidan con la búsqueda.
-            </p>
+            <p className="text-center text-slate-500 py-8">No se encontraron solicitudes.</p>
           )}
         </CardContent>
       </Card>
 
-      <Dialog
-        open={!!selectedRequest}
-        onOpenChange={() => setSelectedRequest(null)}
-      >
+      <Dialog open={!!selectedRequest} onOpenChange={() => setSelectedRequest(null)}>
         {selectedRequest && (
           <>
             <DialogHeader>
@@ -307,38 +230,22 @@ export default function ProfessorRequestsPage() {
             </DialogHeader>
             <div className="space-y-4 mt-4">
               <div>
-                <h3 className="text-xl font-semibold">
-                  {selectedRequest.user.name} {selectedRequest.user.surname}
-                </h3>
+                <h3 className="text-xl font-semibold">{selectedRequest.user.name} {selectedRequest.user.surname}</h3>
                 <p className="text-slate-600">{selectedRequest.user.mail}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-700">
-                  Área de Especialización
-                </p>
+                <p className="text-sm font-medium text-slate-700">Área de Especialización</p>
                 <p>{selectedRequest.expertise}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-700">
-                  Experiencia y Motivación
-                </p>
-                <p className="text-sm leading-relaxed bg-slate-50 p-3 rounded-md">
-                  {selectedRequest.experienceMotivation}
-                </p>
+                <p className="text-sm font-medium text-slate-700">Experiencia y Motivación</p>
+                <p className="text-sm leading-relaxed bg-slate-50 p-3 rounded-md">{selectedRequest.experienceMotivation}</p>
               </div>
               {selectedRequest.documentUrl && (
                 <div>
-                  <p className="text-sm font-medium text-slate-700 mb-1">
-                    Documento Adjunto
-                  </p>
-                  <button
-                    onClick={() =>
-                      setDocumentUrlToShow(selectedRequest.documentUrl!)
-                    }
-                    className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline text-sm font-medium"
-                  >
-                    Ver documento en pantalla
-                    <ExternalLink className="w-3 h-3 ml-1" />
+                  <p className="text-sm font-medium text-slate-700 mb-1">Documento Adjunto</p>
+                  <button onClick={() => setDocumentUrlToShow(selectedRequest.documentUrl!)} className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline text-sm font-medium">
+                    Ver documento en pantalla <ExternalLink className="w-3 h-3 ml-1" />
                   </button>
                 </div>
               )}
@@ -348,10 +255,7 @@ export default function ProfessorRequestsPage() {
       </Dialog>
 
       {documentUrlToShow && (
-        <DocumentViewer
-          url={documentUrlToShow}
-          onClose={() => setDocumentUrlToShow(null)}
-        />
+        <DocumentViewer url={documentUrlToShow} onClose={() => setDocumentUrlToShow(null)} />
       )}
     </div>
   );

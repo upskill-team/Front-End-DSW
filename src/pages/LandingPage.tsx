@@ -1,4 +1,3 @@
-import { Footer } from '../components/landing/Footer';
 import { PopularRanking } from '../components/landing/PopularRanking';
 import { BenefitsSection } from '../components/landing/BenefitsSection';
 import { TrendingCourses } from '../components/landing/TrendingCourses';
@@ -15,7 +14,6 @@ export default function LandingPage() {
         <BenefitsSection />
         <PopularRanking />
       </main>
-      <Footer />
     </div>
   );
 }
