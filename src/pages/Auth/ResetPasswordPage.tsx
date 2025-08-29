@@ -22,7 +22,7 @@ const ResetPasswordPage = () => {
       navigate('/'); // We should add a notification explaining the user why he is being redirected
     }
     setToken(urlToken);
-  }, [searchParams]);
+  }, [searchParams, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
