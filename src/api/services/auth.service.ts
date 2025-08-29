@@ -56,8 +56,20 @@ const getProfile = async (): Promise<User> => {
   }
 };
 
+// Sends a password reset request
+const forgotPassword = async (mail: string): Promise<void> => {
+  await apiClient.post('/auth/forgot-password', { mail });
+};
+
+// Resets the password using a token
+const resetPassword = async (token: string, password_plaintext: string): Promise<void> => {
+  await apiClient.post('/auth/reset-password', { token, password_plaintext });
+};
+
 export const authService = {
   login,
   register,
   getProfile,
+  forgotPassword,
+  resetPassword,
 };

@@ -4,6 +4,8 @@ import AuthLayout from '../components/layouts/AuthLayout';
 import LandingPage from '../pages/LandingPage';
 import LoginPage from '../pages/Auth/LoginPage';
 import RegisterPage from '../pages/Auth/RegisterPage';
+import ForgotPasswordPage from '../pages/Auth/ForgotPasswordPage';
+import ResetPasswordPage from '../pages/Auth/ResetPasswordPage';
 import CourseListPage from '../pages/Course/CourseListPage';
 import AdminDashboard from '../pages/Admin/AdminDashboard';
 import ProfessorDashboard from '../pages/Professor/ProfessorDashboard';
@@ -28,6 +30,8 @@ const AppRouter = () => {
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
       </Route>
 
       <Route element={<MainLayout />}>
