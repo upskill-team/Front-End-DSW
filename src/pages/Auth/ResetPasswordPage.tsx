@@ -19,7 +19,7 @@ const ResetPasswordPage = () => {
   useEffect(() => {
     const urlToken = searchParams.get('token');
     if (!urlToken) {
-      setError("Token de reseteo no encontrado. Por favor, solicita un nuevo enlace.");
+      navigate('/'); // We should add a notification explaining the user why he is being redirected
     }
     setToken(urlToken);
   }, [searchParams]);
