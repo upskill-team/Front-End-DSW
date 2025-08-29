@@ -1,12 +1,15 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { NavBar } from './NavBar';
-import { Footer } from '../landing/Footer';
+import { Footer } from '../common/Footer.tsx';
 
 const MainLayout = () => {
+  const location = useLocation();
+  const isLandingPage = location.pathname === '/';
+
   return (
-    <div className="bg-neutral-50 min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 p-4 sm:p-6 lg:p-8 min-h-screen">
+    <div className="flex flex-col min-h-screen bg-neutral-50">
       <NavBar />
-      <main className="container mx-auto p-4 pt-24">
+      <main className={`flex-grow container mx-auto p-4 ${!isLandingPage ? 'pt-24' : ''}`}>
         <Outlet />
       </main>
       <Footer />
