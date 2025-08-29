@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { X } from 'lucide-react';
 
 interface DialogProps {
@@ -31,9 +32,9 @@ const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
     return null;
   }
 
-  return (
+  return ReactDOM.createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fadeIn"
       onClick={() => onOpenChange(false)}
     >
       <div
@@ -50,6 +51,7 @@ const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
         {children}
       </div>
     </div>
+    , document.getElementById('modal-portal')!
   );
 };
 
