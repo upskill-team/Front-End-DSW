@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import Button from '../../components/ui/Button';
 import {
   Card,
@@ -20,15 +20,15 @@ import {
   Clock,
   ExternalLink,
 } from 'lucide-react';
-import { appealService } from '../../api/services/appeal.service';
 import type { Appeal } from '../../types/entities';
+import { useAppeals, useUpdateAppealState } from '../../hooks/useAppeals.ts';
 
 type StatusFilter = 'all' | 'pending' | 'accepted' | 'rejected';
 
 export default function ProfessorRequestsPage() {
-  const [requests, setRequests] = useState<Appeal[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: requests = [], isLoading, error } = useAppeals();
+  const { mutate: updateAppeal, isPending: isUpdating } = useUpdateAppealState();
+
   const [selectedRequest, setSelectedRequest] = useState<Appeal | null>(null);
   const [documentUrlToShow, setDocumentUrlToShow] = useState<string | null>(
     null
@@ -36,24 +36,6 @@ export default function ProfessorRequestsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState('newest');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
-
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        setIsLoading(true);
-        const data = await appealService.findAllAppeals();
-        setRequests(data);
-      } catch (err: unknown) {
-        setError('No se pudieron cargar las solicitudes.');
-        if (err instanceof Error) {
-          console.error(err.message);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchRequests();
-  }, []);
 
   const filteredAndSortedRequests = useMemo(() => {
     return requests
@@ -72,27 +54,16 @@ export default function ProfessorRequestsPage() {
       });
   }, [requests, searchTerm, sortOrder, statusFilter]);
 
-  const handleStatusChange = async (
+  const handleStatusChange = (
     requestId: string,
     newStatus: 'accepted' | 'rejected'
   ) => {
-    const originalRequests = [...requests];
-    setRequests((prev) =>
-      prev.map((req) =>
-        req.id === requestId ? { ...req, state: newStatus } : req
-      )
-    );
-    try {
-      await appealService.updateAppealState(requestId, { state: newStatus });
-    } catch {
-      setError('No se pudo actualizar la solicitud. Inténtalo de nuevo.');
-      setRequests(originalRequests);
-    }
+    updateAppeal({ appealId: requestId, payload: { state: newStatus } });
   };
 
   if (isLoading)
     return <div className="text-center p-8">Cargando solicitudes...</div>;
-  if (error) return <div className="text-center p-8 text-red-600">{error}</div>;
+  if (error) return <div className="text-center p-8 text-red-600">{error.message}</div>;
 
   return (
     <div className="space-y-6">
@@ -174,8 +145,14 @@ export default function ProfessorRequestsPage() {
                       </Button>
                       {request.state === 'pending' && (
                         <div className="flex gap-2 w-full">
-                          <Button className="flex-1" onClick={() => handleStatusChange(request.id, 'accepted')}><Check className="w-4 h-4 mr-2" />Aprobar</Button>
-                          <Button variant="destructive" className="flex-1" onClick={() => handleStatusChange(request.id, 'rejected')}><X className="w-4 h-4 mr-2" />Rechazar</Button>
+                          <Button className="flex-1" onClick={() => 
+                          handleStatusChange(request.id, 'accepted')} disabled={isUpdating}>
+                            {isUpdating ? 'Procesando...' : <><Check className="w-4 h-4 mr-2" />Aprobar</>}
+                          </Button>
+                          <Button variant="destructive" className="flex-1" onClick={() => 
+                          handleStatusChange(request.id, 'rejected')} disabled={isUpdating}>
+                            {isUpdating ? 'Procesando...' : <><X className="w-4 h-4 mr-2" />Rechazar</>}
+                          </Button>
                         </div>
                       )}
                     </div>

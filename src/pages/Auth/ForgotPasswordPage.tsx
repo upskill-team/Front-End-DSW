@@ -1,38 +1,21 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import type React from 'react';
-import axios from 'axios';
-import { Mail, CheckCircle } from 'lucide-react';
-import { authService } from '../../api/services/auth.service';
-import Button from '../../components/ui/Button';
-import Input from '../../components/ui/Input';
-import AuthCard from '../../components/layouts/AuthCard';
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import type React from 'react'
+import { Mail, CheckCircle } from 'lucide-react'
+import { useForgotPassword } from '../../hooks/useAuthMutations.ts'
+import Button from '../../components/ui/Button'
+import Input from '../../components/ui/Input'
+import AuthCard from '../../components/layouts/AuthCard'
+import { isAxiosError } from 'axios'
 
 const ForgotPasswordPage = () => {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [email, setEmail] = useState('')
+  const { mutate: sendLink, isPending, isSuccess, error } = useForgotPassword()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-    setIsSuccess(false);
-
-    try {
-      await authService.forgotPassword(email);
-      setIsSuccess(true);
-    } catch (err) {
-      const message =
-        axios.isAxiosError(err) && err.response?.data?.message
-          ? err.response.data.message
-          : 'No se pudo procesar la solicitud. Inténtalo de nuevo.';
-      setError(message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    e.preventDefault()
+    sendLink(email)
+  }
 
   return (
     <AuthCard
@@ -64,12 +47,16 @@ const ForgotPasswordPage = () => {
             autoComplete="email"
             />
 
-            {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+            {error && (
+              <p className="text-sm text-red-500 text-center">
+                {isAxiosError(error) ? error.response?.data?.message : 'No se pudo procesar la solicitud.'}
+              </p>
+            )}
 
             <div className="pt-2">
             <Button
                 type="submit"
-                isLoading={isLoading}
+                isLoading={isPending}
                 className="w-full text-base py-3"
             >
                 Enviar Enlace
@@ -87,7 +74,7 @@ const ForgotPasswordPage = () => {
         </form>
       )}
     </AuthCard>
-  );
-};
+  )
+}
 
-export default ForgotPasswordPage;
+export default ForgotPasswordPage

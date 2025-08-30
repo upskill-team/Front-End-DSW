@@ -11,7 +11,7 @@ import AdminDashboard from '../pages/Admin/AdminDashboard';
 import ProfessorDashboard from '../pages/Professor/ProfessorDashboard';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
 import ProtectedRoute from './ProtectedRoute';
-import { ProfessorApplication } from '../pages/Professor/ProfessorApplication';
+import ProfessorAppeal from '../pages/Professor/ProfessorAppeal.tsx';
 import ProfessorAppealsPage from '../pages/Admin/ProfessorAppealsPage.tsx';
 import UsersPage from '../pages/Admin/UsersPage.tsx';
 import AnalyticsPage from '../pages/Admin/AnalyticsPage.tsx';
@@ -47,7 +47,7 @@ const AppRouter = () => {
             <Route path="students" element={<ProfessorStudentsPage />} />
         </Route>
 
-        <Route path="/professor/apply" element={<ProtectedRoute allowedRoles={['admin', 'student']}><ProfessorApplication /></ProtectedRoute>} />
+        <Route path="/professor/apply" element={<ProtectedRoute allowedRoles={['admin', 'student']}><ProfessorAppeal /></ProtectedRoute>} />
 
         <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><Navigate to="/admin/dashboard" replace /></ProtectedRoute>} />
         <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
