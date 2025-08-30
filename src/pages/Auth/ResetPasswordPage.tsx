@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import type React from 'react'
+import * as v from 'valibot'
+import { useForm } from 'react-hook-form'
+import { valibotResolver } from '@hookform/resolvers/valibot'
 import { Lock } from 'lucide-react'
 import { useResetPassword } from '../../hooks/useAuthMutations'
 import Button from '../../components/ui/Button'
@@ -8,13 +10,35 @@ import Input from '../../components/ui/Input'
 import AuthCard from '../../components/layouts/AuthCard'
 import { isAxiosError } from 'axios'
 
+const ResetPasswordObjectSchema = v.object({
+  password: v.pipe(v.string(), v.minLength(8, 'La contraseña debe tener al menos 8 caracteres.')),
+  confirmPassword: v.pipe(v.string(), v.minLength(8, 'La contraseña debe tener al menos 8 caracteres.')),
+});
+
+const ResetPasswordSchema = v.pipe(
+  ResetPasswordObjectSchema,
+  v.forward(
+    v.partialCheck(
+      [['password'], ['confirmPassword']],
+      (input) => input.password === input.confirmPassword,
+      'Las contraseñas no coinciden.'
+    ),
+    ['confirmPassword']
+  )
+);
+
+type ResetPasswordFormData = v.InferInput<typeof ResetPasswordSchema>;
+
 const ResetPasswordPage = () => {
-  const [formData, setFormData] = useState({ password: '', confirmPassword: '' })
   const [token, setToken] = useState<string | null>(null)
-  const [validationError, setValidationError] = useState<string | null>(null)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { mutate: resetPassword, isPending, error } = useResetPassword()
+
+  const { register, handleSubmit, formState: { errors } } = useForm<ResetPasswordFormData>({
+    resolver: valibotResolver(ResetPasswordSchema),
+  });
+
+  const { mutate: resetPassword, isPending, error : apiError } = useResetPassword()
 
   useEffect(() => {
     const urlToken = searchParams.get('token')
@@ -24,61 +48,43 @@ const ResetPasswordPage = () => {
     setToken(urlToken)
   }, [searchParams, navigate])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
-  }
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setValidationError(null)
-
+  const onSubmit = (data: ResetPasswordFormData) => {
     if (!token) {
-      return setValidationError("Token inválido o faltante.")
+      return;
     }
-    if (formData.password !== formData.confirmPassword) {
-      return setValidationError('Las contraseñas no coinciden.')
-    }
-    if (formData.password.length < 8) {
-      return setValidationError('La contraseña debe tener al menos 8 caracteres.')
-    }
-
-    resetPassword({ token, password: formData.password })
-  }
+    resetPassword({ token, password: data.password });
+  };
 
   return (
     <AuthCard
       title="Restablecer Contraseña"
       description="Crea una nueva contraseña segura para tu cuenta"
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <Input
           id="password"
           label="Nueva Contraseña"
-          name="password"
           type="password"
           placeholder="••••••••••"
-          value={formData.password}
-          onChange={handleChange}
           icon={<Lock className="h-5 w-5" />}
-          required
           autoComplete="new-password"
+          {...register('password')}
+          error={errors.password?.message}
         />
         <Input
           id="confirmPassword"
           label="Confirmar Nueva Contraseña"
-          name="confirmPassword"
           type="password"
           placeholder="••••••••••"
-          value={formData.confirmPassword}
-          onChange={handleChange}
           icon={<Lock className="h-5 w-5" />}
-          required
           autoComplete="new-password"
+          {...register('confirmPassword')}
+          error={errors.confirmPassword?.message}
         />
 
-        {(validationError || error) && (
+        {apiError && (
             <p className="text-sm text-red-500 text-center">
-                {validationError || (isAxiosError(error) ? error.response?.data?.message : 'El token es inválido o ha expirado.')}
+                {isAxiosError(apiError) ? apiError.response?.data?.message : 'El token es inválido o ha expirado.'}
             </p>
         )}
 

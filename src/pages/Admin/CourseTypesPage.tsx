@@ -1,57 +1,70 @@
-import { useState, useMemo } from 'react';
-import { Card, CardDescription, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import { Dialog, DialogHeader, DialogTitle } from '../../components/ui/Dialog';
-import Input from '../../components/ui/Input';
-import Textarea from '../../components/ui/TextArea';
-import { Plus, Edit, Trash2, Search } from 'lucide-react';
-import type { CourseType } from '../../types/entities';
-import { useCourseTypes, useCreateCourseType, useUpdateCourseType, useDeleteCourseType } from '../../hooks/useCourseTypes';
+import { useState, useMemo } from 'react'
+import { useForm } from 'react-hook-form'
+import { valibotResolver } from '@hookform/resolvers/valibot'
+import * as v from 'valibot'
+import { Card, CardDescription, CardContent, CardHeader, CardTitle } from '../../components/ui/Card'
+import Button from '../../components/ui/Button'
+import { Dialog, DialogHeader, DialogTitle } from '../../components/ui/Dialog'
+import Input from '../../components/ui/Input'
+import Textarea from '../../components/ui/TextArea'
+import { Plus, Edit, Trash2, Search } from 'lucide-react'
+import type { CourseType } from '../../types/entities'
+import { useCourseTypes, useCreateCourseType, useUpdateCourseType, useDeleteCourseType } from '../../hooks/useCourseTypes'
+
+const CourseTypeSchema = v.object({
+  name: v.pipe(v.string(), v.minLength(1, 'El nombre es requerido.')),
+  description: v.pipe(v.string(), v.minLength(1, 'La descripción es requerida.')),
+})
+
+type CourseTypeFormData = v.InferInput<typeof CourseTypeSchema>
 
 export default function CourseTypesPage() {
-  const { data: courseTypes = [], isLoading, error } = useCourseTypes();
-  const createMutation = useCreateCourseType();
-  const updateMutation = useUpdateCourseType();
-  const deleteMutation = useDeleteCourseType();
+  const { data: courseTypes = [], isLoading, error } = useCourseTypes()
+  const createMutation = useCreateCourseType()
+  const updateMutation = useUpdateCourseType()
+  const deleteMutation = useDeleteCourseType()
   
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentType, setCurrentType] = useState<Partial<CourseType>>({});
-  const [formValues, setFormValues] = useState({ name: '', description: '' });
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [currentTypeId, setCurrentTypeId] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+
+  const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm<CourseTypeFormData>({
+    resolver: valibotResolver(CourseTypeSchema),
+  })
 
   const openModalForCreate = () => {
-    setCurrentType({});
-    setFormValues({ name: '', description: '' });
-    setIsModalOpen(true);
-  };
+    setCurrentTypeId(null)
+    reset({ name: '', description: '' })
+    setIsModalOpen(true)
+  }
 
   const openModalForEdit = (type: CourseType) => {
-    setCurrentType(type);
-    setFormValues({ name: type.name, description: type.description });
-    setIsModalOpen(true);
-  };
+    setCurrentTypeId(type.id)
+    setValue('name', type.name)
+    setValue('description', type.description)
+    setIsModalOpen(true)
+  }
 
   const handleDelete = async (id: string) => {
     if (window.confirm('¿Estás seguro? Esta acción eliminará el tipo de curso.')) {
-      deleteMutation.mutate(id);
+      deleteMutation.mutate(id)
     }
-  };
+  }
 
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const payload = { name: formValues.name, description: formValues.description };
+  const onFormSubmit = (data: CourseTypeFormData) => {
+    const payload = { name: data.name, description: data.description }
 
-    if (currentType.id) {
-      updateMutation.mutate({ id: currentType.id, data: payload }, {
+    if (currentTypeId) {
+      updateMutation.mutate({ id: currentTypeId, data: payload }, {
         onSuccess: () => setIsModalOpen(false),
-      });
+      })
     } else {
       createMutation.mutate(payload, {
         onSuccess: () => setIsModalOpen(false),
-      });
+      })
     }
-  };
+  }
 
   const filteredAndSortedTypes = useMemo(() => {
     return courseTypes
@@ -60,15 +73,15 @@ export default function CourseTypesPage() {
       )
       .sort((a, b) => {
         if (sortOrder === 'asc') {
-          return a.name.localeCompare(b.name);
+          return a.name.localeCompare(b.name)
         } else {
-          return b.name.localeCompare(a.name);
+          return b.name.localeCompare(a.name)
         }
-      });
-  }, [courseTypes, searchTerm, sortOrder]);
+      })
+  }, [courseTypes, searchTerm, sortOrder])
 
-  if (isLoading) return <p>Cargando...</p>;
-  if (error) return <p className="text-red-600">{error.message}</p>;
+  if (isLoading) return <p>Cargando...</p>
+  if (error) return <p className="text-red-600">{error.message}</p>
 
   return (
     <div className="space-y-6">
@@ -127,24 +140,22 @@ export default function CourseTypesPage() {
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogHeader>
-          <DialogTitle>{currentType.id ? 'Editar' : 'Crear'} Tipo de Curso</DialogTitle>
+          <DialogTitle>{currentTypeId ? 'Editar' : 'Crear'} Tipo de Curso</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleFormSubmit} className="space-y-4 pt-4">
+        <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4 pt-4">
           <Input 
             id="name"
             label="Nombre del Tipo de Curso"
-            value={formValues.name}
-            onChange={e => setFormValues({...formValues, name: e.target.value})}
             placeholder="Ej: Programación"
-            required
+            {...register('name')}
+            error={errors.name?.message}
           />
           <Textarea
             id="description"
             label="Descripción"
-            value={formValues.description}
-            onChange={e => setFormValues({...formValues, description: e.target.value})}
             placeholder="Ej: Cursos relacionados con el desarrollo de software y la codificación."
-            required
+            {...register('description')}
+            error={errors.description?.message}
           />
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>Cancelar</Button>
@@ -153,5 +164,5 @@ export default function CourseTypesPage() {
         </form>
       </Dialog>
     </div>
-  );
+  )
 }
