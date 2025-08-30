@@ -7,18 +7,18 @@ import  Input  from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
 import Textarea from "../../components/ui/TextArea";
 import { BookOpen, ArrowLeft, GraduationCap, BookOpenCheck, FileText, Upload } from "lucide-react";
-import { appealService } from "../../api/services/appeal.service";
+import { useCreateAppeal } from '../../hooks/useCreateAppeal';
 
-export const ProfessorApplication = () => {
+export default function ProfessorApplication() {
   const [formData, setFormData] = useState({
     expertise: "",
     experienceMotivation: "",
     document: null as File | null,
   });
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
-  const [error, setError] = useState<string | null>(null);
+  const { mutate: createAppeal, isPending, error } = useCreateAppeal();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -38,8 +38,11 @@ export const ProfessorApplication = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError(null);
+    setValidationError(null);
+
+    if (formData.experienceMotivation.trim().length < 20) {
+      return setValidationError("Por favor, detalla tu experiencia con al menos 20 caracteres.");
+    }
 
     const data = new FormData();
     data.append("expertise", formData.expertise);
@@ -48,22 +51,11 @@ export const ProfessorApplication = () => {
       data.append("document", formData.document);
     }
 
-    try {
-      await appealService.createAppeal(data);
-
-      alert("¡Solicitud enviada con éxito! Te contactaremos pronto.");
-
-      setFormData({
-          expertise: "",
-          experienceMotivation: "",
-          document: null,
-      });
-    }catch (err) {
-      console.error("Error al enviar la solicitud:", err)
-      setError("Hubo un problema al enviar tu solicitud. Por favor, inténtalo de nuevo más tarde.")
-    } finally {
-      setIsLoading(false)
-    }
+    createAppeal(data, {
+      onSuccess: () => {
+        setFormData({ expertise: "", experienceMotivation: "", document: null });
+      }
+    });
   }
 
   return (
@@ -177,14 +169,14 @@ export const ProfessorApplication = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-green-500 hover:bg-green-600 text-white py-2.5"
-                disabled={isLoading}
+                disabled={isPending}
               >
-                {isLoading ? "Enviando..." : "Enviar solicitud"}
+                {isPending ? "Enviando..." : "Enviar solicitud"}
               </Button>
 
-              {error && (
+              {(validationError || error) && (
                 <div className="text-center text-sm text-red-600 mt-4">
-                  <p>{error}</p>
+                  <p>{validationError || 'Hubo un problema al enviar tu solicitud. Por favor, inténtalo de nuevo más tarde.'}</p>
                 </div>
               )}
 

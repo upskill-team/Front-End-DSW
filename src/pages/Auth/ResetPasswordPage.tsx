@@ -1,62 +1,49 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import type React from 'react';
-import axios from 'axios';
-import { Lock } from 'lucide-react';
-import { authService } from '../../api/services/auth.service';
-import Button from '../../components/ui/Button';
-import Input from '../../components/ui/Input';
-import AuthCard from '../../components/layouts/AuthCard';
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import type React from 'react'
+import { Lock } from 'lucide-react'
+import { useResetPassword } from '../../hooks/useAuthMutations'
+import Button from '../../components/ui/Button'
+import Input from '../../components/ui/Input'
+import AuthCard from '../../components/layouts/AuthCard'
+import { isAxiosError } from 'axios'
 
 const ResetPasswordPage = () => {
-  const [formData, setFormData] = useState({ password: '', confirmPassword: '' });
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [formData, setFormData] = useState({ password: '', confirmPassword: '' })
+  const [token, setToken] = useState<string | null>(null)
+  const [validationError, setValidationError] = useState<string | null>(null)
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const { mutate: resetPassword, isPending, error } = useResetPassword()
 
   useEffect(() => {
-    const urlToken = searchParams.get('token');
+    const urlToken = searchParams.get('token')
     if (!urlToken) {
-      navigate('/'); // We should add a notification explaining the user why he is being redirected
+      navigate('/') // We should add a notification explaining the user why he is being redirected
     }
-    setToken(urlToken);
-  }, [searchParams, navigate]);
+    setToken(urlToken)
+  }, [searchParams, navigate])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setValidationError(null)
 
     if (!token) {
-        return setError("Token inválido o faltante.");
+      return setValidationError("Token inválido o faltante.")
     }
     if (formData.password !== formData.confirmPassword) {
-      return setError('Las contraseñas no coinciden.');
+      return setValidationError('Las contraseñas no coinciden.')
     }
     if (formData.password.length < 8) {
-      return setError('La contraseña debe tener al menos 8 caracteres.');
+      return setValidationError('La contraseña debe tener al menos 8 caracteres.')
     }
 
-    setIsLoading(true);
-    try {
-      await authService.resetPassword(token, formData.password);
-      alert("¡Contraseña actualizada con éxito!");
-      navigate('/login');
-    } catch (err) {
-      const message =
-        axios.isAxiosError(err) && err.response?.data?.message
-          ? err.response.data.message
-          : 'El token es inválido, ha expirado o ya fue utilizado.';
-      setError(message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    resetPassword({ token, password: formData.password })
+  }
 
   return (
     <AuthCard
@@ -89,13 +76,17 @@ const ResetPasswordPage = () => {
           autoComplete="new-password"
         />
 
-        {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+        {(validationError || error) && (
+            <p className="text-sm text-red-500 text-center">
+                {validationError || (isAxiosError(error) ? error.response?.data?.message : 'El token es inválido o ha expirado.')}
+            </p>
+        )}
 
         <div className="pt-2">
           <Button
             type="submit"
-            isLoading={isLoading}
-            disabled={!token || isLoading}
+            isLoading={isPending}
+            disabled={!token || isPending}
             className="w-full text-base py-3"
           >
             Actualizar Contraseña
@@ -103,7 +94,7 @@ const ResetPasswordPage = () => {
         </div>
       </form>
     </AuthCard>
-  );
-};
+  )
+}
 
-export default ResetPasswordPage;
+export default ResetPasswordPage

@@ -1,39 +1,24 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardDescription, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import { Dialog, DialogHeader, DialogTitle } from '../../components/ui/Dialog';
 import Input from '../../components/ui/Input';
 import Textarea from '../../components/ui/TextArea';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
-import { courseTypeService } from '../../api/services/courseType.service';
 import type { CourseType } from '../../types/entities';
+import { useCourseTypes, useCreateCourseType, useUpdateCourseType, useDeleteCourseType } from '../../hooks/useCourseTypes';
 
 export default function CourseTypesPage() {
-  const [courseTypes, setCourseTypes] = useState<CourseType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: courseTypes = [], isLoading, error } = useCourseTypes();
+  const createMutation = useCreateCourseType();
+  const updateMutation = useUpdateCourseType();
+  const deleteMutation = useDeleteCourseType();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentType, setCurrentType] = useState<Partial<CourseType>>({});
   const [formValues, setFormValues] = useState({ name: '', description: '' });
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-
-  useEffect(() => {
-    fetchCourseTypes();
-  }, []);
-
-  const fetchCourseTypes = async () => {
-    try {
-      setIsLoading(true);
-      const data = await courseTypeService.findAll();
-      setCourseTypes(data);
-    } catch {
-      setError('No se pudieron cargar los tipos de curso.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const openModalForCreate = () => {
     setCurrentType({});
@@ -49,12 +34,7 @@ export default function CourseTypesPage() {
 
   const handleDelete = async (id: string) => {
     if (window.confirm('¿Estás seguro? Esta acción eliminará el tipo de curso.')) {
-      try {
-        await courseTypeService.remove(id);
-        setCourseTypes(prev => prev.filter(t => t.id !== id));
-      } catch {
-        setError('No se pudo eliminar el tipo de curso.');
-      }
+      deleteMutation.mutate(id);
     }
   };
 
@@ -62,16 +42,14 @@ export default function CourseTypesPage() {
     e.preventDefault();
     const payload = { name: formValues.name, description: formValues.description };
 
-    try {
-      if (currentType.id) {
-        await courseTypeService.update(currentType.id, payload);
-      } else {
-        await courseTypeService.create(payload);
-      }
-      setIsModalOpen(false);
-      fetchCourseTypes();
-    } catch {
-      setError('Ocurrió un error al guardar.');
+    if (currentType.id) {
+      updateMutation.mutate({ id: currentType.id, data: payload }, {
+        onSuccess: () => setIsModalOpen(false),
+      });
+    } else {
+      createMutation.mutate(payload, {
+        onSuccess: () => setIsModalOpen(false),
+      });
     }
   };
 
@@ -90,7 +68,7 @@ export default function CourseTypesPage() {
   }, [courseTypes, searchTerm, sortOrder]);
 
   if (isLoading) return <p>Cargando...</p>;
-  if (error) return <p className="text-red-600">{error}</p>;
+  if (error) return <p className="text-red-600">{error.message}</p>;
 
   return (
     <div className="space-y-6">

@@ -1,65 +1,34 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import type React from 'react';
-import axios from 'axios';
-import { Mail, Lock } from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
-import { authService } from '../../api/services/auth.service';
-import Button from '../../components/ui/Button';
-import Input from '../../components/ui/Input';
-import AuthCard from '../../components/layouts/AuthCard';
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import type React from 'react'
+import { Mail, Lock } from 'lucide-react'
+import { useLogin } from '../../hooks/useAuthMutations.ts'
+import Button from '../../components/ui/Button'
+import Input from '../../components/ui/Input'
+import AuthCard from '../../components/layouts/AuthCard'
+import { isAxiosError } from 'axios'
 
 const LoginPage = () => {
-  const [credentials, setCredentials] = useState({ mail: '', password: '' });
+  
+  const [credentials, setCredentials] = useState({ mail: '', password: '' })
 
-  const [error, setError] = useState<string | null>(null);
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  const navigate = useNavigate();
-
-  const auth = useAuth();
+  const { mutate: login, isPending, error } = useLogin()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCredentials((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+    setCredentials((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    setIsLoading(true);
-
-    setError(null);
-
-    try {
-      const payload = {
-        mail: credentials.mail,
-        password_plaintext: credentials.password,
-      };
-
-
-      const token = await authService.login(payload);
-
-
-      if (!token || typeof token !== 'string') {
-        throw new Error('No se recibió un token válido del servidor.');
-      }
-
-      await auth.login(token);
-
-      navigate('/'); // In this case, it redirects to the home page. In a future we should change this to redirect to... courses maybe.
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || 'Credenciales incorrectas.');
-      } else {
-        setError('Ocurrió un error inesperado. Por favor, intenta de nuevo.');
-      }
-      console.error(err);
-    } finally {
-      setIsLoading(false);
+    const payload = {
+      mail: credentials.mail,
+      password_plaintext: credentials.password,
     }
-  };
 
+    login(payload)
+  }
+  
   return (
     <AuthCard
       title="Iniciar Sesión"
@@ -110,32 +79,34 @@ const LoginPage = () => {
           </Link>
         </div>
 
-        {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+        {error && (
+          <p className="text-sm text-red-500 text-center">
+            {isAxiosError(error)
+              ? error.response?.data?.errors || 'Credenciales incorrectas.'
+              : 'Ocurrió un error inesperado.'
+            }
+          </p>
+        )}
 
         <div className="pt-6">
           <Button
             type="submit"
-            isLoading={isLoading}
+            isLoading={isPending}
             className="w-full text-base py-3"
           >
             Iniciar Sesión
           </Button>
         </div>
 
-        <div className="flex flex-col items-center text-sm text-slate-500 pt-6 gap-1">
-          <span>
-            ¿No tienes una cuenta?
-          </span>
-          <Link
-            to="/register"
-            className="font-semibold text-blue-500 hover:underline"
-          >
+        <div className="text-center text-sm text-slate-500 pt-6">
+          ¿No tienes una cuenta?{' '}
+          <Link to="/register" className="font-semibold text-blue-500 hover:underline">
             Regístrate aquí
           </Link>
         </div>
       </form>
     </AuthCard>
-  );
-};
+  )
+}
 
-export default LoginPage;
+export default LoginPage
