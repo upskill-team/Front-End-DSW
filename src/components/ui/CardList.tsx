@@ -1,5 +1,6 @@
 import { Clock, Star, Users } from 'lucide-react';
 import React from 'react';
+import Button from './Button.tsx';
 
 interface Course {
   id: number;
@@ -96,9 +97,9 @@ export default function CardList({ course }: CourseCardListPureProps) {
                     <span className="text-lg text-slate-500 line-through">${course.originalPrice}</span>
                   )}
                 </div>
-                <button className="w-full lg:w-auto bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                <Button className="w-full lg:w-auto bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
                   Agregar al carrito
-                </button>
+                </Button>
               </div>
             </div>
           </div>

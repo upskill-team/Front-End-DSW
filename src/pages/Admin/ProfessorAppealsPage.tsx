@@ -189,9 +189,9 @@ export default function ProfessorRequestsPage() {
               {selectedRequest.documentUrl && (
                 <div>
                   <p className="text-sm font-medium text-slate-700 mb-1">Documento Adjunto</p>
-                  <button onClick={() => setDocumentUrlToShow(selectedRequest.documentUrl!)} className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline text-sm font-medium">
+                  <Button onClick={() => setDocumentUrlToShow(selectedRequest.documentUrl!)} className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline text-sm font-medium">
                     Ver documento en pantalla <ExternalLink className="w-3 h-3 ml-1" />
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>

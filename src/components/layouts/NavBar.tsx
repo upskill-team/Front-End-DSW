@@ -14,6 +14,7 @@ import {
   ClipboardList,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import Button from '../ui/Button.tsx';
 
 export function NavBar() {
   const { isAuthenticated, user, logout, isLoading } = useAuth();
@@ -99,13 +100,13 @@ return (
               )}
 
               {user?.role === 'student' && (
-                <button
+                <Button
                   className="flex items-center space-x-2 border-green-200 text-green-700 hover:bg-green-50 bg-transparent px-4 py-2 rounded-lg border text-sm font-medium"
                   onClick={handleApplyClick}
                 >
                   <GraduationCap className="w-4 h-4" />
                   <span>Quiero ser profesor</span>
-                </button>
+                </Button>
               )}
               
               {user?.role === 'professor' && (
@@ -124,20 +125,20 @@ return (
 
               {!isProfessorDashboard && !isAdminDashboard &&(
                 <>
-                  <button className="relative p-2 text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg"><Bell className="w-5 h-5" /></button>
+                  <Button className="relative p-2 text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg"><Bell className="w-5 h-5" /></Button>
                 </>
               )}
               <div className="ml-2 flex items-center gap-4">
                 <span className="hidden md:inline text-sm font-medium text-slate-700">Hola, {user?.name}</span>
-                <button onClick={handleLogout} className="text-sm font-medium text-slate-700 hover:text-blue-600">Salir</button>
+                <Button onClick={handleLogout} className="text-sm font-medium text-slate-700 hover:text-blue-600">Salir</Button>
               </div>
             </>
           ) : (
             <>
-              <button className="flex items-center space-x-2 border-green-200 text-green-700 hover:bg-green-50 bg-transparent px-4 py-2 rounded-lg border text-sm font-medium" onClick={handleApplyClick}>
+              <Button className="flex items-center space-x-2 border-green-200 text-green-700 hover:bg-green-50 bg-transparent px-4 py-2 rounded-lg border text-sm font-medium" onClick={handleApplyClick}>
                 <GraduationCap className="w-4 h-4" />
                 <span>Quiero ser profesor</span>
-              </button>
+              </Button>
               <Link to="/login" onClick={() => handleLinkClick('/login')} className="flex items-center text-slate-700 hover:text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium text-sm"><LogIn className="w-4 h-4 mr-2" />Login</Link>
               <Link to="/register" onClick={() => handleLinkClick('/register')} className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm"><UserPlus className="w-4 h-4 mr-2" />Register</Link>
             </>
@@ -145,9 +146,9 @@ return (
         </div>
         
         <div className="md:hidden">
-          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2">
+          <Button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2">
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -190,10 +191,10 @@ return (
                  </div>
               )}
               {user?.role === 'student' && (
-                <button onClick={handleApplyClick} className="w-full flex items-center justify-center space-x-2 border-green-200 text-green-700 hover:bg-green-50 bg-transparent px-4 py-2 rounded-lg border text-sm font-medium">
+                <Button onClick={handleApplyClick} className="w-full flex items-center justify-center space-x-2 border-green-200 text-green-700 hover:bg-green-50 bg-transparent px-4 py-2 rounded-lg border text-sm font-medium">
                   <GraduationCap className="w-4 h-4" />
                   <span>Quiero ser profesor</span>
-                </button>
+                </Button>
               )}
               {user?.role === 'professor' && (
                  <div className="space-y-2 border-b pb-4 mb-2">
@@ -208,17 +209,17 @@ return (
                     </Link>
                  </div>
               )}
-              <button onClick={handleLogout} className="w-full text-sm font-medium text-slate-700 hover:text-red-600 hover:bg-red-50 py-2 rounded-lg">Salir</button>
+              <Button onClick={handleLogout} className="w-full text-sm font-medium text-slate-700 hover:text-red-600 hover:bg-red-50 py-2 rounded-lg">Salir</Button>
             </>
           ) : (
             <>
               <Link to="/courses" onClick={() => handleLinkClick('/courses')} className="flex items-center justify-center text-slate-700 hover:text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium text-sm"> <BookOpen className="w-4 h-4 mr-2" />Cursos</Link>
               <Link to="/login" onClick={() => handleLinkClick('/login')} className="flex items-center justify-center text-slate-700 hover:text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium text-sm"><LogIn className="w-4 h-4 mr-2" />Login</Link>
               <Link to="/register" onClick={() => handleLinkClick('/register')} className="flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm"><UserPlus className="w-4 h-4 mr-2" />Register</Link>
-              <button onClick={handleApplyClick} className="w-full flex items-center justify-center space-x-2 border-green-200 text-green-700 hover:bg-green-50 bg-transparent px-4 py-2 rounded-lg border text-sm font-medium mt-2">
+              <Button onClick={handleApplyClick} className="w-full flex items-center justify-center space-x-2 border-green-200 text-green-700 hover:bg-green-50 bg-transparent px-4 py-2 rounded-lg border text-sm font-medium mt-2">
                 <GraduationCap className="w-4 h-4" />
                 <span>Quiero ser profesor</span>
-              </button>
+              </Button>
             </>
           )}
         </div>

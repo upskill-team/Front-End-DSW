@@ -138,7 +138,7 @@ const RegisterPage = () => {
           <Button
             type="submit"
             isLoading={isLoading}
-            className="w-full text-base py-3"
+            className="w-full text-base py-3 text-white"
           >
             Registrarse
           </Button>

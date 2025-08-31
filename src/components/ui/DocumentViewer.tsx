@@ -1,5 +1,6 @@
 import ReactDOM from 'react-dom';
 import { X } from 'lucide-react';
+import Button from './Button.tsx';
 
 interface DocumentViewerProps {
   url: string;
@@ -18,12 +19,12 @@ const DocumentViewer = ({ url, onClose }: DocumentViewerProps) => {
       >
         <div className="flex justify-between items-center p-3 border-b bg-slate-50 rounded-t-lg">
           <h3 className="font-semibold text-slate-700">Visor de Documento</h3>
-          <button
+          <Button
             onClick={onClose}
             className="p-1 rounded-full text-slate-500 hover:bg-slate-200"
           >
             <X className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
         <iframe
           src={url}

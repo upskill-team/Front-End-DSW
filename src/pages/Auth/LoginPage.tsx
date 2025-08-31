@@ -92,7 +92,7 @@ const LoginPage = () => {
           <Button
             type="submit"
             isLoading={isPending}
-            className="w-full text-base py-3"
+            className="w-full text-base py-3 text-white"
           >
             Iniciar Sesión
           </Button>

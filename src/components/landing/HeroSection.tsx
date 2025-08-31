@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Search, Users, Star } from 'lucide-react';
 
 import RobotModel from './RobotModel';
+import Button from '../ui/Button.tsx';
 
 export default function HeroSection() {
   return (
@@ -30,9 +31,9 @@ export default function HeroSection() {
                 <Search className="w-5 h-5 mr-2" />
                 Explorar Cursos
               </Link>
-              <button className="inline-flex items-center justify-center text-base border-green-200 text-green-700 hover:bg-green-50 px-6 py-3 rounded-lg border bg-transparent font-medium">
+              <Button className="inline-flex items-center justify-center text-base border-green-200 text-green-700 hover:bg-green-50 px-6 py-3 rounded-lg border bg-transparent font-medium">
                 Ver Demo Gratuita
-              </button>
+              </Button>
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-y-3 sm:gap-x-6 text-sm text-slate-600 pt-4">

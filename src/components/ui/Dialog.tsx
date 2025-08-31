@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { X } from 'lucide-react';
+import Button from './Button.tsx';
 
 interface DialogProps {
   open: boolean;
@@ -41,13 +42,13 @@ const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
         className="relative w-full max-w-lg bg-white rounded-lg shadow-xl p-6 m-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
+        <Button
           onClick={() => onOpenChange(false)}
           className="absolute top-4 right-4 text-slate-500 hover:text-slate-800 transition-colors"
           aria-label="Cerrar modal"
         >
           <X className="w-5 h-5" />
-        </button>
+        </Button>
         {children}
       </div>
     </div>
