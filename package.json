@@ -14,15 +14,18 @@
     "test": "pnpm run lint && pnpm run type-check && pnpm run audit"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.1",
     "@tanstack/react-query": "^5.85.6",
     "@tanstack/react-query-devtools": "^5.85.6",
     "axios": "^1.10.0",
     "lucide-react": "^0.534.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-hook-form": "^7.62.0",
     "react-router-dom": "^7.7.0",
     "recharts": "^3.1.2",
-    "three": "^0.179.1"
+    "three": "^0.179.1",
+    "valibot": "^1.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
