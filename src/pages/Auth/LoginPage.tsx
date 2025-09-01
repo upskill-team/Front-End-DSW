@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { valibotResolver } from '@hookform/resolvers/valibot'
+import * as v from 'valibot'
 import { Link } from 'react-router-dom'
-import type React from 'react'
 import { Mail, Lock } from 'lucide-react'
 import { useLogin } from '../../hooks/useAuthMutations.ts'
 import Button from '../../components/ui/Button'
@@ -8,24 +9,26 @@ import Input from '../../components/ui/Input'
 import AuthCard from '../../components/layouts/AuthCard'
 import { isAxiosError } from 'axios'
 
+const LoginSchema = v.object({
+  mail: v.pipe(v.string(), v.email('Debe ser un email válido.')),
+  password: v.pipe(v.string(), v.minLength(1, 'La contraseña es requerida.')),
+})
+
+type LoginFormData = v.InferInput<typeof LoginSchema>
+
 const LoginPage = () => {
   
-  const [credentials, setCredentials] = useState({ mail: '', password: '' })
+  const { register: formRegister, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
+    resolver: valibotResolver(LoginSchema),
+  })
 
   const { mutate: login, isPending, error } = useLogin()
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCredentials((prev) => ({ ...prev, [e.target.name]: e.target.value }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
+  const onSubmit = (data: LoginFormData) => {
     const payload = {
-      mail: credentials.mail,
-      password_plaintext: credentials.password,
+      mail: data.mail,
+      password_plaintext: data.password,
     }
-
     login(payload)
   }
   
@@ -34,30 +37,26 @@ const LoginPage = () => {
       title="Iniciar Sesión"
       description="Accede a tu cuenta para continuar aprendiendo"
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <Input
           id="mail"
           label="Correo electrónico"
-          name="mail"
           type="email"
           placeholder="tu@email.com"
-          value={credentials.mail}
-          onChange={handleChange}
           icon={<Mail className="h-5 w-5" />}
-          required
           autoComplete="email"
+          {...formRegister('mail')}
+          error={errors.mail?.message}
         />
         <Input
           id="password"
           label="Contraseña"
-          name="password"
           type="password"
           placeholder="Tu contraseña"
-          value={credentials.password}
-          onChange={handleChange}
           icon={<Lock className="h-5 w-5" />}
-          required
           autoComplete="current-password"
+          {...formRegister('password')}
+          error={errors.password?.message}
         />
         <div className="flex items-center justify-between text-sm pt-1">
           <div className="flex items-center gap-2">

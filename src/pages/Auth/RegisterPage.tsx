@@ -1,144 +1,132 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import type React from 'react';
-import axios from 'axios';
-import { User, Mail, Lock } from 'lucide-react';
-import { authService } from '../../api/services/auth.service';
-import Button from '../../components/ui/Button';
-import Input from '../../components/ui/Input';
-import AuthCard from '../../components/layouts/AuthCard';
+import { Link } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { valibotResolver } from '@hookform/resolvers/valibot'
+import * as v from 'valibot'
+import { User, Mail, Lock } from 'lucide-react'
+import { useRegister } from '../../hooks/useAuthMutations'
+import Button from '../../components/ui/Button'
+import Input from '../../components/ui/Input'
+import AuthCard from '../../components/layouts/AuthCard'
+import { isAxiosError } from 'axios'
 
-const initialFormState = {
-  name: '',
-  surname: '',
-  mail: '',
-  password: '',
-  confirmPassword: '',
-};
+const RegisterObjectSchema = v.object({
+  name: v.pipe(v.string(), v.minLength(1, 'El nombre es requerido.')),
+  surname: v.pipe(v.string(), v.minLength(1, 'El apellido es requerido.')),
+  mail: v.pipe(v.string(), v.email('Debe ser un email válido.')),
+  password: v.pipe(v.string(), v.minLength(8, 'La contraseña debe tener al menos 8 caracteres.')),
+  confirmPassword: v.pipe(v.string(), v.minLength(1, 'Debes confirmar la contraseña.')),
+})
+
+const RegisterSchema = v.pipe(
+  RegisterObjectSchema,
+  v.forward(
+    v.partialCheck(
+      [['password'], ['confirmPassword']],
+      (input) => input.password === input.confirmPassword,
+      'Las contraseñas no coinciden.'
+    ),
+    ['confirmPassword']
+  )
+)
+
+type RegisterFormData = v.InferInput<typeof RegisterSchema>
 
 const RegisterPage = () => {
-  const [formData, setFormData] = useState(initialFormState);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  const { register: formRegister, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
+    resolver: valibotResolver(RegisterSchema),
+    mode: 'onBlur',
+  })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  const { mutate: registerUser, isPending, error } = useRegister()
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
-
-    if (formData.password !== formData.confirmPassword) {
-      return setError('Las contraseñas no coinciden.');
+  const onSubmit = (data: RegisterFormData) => {
+    const payload = {
+      name: data.name,
+      surname: data.surname,
+      mail: data.mail,
+      password_plaintext: data.password,
     }
-    if (formData.password.length < 8) {
-      return setError('La contraseña debe tener al menos 8 caracteres.');
-    }
-
-    setIsLoading(true);
-    try {
-      const payload = {
-        name: formData.name,
-        surname: formData.surname,
-        mail: formData.mail,
-        password_plaintext: formData.password,
-      };
-      await authService.register(payload);
-      navigate('/login');
-    } catch (err) {
-      const message =
-        axios.isAxiosError(err) && err.response?.data?.message
-          ? err.response.data.message
-          : 'Ocurrió un error inesperado al intentar registrar la cuenta.';
-      setError(message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    registerUser(payload)
+  }
 
   return (
     <AuthCard
       title="Crea tu Cuenta"
       description="Completa el formulario para unirte a nosotros"
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
           <Input
             id="name"
             label="Nombre"
-            name="name"
             type="text"
             placeholder="Darth"
-            value={formData.name}
-            onChange={handleChange}
             icon={<User className="h-5 w-5" />}
-            required
             autoComplete="given-name"
+            {...formRegister('name')} 
+            error={errors.name?.message}
           />
           <Input
             id="surname"
             label="Apellido"
-            name="surname"
             type="text"
             placeholder="Vader"
-            value={formData.surname}
-            onChange={handleChange}
             icon={<User className="h-5 w-5" />}
-            required
             autoComplete="family-name"
+            {...formRegister('surname')} 
+            error={errors.surname?.message}
           />
         </div>
 
         <Input
           id="mail"
           label="Correo Electrónico"
-          name="mail"
           type="email"
           placeholder="tu@email.com"
-          value={formData.mail}
-          onChange={handleChange}
           icon={<Mail className="h-5 w-5" />}
-          required
           autoComplete="email"
+          {...formRegister('mail')} 
+            error={errors.mail?.message}
         />
 
         <Input
           id="password"
           label="Contraseña"
-          name="password"
           type="password"
           placeholder="••••••••••"
-          value={formData.password}
-          onChange={handleChange}
           icon={<Lock className="h-5 w-5" />}
-          required
           autoComplete="new-password"
+          {...formRegister('password')} 
+            error={errors.password?.message}
         />
 
         <Input
           id="confirmPassword"
           label="Confirmar Contraseña"
-          name="confirmPassword"
           type="password"
           placeholder="••••••••••"
-          value={formData.confirmPassword}
-          onChange={handleChange}
           icon={<Lock className="h-5 w-5" />}
-          required
           autoComplete="new-password"
+          {...formRegister('confirmPassword')} 
+            error={errors.confirmPassword?.message}
         />
 
         {error && (
-          <p className="text-sm text-red-500 text-center -mt-2">{error}</p>
+          <p className="text-sm text-red-500 text-center">
+            {isAxiosError(error)
+              ? error.response?.data?.errors || 'Credenciales incorrectas.'
+              : 'Ocurrió un error inesperado.'
+            }
+          </p>
         )}
 
         <div className="pt-2">
           <Button
             type="submit"
-            isLoading={isLoading}
+
+            isLoading={isPending}
             className="w-full text-base py-3 text-white"
+
           >
             Registrarse
           </Button>
@@ -155,7 +143,7 @@ const RegisterPage = () => {
         </div>
       </form>
     </AuthCard>
-  );
-};
+  )
+}
 
-export default RegisterPage;
+export default RegisterPage

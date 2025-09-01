@@ -1,61 +1,58 @@
-import type React from "react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import  Button  from "../../components/ui/Button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/Card";
-import  Input  from "../../components/ui/Input";
-import Label from "../../components/ui/Label";
-import Textarea from "../../components/ui/TextArea";
-import { BookOpen, ArrowLeft, GraduationCap, BookOpenCheck, FileText, Upload } from "lucide-react";
-import { useCreateAppeal } from '../../hooks/useCreateAppeal';
+import React, { useState } from "react"
+import { Link } from "react-router-dom"
+import { useForm } from 'react-hook-form'
+import { valibotResolver } from '@hookform/resolvers/valibot'
+import * as v from 'valibot'
+import Button from "../../components/ui/Button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/Card"
+import Input from "../../components/ui/Input"
+import Textarea from "../../components/ui/TextArea"
+import Label from "../../components/ui/Label"
+import { BookOpen, ArrowLeft, GraduationCap, Upload } from "lucide-react"
+import { useCreateAppeal } from '../../hooks/useCreateAppeal'
+import { isAxiosError } from 'axios'
+
+const AppealSchema = v.object({
+  expertise: v.pipe(
+  v.string(),
+  v.minLength(1, 'El área de especialización es requerida.')
+  ),
+  experienceMotivation: v.pipe(
+  v.string(),
+  v.minLength(20, 'Por favor, detalla tu experiencia con al menos 20 caracteres.'),
+  ),
+})
+
+type AppealFormData = v.InferInput<typeof AppealSchema>
 
 export default function ProfessorApplication() {
-  const [formData, setFormData] = useState({
-    expertise: "",
-    experienceMotivation: "",
-    document: null as File | null,
-  });
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<AppealFormData>({
+    resolver: valibotResolver(AppealSchema),
+  })
 
-  const [validationError, setValidationError] = useState<string | null>(null);
+  const [documentFile, setDocumentFile] = useState<File | null>(null)
 
-  const { mutate: createAppeal, isPending, error } = useCreateAppeal();
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const { mutate: createAppeal, isPending, error: apiError } = useCreateAppeal()
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    setFormData((prev) => ({
-      ...prev,
-      document: file,
-    }));
-  };
+    const file = e.target.files?.[0] || null
+    setDocumentFile(file)
+  }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setValidationError(null);
-
-    if (formData.experienceMotivation.trim().length < 20) {
-      return setValidationError("Por favor, detalla tu experiencia con al menos 20 caracteres.");
+  const onSubmit = (data: AppealFormData) => {
+    const formData = new FormData()
+    formData.append("expertise", data.expertise)
+    formData.append("experienceMotivation", data.experienceMotivation)
+    if (documentFile) {
+      formData.append("document", documentFile)
     }
 
-    const data = new FormData();
-    data.append("expertise", formData.expertise);
-    data.append("experienceMotivation", formData.experienceMotivation);
-    if (formData.document) {
-      data.append("document", formData.document);
-    }
-
-    createAppeal(data, {
+    createAppeal(formData, {
       onSuccess: () => {
-        setFormData({ expertise: "", experienceMotivation: "", document: null });
+        reset()
+        setDocumentFile(null)
       }
-    });
+    })
   }
 
   return (
@@ -95,20 +92,16 @@ export default function ProfessorApplication() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <div className="relative">
                     <Input
-                        id="expertise"
-                        name="expertise"
-                        label="Área de especialización"
-                        icon={<BookOpenCheck className="h-4 w-4" />}
-                        type="text"
-                        placeholder="Ej: Programación, Diseño, Marketing..."
-                        value={formData.expertise}
-                        onChange={handleInputChange}
-                        required
+                      id="expertise"
+                      label="Área de especialización"
+                      type="text"
+                      placeholder="Ej: Programación, Diseño..."
+                      {...register('expertise')}
+                      error={errors.expertise?.message}
                     />
                 </div>
               </div>
@@ -116,14 +109,11 @@ export default function ProfessorApplication() {
             <div className="space-y-2">
                 <div className="relative">
                     <Textarea
-                        id="experienceMotivation"
-                        name="experienceMotivation"
-                        label="Experiencia y motivacion"
-                        icon={<FileText className="h-4 w-4" />}
-                        placeholder="Cuéntanos sobre tu experiencia profesional..."
-                        value={formData.experienceMotivation}
-                        onChange={handleInputChange}
-                        required
+                      id="experienceMotivation"
+                      label="Experiencia y motivación"
+                      placeholder="Cuéntanos sobre tu experiencia profesional..."
+                      {...register('experienceMotivation')}
+                      error={errors.experienceMotivation?.message}
                     />
                 </div>
             </div>
@@ -144,9 +134,9 @@ export default function ProfessorApplication() {
                           <span className="font-semibold">Haz clic para subir</span> o arrastra y suelta
                         </p>
                         <p className="text-xs text-slate-400">PDF, DOC, DOCX (MAX. 10MB)</p>
-                        {formData.document && (
+                        {documentFile && (
                           <p className="text-xs text-green-600 mt-2 font-medium">
-                            Archivo seleccionado: {formData.document.name}
+                            Archivo seleccionado: {documentFile.name}
                           </p>
                         )}
                       </div>
@@ -166,27 +156,23 @@ export default function ProfessorApplication() {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full bg-green-500 hover:bg-green-600 text-white py-2.5"
-                disabled={isPending}
-              >
-                {isPending ? "Enviando..." : "Enviar solicitud"}
-              </Button>
+              <Button type="submit" className="w-full bg-green-500 hover:bg-green-600 text-white py-2.5" disabled={isPending}>
+                  {isPending ? "Enviando..." : "Enviar solicitud"}
+                </Button>
 
-              {(validationError || error) && (
+              {(apiError) && (
                 <div className="text-center text-sm text-red-600 mt-4">
-                  <p>{validationError || 'Hubo un problema al enviar tu solicitud. Por favor, inténtalo de nuevo más tarde.'}</p>
+                  <p>{isAxiosError(apiError) ? apiError.response?.data?.message : 'Ocurrió un error.'}</p>
                 </div>
               )}
 
               <div className="text-center text-sm text-slate-600 mt-4">
-                <p>Revisaremos tu solicitud y te contactaremos en un plazo de 2-3 días hábiles.</p>
+                <p>Revisaremos tu solicitud y te contactaremos.</p>
               </div>
             </form>
           </CardContent>
         </Card>
       </div>
     </div>
-  );
-};
+  )
+}
