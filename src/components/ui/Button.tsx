@@ -28,10 +28,17 @@ const sizeClasses: Record<ButtonSize, string> = {
 };
 
 /**
- * Componente de botón reutilizable y personalizable.
+ * Renders a standardized and reusable button, a cornerstone of our design system.
+ * It provides visual variants, size control, and built-in loading states.
  *
- * @param {ButtonProps} props - Las propiedades para configurar el botón.
- * @returns {React.ReactElement} El componente de botón renderizado.
+ * @param props The properties to configure the button.
+ * @param props.children The content to be displayed inside the button (e.g., text, an icon).
+ * @param [props.isLoading=false] If `true`, displays a spinner and disables the button.
+ * @param [props.variant='primary'] The visual variant of the button. Accepts 'primary', 'outline', 'ghost', 'destructive'.
+ * @param [props.size='md'] The size of the button. Accepts 'sm', 'md', 'lg'.
+ * @param [props.fullWidth=false] If `true`, the button will take up the full width of its container.
+ * @param props.className Additional Tailwind classes to override or add layout styles (e.g., margins).
+ * @returns The rendered button component.
  */
 const Button = ({
   children,
@@ -44,13 +51,15 @@ const Button = ({
 }: ButtonProps) => {
   return (
     <button
-      className={twMerge(clsx(
-        'inline-flex items-center justify-center rounded-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed',
-        variantClasses[variant],
-        sizeClasses[size],
-        { 'w-full': fullWidth },
-        className
-      ))}
+      className={twMerge(
+        clsx(
+          'inline-flex items-center justify-center rounded-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed',
+          variantClasses[variant],
+          sizeClasses[size],
+          { 'w-full': fullWidth },
+          className
+        )
+      )}
       disabled={isLoading || props.disabled}
       {...props}
     >
