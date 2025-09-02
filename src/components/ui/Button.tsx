@@ -1,4 +1,6 @@
 import React from 'react';
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 type ButtonVariant = 'primary' | 'outline' | 'ghost' | 'destructive';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -11,19 +13,26 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean;
 }
 
-const variantClasses = {
-  primary: 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500',
-  outline: 'bg-transparent border border-slate-300 text-slate-700 hover:bg-slate-50 focus:ring-slate-400',
+const variantClasses: Record<ButtonVariant, string> = {
+  primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
+  outline:
+    'bg-transparent border border-slate-300 text-slate-700 hover:bg-slate-50 focus:ring-slate-400',
   ghost: 'bg-transparent text-slate-700 hover:bg-slate-50 focus:ring-slate-400',
   destructive: 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-500',
 };
 
-const sizeClasses = {
+const sizeClasses: Record<ButtonSize, string> = {
   sm: 'py-1.5 px-3 text-sm',
   md: 'py-2.5 px-4 text-base',
   lg: 'py-3 px-6 text-lg',
 };
 
+/**
+ * Componente de botón reutilizable y personalizable.
+ *
+ * @param {ButtonProps} props - Las propiedades para configurar el botón.
+ * @returns {React.ReactElement} El componente de botón renderizado.
+ */
 const Button = ({
   children,
   isLoading = false,
@@ -35,13 +44,13 @@ const Button = ({
 }: ButtonProps) => {
   return (
     <button
-      className={[
+      className={twMerge(clsx(
         'inline-flex items-center justify-center rounded-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed',
         variantClasses[variant],
         sizeClasses[size],
-        fullWidth ? 'w-full' : '',
-        className,
-      ].join(' ')}
+        { 'w-full': fullWidth },
+        className
+      ))}
       disabled={isLoading || props.disabled}
       {...props}
     >
