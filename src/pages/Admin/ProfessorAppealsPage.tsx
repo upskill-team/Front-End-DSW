@@ -27,7 +27,8 @@ type StatusFilter = 'all' | 'pending' | 'accepted' | 'rejected';
 
 export default function ProfessorRequestsPage() {
   const { data: requests = [], isLoading, error } = useAppeals();
-  const { mutate: updateAppeal, isPending: isUpdating } = useUpdateAppealState();
+  const { mutate: updateAppeal, isPending: isUpdating } =
+    useUpdateAppealState();
 
   const [selectedRequest, setSelectedRequest] = useState<Appeal | null>(null);
   const [documentUrlToShow, setDocumentUrlToShow] = useState<string | null>(
@@ -63,7 +64,8 @@ export default function ProfessorRequestsPage() {
 
   if (isLoading)
     return <div className="text-center p-8">Cargando solicitudes...</div>;
-  if (error) return <div className="text-center p-8 text-red-600">{error.message}</div>;
+  if (error)
+    return <div className="text-center p-8 text-red-600">{error.message}</div>;
 
   return (
     <div className="space-y-6">
@@ -80,8 +82,12 @@ export default function ProfessorRequestsPage() {
         <CardHeader>
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div>
-              <CardTitle>Solicitudes ({filteredAndSortedRequests.length})</CardTitle>
-              <CardDescription>Lista de todas las solicitudes de profesores</CardDescription>
+              <CardTitle>
+                Solicitudes ({filteredAndSortedRequests.length})
+              </CardTitle>
+              <CardDescription>
+                Lista de todas las solicitudes de profesores
+              </CardDescription>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-2 w-full lg:w-auto">
               <div className="relative flex-grow w-full">
@@ -97,7 +103,9 @@ export default function ProfessorRequestsPage() {
               <div className="flex gap-2 w-full">
                 <select
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
+                  onChange={(e) =>
+                    setStatusFilter(e.target.value as StatusFilter)
+                  }
                   className="flex-1 w-full px-3 py-2 text-sm border rounded-lg bg-white/80 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                 >
                   <option value="all">Todas</option>
@@ -122,36 +130,86 @@ export default function ProfessorRequestsPage() {
             {filteredAndSortedRequests.map((request) => {
               const date = new Date(request.date);
               const formattedDate = !isNaN(date.getTime())
-                ? date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+                ? date.toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                  })
                 : 'Fecha inválida';
 
               return (
-                <div key={request.id} className="p-4 rounded-lg border border-slate-200 space-y-4">
+                <div
+                  key={request.id}
+                  className="p-4 rounded-lg border border-slate-200 space-y-4"
+                >
                   <div className="flex flex-col lg:flex-row justify-between lg:items-start gap-4">
                     <div className="flex-1 space-y-3">
                       <div className="flex items-center flex-wrap gap-x-3 gap-y-2">
-                        <h3 className="font-semibold text-lg text-slate-800">{request.user.name} {request.user.surname}</h3>
+                        <h3 className="font-semibold text-lg text-slate-800">
+                          {request.user.name} {request.user.surname}
+                        </h3>
                         <StatusBadge status={request.state} />
                       </div>
                       <div className="flex flex-col sm:flex-row sm:flex-wrap text-sm text-slate-600 gap-x-4 gap-y-1 pl-1">
-                        <span className="flex items-center gap-2"><Mail className="w-4 h-4 flex-shrink-0" />{request.user.mail}</span>
-                        <span className="flex items-center gap-2"><GraduationCap className="w-4 h-4 flex-shrink-0" />{request.expertise}</span>
-                        <span className="flex items-center gap-2"><Clock className="w-4 h-4 flex-shrink-0" />{formattedDate}</span>
+                        <span className="flex items-center gap-2">
+                          <Mail className="w-4 h-4 flex-shrink-0" />
+                          {request.user.mail}
+                        </span>
+                        <span className="flex items-center gap-2">
+                          <GraduationCap className="w-4 h-4 flex-shrink-0" />
+                          {request.expertise}
+                        </span>
+                        <span className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 flex-shrink-0" />
+                          {formattedDate}
+                        </span>
                       </div>
                     </div>
                     <div className="flex flex-col lg:flex-row lg:items-start gap-2 w-full lg:w-auto">
-                      <Button variant="outline" className="w-full lg:w-auto" onClick={() => setSelectedRequest(request)}>
-                        <FileText className="w-4 h-4 mr-2" />Detalles
+                      <Button
+                        variant="outline"
+                        size="md"
+                        onClick={() => setSelectedRequest(request)}
+                      >
+                        <FileText className="w-4 h-4 mr-2" />
+                        Detalles
                       </Button>
                       {request.state === 'pending' && (
                         <div className="flex gap-2 w-full">
-                          <Button className="flex-1" onClick={() => 
-                          handleStatusChange(request.id, 'accepted')} disabled={isUpdating}>
-                            {isUpdating ? 'Procesando...' : <><Check className="w-4 h-4 mr-2" />Aprobar</>}
+                          <Button
+                            size="md"
+                            className="flex-1"
+                            onClick={() =>
+                              handleStatusChange(request.id, 'accepted')
+                            }
+                            disabled={isUpdating}
+                          >
+                            {isUpdating ? (
+                              'Procesando...'
+                            ) : (
+                              <>
+                                <Check className="w-4 h-4 mr-2" />
+                                Aprobar
+                              </>
+                            )}
                           </Button>
-                          <Button variant="destructive" className="flex-1" onClick={() => 
-                          handleStatusChange(request.id, 'rejected')} disabled={isUpdating}>
-                            {isUpdating ? 'Procesando...' : <><X className="w-4 h-4 mr-2" />Rechazar</>}
+                          <Button
+                            variant="destructive"
+                            size="md"
+                            className="flex-1"
+                            onClick={() =>
+                              handleStatusChange(request.id, 'rejected')
+                            }
+                            disabled={isUpdating}
+                          >
+                            {isUpdating ? (
+                              'Procesando...'
+                            ) : (
+                              <>
+                                <X className="w-4 h-4 mr-2" />
+                                Rechazar
+                              </>
+                            )}
                           </Button>
                         </div>
                       )}
@@ -162,12 +220,17 @@ export default function ProfessorRequestsPage() {
             })}
           </div>
           {filteredAndSortedRequests.length === 0 && (
-            <p className="text-center text-slate-500 py-8">No se encontraron solicitudes.</p>
+            <p className="text-center text-slate-500 py-8">
+              No se encontraron solicitudes.
+            </p>
           )}
         </CardContent>
       </Card>
 
-      <Dialog open={!!selectedRequest} onOpenChange={() => setSelectedRequest(null)}>
+      <Dialog
+        open={!!selectedRequest}
+        onOpenChange={() => setSelectedRequest(null)}
+      >
         {selectedRequest && (
           <>
             <DialogHeader>
@@ -175,23 +238,41 @@ export default function ProfessorRequestsPage() {
             </DialogHeader>
             <div className="space-y-4 mt-4">
               <div>
-                <h3 className="text-xl font-semibold">{selectedRequest.user.name} {selectedRequest.user.surname}</h3>
+                <h3 className="text-xl font-semibold">
+                  {selectedRequest.user.name} {selectedRequest.user.surname}
+                </h3>
                 <p className="text-slate-600">{selectedRequest.user.mail}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-700">Área de Especialización</p>
+                <p className="text-sm font-medium text-slate-700">
+                  Área de Especialización
+                </p>
                 <p>{selectedRequest.expertise}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-700">Experiencia y Motivación</p>
-                <p className="text-sm leading-relaxed bg-slate-50 p-3 rounded-md">{selectedRequest.experienceMotivation}</p>
+                <p className="text-sm font-medium text-slate-700">
+                  Experiencia y Motivación
+                </p>
+                <p className="text-sm leading-relaxed bg-slate-50 p-3 rounded-md">
+                  {selectedRequest.experienceMotivation}
+                </p>
               </div>
               {selectedRequest.documentUrl && (
                 <div>
-                  <p className="text-sm font-medium text-slate-700 mb-1">Documento Adjunto</p>
-                  <button onClick={() => setDocumentUrlToShow(selectedRequest.documentUrl!)} className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline text-sm font-medium">
-                    Ver documento en pantalla <ExternalLink className="w-3 h-3 ml-1" />
-                  </button>
+                  <p className="text-sm font-medium text-slate-700 mb-1">
+                    Documento Adjunto
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() =>
+                      setDocumentUrlToShow(selectedRequest.documentUrl!)
+                    }
+                    className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline text-sm font-medium p-0"
+                  >
+                    Ver documento en pantalla{' '}
+                    <ExternalLink className="w-3 h-3 ml-1" />
+                  </Button>
                 </div>
               )}
             </div>
@@ -200,7 +281,10 @@ export default function ProfessorRequestsPage() {
       </Dialog>
 
       {documentUrlToShow && (
-        <DocumentViewer url={documentUrlToShow} onClose={() => setDocumentUrlToShow(null)} />
+        <DocumentViewer
+          url={documentUrlToShow}
+          onClose={() => setDocumentUrlToShow(null)}
+        />
       )}
     </div>
   );

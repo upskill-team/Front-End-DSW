@@ -1,22 +1,23 @@
-import React, { forwardRef, useState } from 'react'
-import { Eye, EyeOff } from 'lucide-react'
+import React, { forwardRef, useState } from 'react';
+import Button from './Button';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label: string
-  icon?: React.ReactNode
-  error?: string | null
+  label: string;
+  icon?: React.ReactNode;
+  error?: string | null;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, id, type, icon, error, ...props }, ref) => {
-    const [isPasswordVisible, setPasswordVisible] = useState(false)
-    
-    const isPasswordInput = type === 'password'
+    const [isPasswordVisible, setPasswordVisible] = useState(false);
+
+    const isPasswordInput = type === 'password';
     const inputType = isPasswordInput
       ? isPasswordVisible
         ? 'text'
         : 'password'
-      : type
+      : type;
 
     const inputClasses = `
       w-full py-3 border rounded-lg transition-all
@@ -25,9 +26,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       ${icon ? 'pl-10' : 'pl-4'}
       ${isPasswordInput ? 'pr-10' : 'pr-4'}
       ${error ? 'border-red-500 ring-red-200' : ''}
-    `
+    `;
 
-  return (
+    return (
       <div className="flex flex-col gap-2">
         <label htmlFor={id} className="text-sm font-medium text-slate-700">
           {label}
@@ -38,11 +39,19 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               {icon}
             </span>
           )}
-          <input id={id} type={inputType} className={inputClasses} ref={ref} {...props} />
-          
+          <input
+            id={id}
+            type={inputType}
+            className={inputClasses}
+            ref={ref}
+            {...props}
+          />
+
           {isPasswordInput && (
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => setPasswordVisible(!isPasswordVisible)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
               aria-label={
@@ -54,15 +63,15 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               ) : (
                 <Eye className="h-5 w-5" />
               )}
-            </button>
+            </Button>
           )}
         </div>
         {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
       </div>
-    )
+    );
   }
-)
+);
 
-Input.displayName = 'Input'
+Input.displayName = 'Input';
 
-export default Input
+export default Input;

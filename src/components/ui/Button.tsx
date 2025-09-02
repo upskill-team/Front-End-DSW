@@ -1,38 +1,65 @@
 import React from 'react';
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
-type ButtonVariant = 'primary' | 'outline' | 'circle' | 'ghost' | 'destructive';
+type ButtonVariant = 'primary' | 'outline' | 'ghost' | 'destructive';
+type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   isLoading?: boolean;
   variant?: ButtonVariant;
+  size?: ButtonSize;
+  fullWidth?: boolean;
 }
 
+const variantClasses: Record<ButtonVariant, string> = {
+  primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
+  outline:
+    'bg-transparent border border-slate-300 text-slate-700 hover:bg-slate-50 focus:ring-slate-400',
+  ghost: 'bg-transparent text-slate-700 hover:bg-slate-50 focus:ring-slate-400',
+  destructive: 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-500',
+};
+
+const sizeClasses: Record<ButtonSize, string> = {
+  sm: 'py-1.5 px-3 text-sm',
+  md: 'py-2.5 px-4 text-base',
+  lg: 'py-3 px-6 text-lg',
+};
+
+/**
+ * Renders a standardized and reusable button, a cornerstone of our design system.
+ * It provides visual variants, size control, and built-in loading states.
+ *
+ * @param props The properties to configure the button.
+ * @param props.children The content to be displayed inside the button (e.g., text, an icon).
+ * @param [props.isLoading=false] If `true`, displays a spinner and disables the button.
+ * @param [props.variant='primary'] The visual variant of the button. Accepts 'primary', 'outline', 'ghost', 'destructive'.
+ * @param [props.size='md'] The size of the button. Accepts 'sm', 'md', 'lg'.
+ * @param [props.fullWidth=false] If `true`, the button will take up the full width of its container.
+ * @param props.className Additional Tailwind classes to override or add layout styles (e.g., margins).
+ * @returns The rendered button component.
+ */
 const Button = ({
   children,
   isLoading = false,
   variant = 'primary',
+  size = 'md',
+  fullWidth = false,
   className,
   ...props
 }: ButtonProps) => {
-  const baseClasses = `
-    w-full inline-flex items-center justify-center py-2.5 px-4 rounded-lg font-medium 
-    text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
-    disabled:opacity-50 disabled:cursor-not-allowed
-  `;
-
-  const variantClasses = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
-    outline:
-      'bg-transparent border border-slate-300 text-slate-700 hover:bg-slate-50 focus:ring-slate-400',
-    circle:' bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 rounded-full p-2',
-    ghost: 'bg-transparent text-slate-700 hover:bg-slate-50 focus:ring-slate-400',
-    destructive: 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-500',
-  };
-
   return (
     <button
-      className={`${baseClasses} ${variantClasses[variant]} ${className || ''}`}
+      className={twMerge(
+        clsx(
+          'inline-flex items-center justify-center rounded-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed',
+          variantClasses[variant],
+          sizeClasses[size],
+          { 'w-full': fullWidth },
+          className
+        )
+      )}
       disabled={isLoading || props.disabled}
       {...props}
     >

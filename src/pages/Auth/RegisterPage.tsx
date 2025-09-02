@@ -1,21 +1,27 @@
-import { Link } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import { valibotResolver } from '@hookform/resolvers/valibot'
-import * as v from 'valibot'
-import { User, Mail, Lock } from 'lucide-react'
-import { useRegister } from '../../hooks/useAuthMutations'
-import Button from '../../components/ui/Button'
-import Input from '../../components/ui/Input'
-import AuthCard from '../../components/layouts/AuthCard'
-import { isAxiosError } from 'axios'
+import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { valibotResolver } from '@hookform/resolvers/valibot';
+import * as v from 'valibot';
+import { User, Mail, Lock } from 'lucide-react';
+import { useRegister } from '../../hooks/useAuthMutations';
+import Button from '../../components/ui/Button';
+import Input from '../../components/ui/Input';
+import AuthCard from '../../components/layouts/AuthCard';
+import { isAxiosError } from 'axios';
 
 const RegisterObjectSchema = v.object({
   name: v.pipe(v.string(), v.minLength(1, 'El nombre es requerido.')),
   surname: v.pipe(v.string(), v.minLength(1, 'El apellido es requerido.')),
   mail: v.pipe(v.string(), v.email('Debe ser un email válido.')),
-  password: v.pipe(v.string(), v.minLength(8, 'La contraseña debe tener al menos 8 caracteres.')),
-  confirmPassword: v.pipe(v.string(), v.minLength(1, 'Debes confirmar la contraseña.')),
-})
+  password: v.pipe(
+    v.string(),
+    v.minLength(8, 'La contraseña debe tener al menos 8 caracteres.')
+  ),
+  confirmPassword: v.pipe(
+    v.string(),
+    v.minLength(1, 'Debes confirmar la contraseña.')
+  ),
+});
 
 const RegisterSchema = v.pipe(
   RegisterObjectSchema,
@@ -27,17 +33,21 @@ const RegisterSchema = v.pipe(
     ),
     ['confirmPassword']
   )
-)
+);
 
-type RegisterFormData = v.InferInput<typeof RegisterSchema>
+type RegisterFormData = v.InferInput<typeof RegisterSchema>;
 
 const RegisterPage = () => {
-  const { register: formRegister, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
+  const {
+    register: formRegister,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
     resolver: valibotResolver(RegisterSchema),
     mode: 'onBlur',
-  })
+  });
 
-  const { mutate: registerUser, isPending, error } = useRegister()
+  const { mutate: registerUser, isPending, error } = useRegister();
 
   const onSubmit = (data: RegisterFormData) => {
     const payload = {
@@ -45,9 +55,9 @@ const RegisterPage = () => {
       surname: data.surname,
       mail: data.mail,
       password_plaintext: data.password,
-    }
-    registerUser(payload)
-  }
+    };
+    registerUser(payload);
+  };
 
   return (
     <AuthCard
@@ -63,7 +73,7 @@ const RegisterPage = () => {
             placeholder="Darth"
             icon={<User className="h-5 w-5" />}
             autoComplete="given-name"
-            {...formRegister('name')} 
+            {...formRegister('name')}
             error={errors.name?.message}
           />
           <Input
@@ -73,7 +83,7 @@ const RegisterPage = () => {
             placeholder="Vader"
             icon={<User className="h-5 w-5" />}
             autoComplete="family-name"
-            {...formRegister('surname')} 
+            {...formRegister('surname')}
             error={errors.surname?.message}
           />
         </div>
@@ -85,8 +95,8 @@ const RegisterPage = () => {
           placeholder="tu@email.com"
           icon={<Mail className="h-5 w-5" />}
           autoComplete="email"
-          {...formRegister('mail')} 
-            error={errors.mail?.message}
+          {...formRegister('mail')}
+          error={errors.mail?.message}
         />
 
         <Input
@@ -96,8 +106,8 @@ const RegisterPage = () => {
           placeholder="••••••••••"
           icon={<Lock className="h-5 w-5" />}
           autoComplete="new-password"
-          {...formRegister('password')} 
-            error={errors.password?.message}
+          {...formRegister('password')}
+          error={errors.password?.message}
         />
 
         <Input
@@ -107,16 +117,15 @@ const RegisterPage = () => {
           placeholder="••••••••••"
           icon={<Lock className="h-5 w-5" />}
           autoComplete="new-password"
-          {...formRegister('confirmPassword')} 
-            error={errors.confirmPassword?.message}
+          {...formRegister('confirmPassword')}
+          error={errors.confirmPassword?.message}
         />
 
         {error && (
           <p className="text-sm text-red-500 text-center">
             {isAxiosError(error)
               ? error.response?.data?.errors || 'Credenciales incorrectas.'
-              : 'Ocurrió un error inesperado.'
-            }
+              : 'Ocurrió un error inesperado.'}
           </p>
         )}
 
@@ -124,7 +133,9 @@ const RegisterPage = () => {
           <Button
             type="submit"
             isLoading={isPending}
-            className="w-full text-base py-3"
+            variant="primary"
+            size="lg"
+            fullWidth
           >
             Registrarse
           </Button>
@@ -141,7 +152,7 @@ const RegisterPage = () => {
         </div>
       </form>
     </AuthCard>
-  )
-}
+  );
+};
 
-export default RegisterPage
+export default RegisterPage;

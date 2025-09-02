@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { X } from 'lucide-react';
+import Button from './Button';
 
 interface DialogProps {
   open: boolean;
@@ -8,8 +9,12 @@ interface DialogProps {
   children: React.ReactNode;
 }
 
-const DialogHeader = ({ children }: { children: React.ReactNode }) => <div className="mb-4 text-center">{children}</div>;
-const DialogTitle = ({ children }: { children: React.ReactNode }) => <h2 className="text-lg font-semibold text-slate-900">{children}</h2>;
+const DialogHeader = ({ children }: { children: React.ReactNode }) => (
+  <div className="mb-4 text-center">{children}</div>
+);
+const DialogTitle = ({ children }: { children: React.ReactNode }) => (
+  <h2 className="text-lg font-semibold text-slate-900">{children}</h2>
+);
 
 const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
   useEffect(() => {
@@ -41,17 +46,19 @@ const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
         className="relative w-full max-w-lg bg-white rounded-lg shadow-xl p-6 m-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => onOpenChange(false)}
-          className="absolute top-4 right-4 text-slate-500 hover:text-slate-800 transition-colors"
+          className="absolute top-3 right-3 h-8 w-8 p-0"
           aria-label="Cerrar modal"
         >
-          <X className="w-5 h-5" />
-        </button>
+          <X className="w-4 h-4" />
+        </Button>
         {children}
       </div>
-    </div>
-    , document.getElementById('modal-portal')!
+    </div>,
+    document.getElementById('modal-portal')!
   );
 };
 
