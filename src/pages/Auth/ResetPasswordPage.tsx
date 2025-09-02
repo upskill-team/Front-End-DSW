@@ -83,9 +83,11 @@ const ResetPasswordPage = () => {
         />
 
         {apiError && (
-            <p className="text-sm text-red-500 text-center">
-                {isAxiosError(apiError) ? apiError.response?.data?.message : 'El token es inválido o ha expirado.'}
-            </p>
+          <p className="text-sm text-red-500 text-center">
+            {isAxiosError(apiError)
+              ? apiError.response?.data?.message
+              : 'El token es inválido o ha expirado.'}
+          </p>
         )}
 
         <div className="pt-2">
@@ -93,14 +95,16 @@ const ResetPasswordPage = () => {
             type="submit"
             isLoading={isPending}
             disabled={!token || isPending}
-            className="w-full text-base py-3"
+            variant="primary"
+            size="lg"
+            fullWidth
           >
             Actualizar Contraseña
           </Button>
         </div>
       </form>
     </AuthCard>
-  )
+  );
 }
 
 export default ResetPasswordPage
