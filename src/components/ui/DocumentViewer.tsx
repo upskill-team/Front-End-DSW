@@ -20,10 +20,13 @@ const DocumentViewer = ({ url, onClose }: DocumentViewerProps) => {
         <div className="flex justify-between items-center p-3 border-b bg-slate-50 rounded-t-lg">
           <h3 className="font-semibold text-slate-700">Visor de Documento</h3>
           <Button
-            onClick={onClose}
-            className="p-1 rounded-full text-slate-500 hover:bg-slate-200"
+            variant="ghost"
+            size="sm"
+            onClick={() => onClose()}
+            className="absolute top-3 right-3 h-8 w-8 p-0"
+            aria-label="Cerrar visor"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </Button>
         </div>
         <iframe
