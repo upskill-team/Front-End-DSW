@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { NavBar } from './NavBar';
+import { NavBar } from '../common/NavBar';
 import { Footer } from '../common/Footer.tsx';
 
 const MainLayout = () => {
