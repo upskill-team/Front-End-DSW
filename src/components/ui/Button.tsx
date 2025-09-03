@@ -1,10 +1,18 @@
-import React from 'react';
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import type React from 'react';
+import { cn } from '../../lib/utils';
 
 type ButtonVariant = 'primary' | 'outline' | 'ghost' | 'destructive';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
+/**
+ * @interface ButtonProps
+ * @extends React.ButtonHTMLAttributes<HTMLButtonElement>
+ * @property {React.ReactNode} children - The content to be displayed inside the button.
+ * @property {boolean} [isLoading=false] - If true, displays a spinner and disables the button.
+ * @property {'primary'|'outline'|'ghost'|'destructive'} [variant='primary'] - The visual style of the button.
+ * @property {'sm'|'md'|'lg'} [size='md'] - The size of the button.
+ * @property {boolean} [fullWidth=false] - If true, the button will occupy the full width of its container.
+ */
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   isLoading?: boolean;
@@ -28,17 +36,12 @@ const sizeClasses: Record<ButtonSize, string> = {
 };
 
 /**
- * Renders a standardized and reusable button, a cornerstone of our design system.
- * It provides visual variants, size control, and built-in loading states.
+ * A versatile and reusable button component, foundational to the UI.
+ * It supports different visual styles, sizes, and a loading state.
+ * Built with accessibility and professional standards in mind.
  *
- * @param props The properties to configure the button.
- * @param props.children The content to be displayed inside the button (e.g., text, an icon).
- * @param [props.isLoading=false] If `true`, displays a spinner and disables the button.
- * @param [props.variant='primary'] The visual variant of the button. Accepts 'primary', 'outline', 'ghost', 'destructive'.
- * @param [props.size='md'] The size of the button. Accepts 'sm', 'md', 'lg'.
- * @param [props.fullWidth=false] If `true`, the button will take up the full width of its container.
- * @param props.className Additional Tailwind classes to override or add layout styles (e.g., margins).
- * @returns The rendered button component.
+ * @param {ButtonProps} props - The properties to configure the button.
+ * @returns {JSX.Element} The rendered button component.
  */
 const Button = ({
   children,
@@ -51,14 +54,12 @@ const Button = ({
 }: ButtonProps) => {
   return (
     <button
-      className={twMerge(
-        clsx(
-          'inline-flex items-center justify-center rounded-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed',
-          variantClasses[variant],
-          sizeClasses[size],
-          { 'w-full': fullWidth },
-          className
-        )
+      className={cn(
+        'inline-flex items-center justify-center rounded-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed',
+        variantClasses[variant],
+        sizeClasses[size],
+        { 'w-full': fullWidth },
+        className
       )}
       disabled={isLoading || props.disabled}
       {...props}
