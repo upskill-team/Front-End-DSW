@@ -6,58 +6,59 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import Badge from '../../components/ui/Badge';
-import { BookOpen, Users, DollarSign, Edit, Star, Plus } from 'lucide-react';
-
-const teacherCourses = [
-  {
-    id: 1,
-    title: 'Desarrollo Web Completo',
-    description: 'HTML, CSS, JavaScript y React',
-    image: '/img/noImage.jpg',
-    students: 342,
-    rating: 4.8,
-    earnings: 6840,
-    status: 'Publicado',
-    progress: 100,
-    lessons: 45,
-  },
-  {
-    id: 2,
-    title: 'JavaScript Avanzado',
-    description: 'ES6+, Async/Await, APIs',
-    image: '/img/noImage.jpg',
-    students: 198,
-    rating: 4.9,
-    earnings: 3960,
-    status: 'Publicado',
-    progress: 100,
-    lessons: 32,
-  },
-  {
-    id: 3,
-    title: 'React Hooks Masterclass',
-    description: 'Hooks avanzados y patrones',
-    image: '/img/noImage.jpg',
-    students: 156,
-    rating: 4.7,
-    earnings: 3120,
-    status: 'En desarrollo',
-    progress: 65,
-    lessons: 28,
-  },
-];
+} from '../../components/ui/Card'
+import Button from '../../components/ui/Button'
+import Badge from '../../components/ui/Badge'
+import { BookOpen, Users, DollarSign, Edit, Star, Plus } from 'lucide-react'
+import { useProfessorCourses } from '../../hooks/useCourses.ts'
 
 const ProfessorCoursesPage = () => {
+  // --- 2. Llama al hook para obtener los datos y los estados ---
+  const { data: courses, isLoading, error } = useProfessorCourses()
+
+  // --- 3. Maneja el estado de carga (mientras se obtienen los datos) ---
+  if (isLoading) {
+    return (
+      <div className="text-center p-8">
+        <p className="text-slate-600">Cargando tus cursos...</p>
+        {/* Opcional: Podrías poner aquí un componente de "spinner" o "skeleton loader" */}
+      </div>
+    )
+  }
+
+  // --- 4. Maneja el estado de error (si la petición a la API falla) ---
+  if (error) {
+    return (
+      <div className="text-center p-8 bg-red-50 border border-red-200 rounded-lg">
+        <h3 className="text-red-800 font-semibold">Ocurrió un error</h3>
+        <p className="text-red-600">{error.message}</p>
+      </div>
+    )
+  }
+  
+  // Si no hay cursos, courses será un array vacío. Mostramos un mensaje amigable.
+  if (!courses || courses.length === 0) {
+    return (
+      <div className="text-center p-12 bg-slate-50 border rounded-lg">
+        <h3 className="text-slate-800 font-semibold text-xl">Aún no tienes cursos</h3>
+        <p className="text-slate-600 mt-2 mb-4">¡Es un buen momento para empezar a crear!</p>
+        <Button size="md" className="bg-green-500 hover:bg-green-600 text-white">
+          <Plus className="w-4 h-4 mr-2" />
+          Crear tu Primer Curso
+        </Button>
+      </div>
+    )
+  }
+
+  // --- 5. Renderiza la página con los datos reales ---
   return (
     <div className="space-y-6">
       <div className="mb-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold text-slate-800">
-              Mis Cursos ({teacherCourses.length})
+              {/* Usamos la longitud del array de datos reales */}
+              Mis Cursos ({courses.length})
             </h2>
           </div>
           <div className="flex gap-3">
@@ -72,38 +73,36 @@ const ProfessorCoursesPage = () => {
         </div>
       </div>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {teacherCourses.map((course) => (
+        {/* Mapeamos sobre el array 'courses' que viene de la API */}
+        {courses.map((course) => (
           <Card
             key={course.id}
             className="group hover:shadow-lg transition-all duration-300"
           >
             <div className="relative overflow-hidden rounded-t-lg">
               <img
-                src={course.image}
-                alt={course.title}
+                // TODO: El backend debería devolver una URL de imagen para el curso.
+                src={'/img/noImage.jpg'} 
+                alt={course.name} // Usamos 'name' en lugar de 'title'
                 className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
               />
               <div className="absolute top-3 right-3">
-                <Badge
-                  className={`${
-                    course.status === 'Publicado'
-                      ? 'bg-green-100 text-green-700 border-green-200'
-                      : 'bg-yellow-100 text-yellow-700 border-yellow-200'
-                  }`}
-                >
-                  {course.status}
+                {/* TODO: El backend debería devolver un estado para el curso (ej: 'published', 'draft'). */}
+                <Badge className="bg-green-100 text-green-700 border-green-200">
+                  Publicado
                 </Badge>
               </div>
               <div className="absolute top-3 left-3">
+                {/* TODO: El backend debería calcular y devolver el rating promedio. */}
                 <Badge className="bg-white/90 text-slate-700 border-0">
                   <Star className="w-3 h-3 mr-1 fill-current text-yellow-500" />
-                  {course.rating}
+                  4.8
                 </Badge>
               </div>
             </div>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-semibold text-slate-800 line-clamp-2 h-14">
-                {course.title}
+                {course.name} {/* Usamos 'name' */}
               </CardTitle>
               <CardDescription className="text-sm text-slate-600">
                 {course.description}
@@ -114,18 +113,22 @@ const ProfessorCoursesPage = () => {
                 <div className="grid grid-cols-2 gap-4 text-sm text-slate-600">
                   <div className="flex items-center space-x-1">
                     <Users className="w-3 h-3" />
-                    <span>{course.students} estudiantes</span>
+                    {/* El número de estudiantes es la longitud del array */}
+                    <span>{course.students.length} estudiantes</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <BookOpen className="w-3 h-3" />
-                    <span>{course.lessons} lecciones</span>
+                    {/* Calculamos las lecciones sumando materiales y actividades */}
+                    <span>
+                      {course.units.reduce((acc, unit) => acc + unit.materials.length + unit.activities.length, 0)} lecciones
+                    </span>
                   </div>
                   <div className="flex items-center space-x-1 col-span-2">
                     <DollarSign className="w-3 h-3" />
-                    <span>${course.earnings}</span>
+                    {/* TODO: El backend debería calcular y devolver las ganancias. */}
+                    <span>$0</span>
                   </div>
                 </div>
-                {course.status === 'En desarrollo'}
                 <div className="flex justify-end pt-2">
                   <Button variant="outline" size="sm" className="h-8 w-8 p-0">
                     <Edit className="w-4 h-4" />
@@ -137,7 +140,7 @@ const ProfessorCoursesPage = () => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProfessorCoursesPage;
+export default ProfessorCoursesPage

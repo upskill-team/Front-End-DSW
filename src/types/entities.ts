@@ -34,6 +34,7 @@ export interface Course {
   courseType: CourseType;
   professor: Professor;
   students: Student[];
+  units: Unit[];
 }
 
 export interface CourseType {
@@ -58,4 +59,35 @@ export interface Appeal {
   state: 'pending' | 'accepted' | 'rejected';
   user: User;
   date: Date;
+}
+
+export interface MultipleChoiceOption {
+  text: string;
+  isCorrect: boolean;
+}
+
+export interface Material {
+  id: string;
+  title: string;
+  description?: string;
+  url: string;
+}
+
+export interface Activity {
+  id: string;
+  name: string;
+  description: string;
+  startDate?: Date;
+  endDate?: Date;
+  question: string;
+  options: MultipleChoiceOption[];
+}
+
+export interface Unit {
+  id: string;
+  unitNumber: number;
+  name: string;
+  detail: string;
+  activities: Activity[];
+  materials: Material[];
 }
