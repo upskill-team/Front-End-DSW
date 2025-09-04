@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   BookOpen,
   LogIn,
@@ -12,9 +12,11 @@ import {
   BarChart3,
   Users,
   ClipboardList,
-} from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
-import Button from '../ui/Button'; // Asegúrate de que la importación esté presente
+} from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
+import Button from "../ui/Button"; // Asegúrate de que la importación esté presente
+import { AdminControls } from "./navBar/AdminControls.tsx";
+import { ProfessorControls } from "./navBar/ProfessorControls.tsx";
 
 export function NavBar() {
   const { isAuthenticated, user, logout, isLoading } = useAuth();
@@ -23,22 +25,22 @@ export function NavBar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const activeLinkClasses =
-    'bg-gradient-to-r from-blue-500 to-green-500 text-white';
+    "bg-gradient-to-r from-blue-500 to-green-500 text-white";
   const inactiveLinkClasses =
-    'text-slate-700 hover:bg-blue-50 hover:text-blue-600';
+    "text-slate-700 hover:bg-blue-50 hover:text-blue-600";
 
   const handleLogout = () => {
     logout();
     setIsMobileMenuOpen(false);
-    navigate('/login');
+    navigate("/login");
   };
 
   const handleApplyClick = () => {
     if (!isAuthenticated) {
-      alert('Debes iniciar sesión para poder aplicar.');
-      navigate('/login');
+      alert("Debes iniciar sesión para poder aplicar.");
+      navigate("/login");
     } else {
-      navigate('/professor/apply');
+      navigate("/professor/apply");
     }
     setIsMobileMenuOpen(false);
   };
@@ -48,22 +50,22 @@ export function NavBar() {
     if (location.pathname === path) {
       window.scrollTo({
         top: 0,
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     }
   };
 
   const isProfessorDashboard = location.pathname.startsWith(
-    '/professor/dashboard'
+    "/professor/dashboard"
   );
-  const isAdminDashboard = location.pathname.startsWith('/admin');
+  const isAdminDashboard = location.pathname.startsWith("/admin");
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-blue-100 shadow-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link
           to="/"
-          onClick={() => handleLinkClick('/')}
+          onClick={() => handleLinkClick("/")}
           className="flex items-center space-x-2"
         >
           <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-green-400 rounded-lg flex items-center justify-center">
@@ -78,12 +80,12 @@ export function NavBar() {
           <Link
             to="/courses"
             className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${
-              location.pathname === '/courses'
+              location.pathname === "/courses"
                 ? activeLinkClasses
                 : inactiveLinkClasses
             }`}
           >
-            <BookOpen className="w-4 h-4" />{' '}
+            <BookOpen className="w-4 h-4" />{" "}
             <span className="xl:inline ml-2">Cursos</span>
           </Link>
 
@@ -94,92 +96,15 @@ export function NavBar() {
             </div>
           ) : isAuthenticated ? (
             <>
-              {user?.role === 'admin' && (
-                <div className="flex items-center space-x-1 bg-slate-100 p-1 rounded-lg">
-                  <Link
-                    to="/admin/dashboard"
-                    title="Panel General"
-                    onClick={() => handleLinkClick('/admin/dashboard')}
-                    className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${
-                      location.pathname.startsWith('/admin/dashboard')
-                        ? activeLinkClasses
-                        : inactiveLinkClasses
-                    }`}
-                  >
-                    <LayoutDashboard className="w-4 h-4" />{' '}
-                    <span className="hidden xl:inline ml-2">Panel General</span>
-                  </Link>
-                  <Link
-                    to="/admin/analytics"
-                    title="Analíticas"
-                    onClick={() => handleLinkClick('/admin/analytics')}
-                    className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${
-                      location.pathname.startsWith('/admin/analytics')
-                        ? activeLinkClasses
-                        : inactiveLinkClasses
-                    }`}
-                  >
-                    <BarChart3 className="w-4 h-4" />{' '}
-                    <span className="hidden xl:inline ml-2">Analíticas</span>
-                  </Link>
-                  <Link
-                    to="/admin/users"
-                    title="Usuarios"
-                    onClick={() => handleLinkClick('/admin/users')}
-                    className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${
-                      location.pathname.startsWith('/admin/users')
-                        ? activeLinkClasses
-                        : inactiveLinkClasses
-                    }`}
-                  >
-                    <Users className="w-4 h-4" />{' '}
-                    <span className="hidden xl:inline ml-2">Usuarios</span>
-                  </Link>
-                  <Link
-                    to="/admin/courses"
-                    title="Gestion de Cursos"
-                    onClick={() => handleLinkClick('/admin/courses')}
-                    className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${
-                      location.pathname.startsWith('/admin/courses')
-                        ? activeLinkClasses
-                        : inactiveLinkClasses
-                    }`}
-                  >
-                    <BookOpen className="w-4 h-4" />{' '}
-                    <span className="hidden xl:inline ml-2">
-                      Gestion de Cursos
-                    </span>
-                  </Link>
-                  <Link
-                    to="/admin/courseTypes"
-                    title="Tipos de Cursos"
-                    className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${
-                      location.pathname.startsWith('/admin/courseTypes')
-                        ? activeLinkClasses
-                        : inactiveLinkClasses
-                    }`}
-                  >
-                    <ClipboardList className="w-4 h-4" />{' '}
-                    <span className="hidden xl:inline ml-2">
-                      Tipos de Cursos
-                    </span>
-                  </Link>
-                  <Link
-                    to="/admin/appeals"
-                    title="Solicitudes"
-                    onClick={() => handleLinkClick('/admin/appeals')}
-                    className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${
-                      location.pathname.startsWith('/admin/appeals')
-                        ? activeLinkClasses
-                        : inactiveLinkClasses
-                    }`}
-                  >
-                    <GraduationCap className="w-4 h-4" />{' '}
-                    <span className="hidden xl:inline ml-2">Solicitudes</span>
-                  </Link>
-                </div>
+              {user?.role === "admin" && (
+                <AdminControls
+                  handleLinkClick={handleLinkClick}
+                  activeLinkClasses={activeLinkClasses}
+                  inactiveLinkClasses={inactiveLinkClasses}
+                  location={location}
+                />
               )}
-              {user?.role === 'student' && (
+              {user?.role === "student" && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -190,60 +115,13 @@ export function NavBar() {
                   <span>Quiero ser profesor</span>
                 </Button>
               )}
-              {user?.role === 'professor' && (
-                <div className="flex items-center space-x-1 bg-slate-100 p-1 rounded-lg">
-                  <Link
-                    to="/professor/dashboard/courses"
-                    title="Mis Cursos"
-                    onClick={() =>
-                      handleLinkClick('/professor/dashboard/courses')
-                    }
-                    className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${
-                      location.pathname.startsWith(
-                        '/professor/dashboard/courses'
-                      )
-                        ? activeLinkClasses
-                        : inactiveLinkClasses
-                    }`}
-                  >
-                    <BookOpen className="w-4 h-4" />{' '}
-                    <span className="hidden xl:inline ml-2">Mis Cursos</span>
-                  </Link>
-                  <Link
-                    to="/professor/dashboard/analytics"
-                    title="Analíticas"
-                    onClick={() =>
-                      handleLinkClick('/professor/dashboard/analytics')
-                    }
-                    className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${
-                      location.pathname.startsWith(
-                        '/professor/dashboard/analytics'
-                      )
-                        ? activeLinkClasses
-                        : inactiveLinkClasses
-                    }`}
-                  >
-                    <BarChart3 className="w-4 h-4" />{' '}
-                    <span className="hidden xl:inline ml-2">Analíticas</span>
-                  </Link>
-                  <Link
-                    to="/professor/dashboard/students"
-                    title="Estudiantes"
-                    onClick={() =>
-                      handleLinkClick('/professor/dashboard/students')
-                    }
-                    className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${
-                      location.pathname.startsWith(
-                        '/professor/dashboard/students'
-                      )
-                        ? activeLinkClasses
-                        : inactiveLinkClasses
-                    }`}
-                  >
-                    <Users className="w-4 h-4" />{' '}
-                    <span className="hidden xl:inline ml-2">Estudiantes</span>
-                  </Link>
-                </div>
+              {user?.role === "professor" && (
+                 <ProfessorControls
+                  handleLinkClick={handleLinkClick}
+                  activeLinkClasses={activeLinkClasses}
+                  inactiveLinkClasses={inactiveLinkClasses}
+                  location={location}
+                />
               )}
               {!isProfessorDashboard && !isAdminDashboard && (
                 <>
@@ -274,7 +152,7 @@ export function NavBar() {
               </Button>
               <Link
                 to="/login"
-                onClick={() => handleLinkClick('/login')}
+                onClick={() => handleLinkClick("/login")}
                 className="flex items-center text-slate-700 hover:text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium text-sm"
               >
                 <LogIn className="w-4 h-4 mr-2" />
@@ -282,7 +160,7 @@ export function NavBar() {
               </Link>
               <Link
                 to="/register"
-                onClick={() => handleLinkClick('/register')}
+                onClick={() => handleLinkClick("/register")}
                 className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm"
               >
                 <UserPlus className="w-4 h-4 mr-2" />
@@ -312,7 +190,7 @@ export function NavBar() {
         <div className="md:hidden bg-white border-t border-blue-100 px-4 pt-2 pb-4 space-y-2">
           {isAuthenticated ? (
             <>
-              {user?.role === 'student' && (
+              {user?.role === "student" && (
                 <Button
                   variant="outline"
                   size="sm"
