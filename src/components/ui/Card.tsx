@@ -1,5 +1,5 @@
 import type React from 'react';
-import { cn } from '../../lib/utils.ts';
+//import { cn } from '../../lib/utils.ts';
 
 const Card = ({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div className={`rounded-xl bg-white/80 backdrop-blur-sm shadow-lg ${className}`} {...props}>

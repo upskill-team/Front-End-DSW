@@ -73,7 +73,7 @@ const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
 };
 
 const DialogContent = ({
-  className,
+  //className,
   children,
   showCloseButton = true,
   ...props
