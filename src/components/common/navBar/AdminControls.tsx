@@ -10,19 +10,6 @@ import {
 import { Link } from "react-router-dom";
 import type { Location } from "react-router-dom";
 
-// 1. Definimos la estructura de nuestros enlaces en un solo lugar
-const adminLinks: {
-  path: string;
-  title: string;
-  Icon: LucideIcon;
-}[] = [
-  { path: "/admin/dashboard", title: "Panel General", Icon: LayoutDashboard },
-  { path: "/admin/analytics", title: "Analíticas", Icon: BarChart3 },
-  { path: "/admin/users", title: "Usuarios", Icon: Users },
-  { path: "/admin/courses", title: "Gestion de Cursos", Icon: BookOpen },
-  { path: "/admin/courseTypes", title: "Tipos de Cursos", Icon: ClipboardList },
-  { path: "/admin/appeals", title: "Solicitudes", Icon: GraduationCap },
-];
 
 interface AdminControlsProps {
   handleLinkClick: (path: string) => void;

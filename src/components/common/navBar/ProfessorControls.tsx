@@ -2,21 +2,6 @@ import { BarChart3, BookOpen, Users, type LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { Location } from "react-router-dom";
 
-// 1. Definimos los enlaces como una fuente única de verdad.
-const professorLinks: {
-  path: string;
-  title: string;
-  Icon: LucideIcon;
-}[] = [
-  { path: "/professor/dashboard/courses", title: "Mis Cursos", Icon: BookOpen },
-  {
-    path: "/professor/dashboard/analytics",
-    title: "Analíticas",
-    Icon: BarChart3,
-  },
-  { path: "/professor/dashboard/students", title: "Estudiantes", Icon: Users },
-];
-
 interface ProfessorControlsProps {
   handleLinkClick: (path: string) => void;
   activeLinkClasses: string;
