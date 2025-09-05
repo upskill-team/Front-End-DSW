@@ -4,10 +4,11 @@ const ProfessorDashboard = () => {
 
   const location = useLocation()
   const isCreationPage = location.pathname.endsWith('/courses/new')
+  const isEditionPage = location.pathname.endsWith('/courses/edit')
 
   return (
     <div className="container mx-auto max-w-7xl">
-      {!isCreationPage && (
+      {(!isCreationPage && !isEditionPage) && (
         <div className="mb-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>

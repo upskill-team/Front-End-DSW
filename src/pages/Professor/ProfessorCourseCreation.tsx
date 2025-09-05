@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type React from "react";
-import { Link } from "react-router-dom";
-import { ArrowLeft, BookOpen, Star, Upload, Users } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, BookOpen, Upload, Users } from "lucide-react";
 import Button from "../../components/ui/Button.tsx";
 import {
   Card,
@@ -18,84 +18,80 @@ import Select from "../../components/ui/Select.tsx";
 import { useCourseTypes } from "../../hooks/useCourseTypes.ts";
 import { useCreateCourse } from "../../hooks/useCourses.ts";
 import * as v from 'valibot';
+import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
 
-// Define the schema for course creation form validation
 const CourseSchema = v.object({
   name: v.pipe(v.string(), v.minLength(1, 'El nombre es requerido.')),
   description: v.pipe(v.string(), v.minLength(1, 'La descripción es requerida.')),
-  price: v.union([v.string(), v.number()]),
   isFree: v.boolean(),
-  image: v.union([v.instance(File), v.null()]),
-  courseTypeId: v.string()
-})
+  price: v.optional(v.pipe(v.number(), v.minValue(0, "El precio no puede ser negativo"))),
+  courseTypeId: v.pipe(v.string(), v.minLength(1, "Debes seleccionar una categoría.")),
+  // image: v.optional(v.instance(FileList)), // La subida de archivos se maneja por separado
+});
 
 type CreateCoursePayload = v.InferInput<typeof CourseSchema>;
 
-
 export default function ProfessorCourseCreation() {
-  const [courseData, setCourseData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    isFree: false,
-    image: null as File | null,
-    courseTypeId: "",
+  const navigate = useNavigate();
+
+  const { mutate: createCourse, isPending, error: mutationError } = useCreateCourse();
+  const { data: courseTypes = [], isLoading: isLoadingTypes } = useCourseTypes();
+
+  const { register, handleSubmit, formState: { errors }, watch } = useForm<CreateCoursePayload>({
+    resolver: valibotResolver(CourseSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      isFree: true,
+      price: 0,
+      courseTypeId: "",
+    }
   });
-  const [imagePreview, setImagePreview] = useState<string>("");
 
-  const { data: courseTypes = [] } = useCourseTypes();
-  const createMutation = useCreateCourse()
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
 
-  const {register} = useForm<CreateCoursePayload>();
-
-
-
+  const watchedValues = watch();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setCourseData((prev) => ({ ...prev, image: file }));
       const reader = new FileReader();
-      reader.onload = (event) => {
-        setImagePreview(event.target?.result as string);
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
-  };
-
-/*
-  const onFormSubmit =(data:CreateCoursePayload)=>{
-      const payload= {
-        name: data.name,
-        description: data.description,
-        price: data.isFree ? 0 : Number(data.price),
-        isFree: data.isFree,
-        image: data.image,
-        courserTypeId: courseData.courseTypeId
-      }
-
-      createMutation.mutate(data,{
-        onSuccess:(newCourse)=>{
-          alert("Curso creado exitosamente. Ahora serías redirigido al editor del curso.")
-        },
-        onError:()=>{
-          alert("Error al crear el curso. Intenta nuevamente.")
-        }
-      })
   }
-*/
-  const handleCreateCourse = () => {
-    if (courseData.name.trim() && courseData.description.trim()) {
-      //Add the navigation to the edit course page
-      alert(
-        "Curso creado (simulación). Ahora serías redirigido al editor del curso."
-      );
+
+  const onSubmit = (formData: CreateCoursePayload) => {
+    const dataToSend = new FormData();
+
+    dataToSend.append('name', formData.name);
+    dataToSend.append('description', formData.description);
+    dataToSend.append('courseTypeId', formData.courseTypeId);
+    dataToSend.append('isFree', String(formData.isFree));
+    dataToSend.append('price', String(formData.isFree ? 0 : formData.price || 0))
+    const imageInput = document.getElementById('course-image') as HTMLInputElement;
+    if (imageInput.files && imageInput.files[0]) {
+      dataToSend.append('image', imageInput.files[0]);
     }
+
+    createCourse(dataToSend, {
+      onSuccess: (createdCourse) => {
+        alert('¡Curso creado con éxito! Ahora puedes empezar a añadir contenido.');
+        navigate(`/professor/dashboard/courses/${createdCourse.id}/edit`);
+      },
+      onError: (err: any) => {
+        console.error("Error al crear el curso:", err);
+        const message = err.response?.data?.message || err.message;
+        alert(`Error al crear el curso: ${message}`);
+      },
+    });
   };
 
   return (
-    <div className="container mx-auto max-w-6xl">
+    <div className="container mx-auto max-w-6xl py-8">
       <div className="mb-8">
         <Link to="/professor/dashboard/courses">
           <Button
@@ -114,8 +110,7 @@ export default function ProfessorCourseCreation() {
         </p>
       </div>
 
-      {/**Html del formulario */}
-      <div className="grid lg:grid-cols-2 gap-8">
+      <form onSubmit={handleSubmit(onSubmit)} className="grid lg:grid-cols-2 gap-8">
         <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-slate-800">
@@ -123,45 +118,36 @@ export default function ProfessorCourseCreation() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <Input
-                id="course-name"
-                label="Nombre del curso"
-                value={courseData.name}
-                onChange={(e) =>
-                  setCourseData((prev) => ({ ...prev, name: e.target.value }))
-                }
-                placeholder="Ej: Desarrollo Web con React"
-              />
-            </div>
+            <Input
+              id="course-name"
+              label="Nombre del curso"
+              placeholder="Ej: Desarrollo Web con React"
+              {...register("name")}
+              error={errors.name?.message}
+            />
 
-            <div className="space-y-2">
-              <Textarea
-                id="course-description"
-                label="Descripción"
-                value={courseData.description}
-                onChange={(e) =>
-                  setCourseData((prev) => ({
-                    ...prev,
-                    description: e.target.value,
-                  }))
-                }
-                placeholder="Describe brevemente de qué trata tu curso..."
-                rows={4}
-              />
-            </div>
+            <Textarea
+              id="course-description"
+              label="Descripción"
+              placeholder="Describe brevemente de qué trata tu curso..."
+              rows={4}
+              {...register("description")}
+              error={errors.description?.message}
+            />
 
-            <div className="space-y-2">
-              <Select id="typeCourse-select" label="Tipo de Curso">
+            {isLoadingTypes ? <p>Cargando categorías...</p> : (
+              <Select id="typeCourse-select" label="Tipo de Curso" {...register("courseTypeId")}>
+                <option value="" disabled>Selecciona una categoría</option>
                 {courseTypes.map((type) => (
-                  <option className="w-full py-3 px-4 border rounded-lg transition-all bg-slate-100/70 border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 focus:bg-white" key={type.id} value={type.id}>
+                  <option key={type.id} value={type.id}>
                     {type.name}
                   </option>
                 ))}
               </Select>
-            </div>
+            )}
+            {errors.courseTypeId && <p className="text-sm text-red-500 mt-1">{errors.courseTypeId.message}</p>}
 
-            <div className="space-y-2">
+            <div>
               <Label>Imagen del curso</Label>
               <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center bg-slate-50 hover:bg-slate-100">
                 <input
@@ -181,85 +167,62 @@ export default function ProfessorCourseCreation() {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 rounded-lg border p-4">
               <div className="flex items-center justify-between">
                 <Label htmlFor="is-free">Curso gratuito</Label>
                 <Switch
                   id="is-free"
-                  checked={courseData.isFree}
-                  onChange={(e) =>
-                    setCourseData((prev) => ({
-                      ...prev,
-                      isFree: e.target.checked,
-                    }))
-                  }
+                  {...register("isFree")}
                 />
               </div>
 
-              {!courseData.isFree && (
-                <div className="space-y-2">
-                  <Input
-                    id="course-price"
-                    label="Precio del curso (ARS)"
-                    type="number"
-                    value={courseData.price}
-                    onChange={(e) =>
-                      setCourseData((prev) => ({
-                        ...prev,
-                        price: e.target.value,
-                      }))
-                    }
-                    placeholder="99"
-                  />
-                </div>
+              {!watchedValues.isFree && (
+                <Input
+                  id="course-price"
+                  label="Precio del curso (ARS)"
+                  type="number"
+                  placeholder="99"
+                  {...register(("price"), { valueAsNumber: true})}
+                  error={errors.price?.message}
+                />
               )}
             </div>
 
             <Button
-              onClick={handleCreateCourse}
-              disabled={
-                !courseData.name.trim() || !courseData.description.trim()
-              }
+              type="submit"
+              disabled={isPending}
+              isLoading={isPending}
               className="w-full bg-green-500 hover:bg-green-600 text-white"
             >
               Crear Curso y Continuar
             </Button>
+
+            {mutationError && <p className="text-sm text-red-500 text-center mt-2">{mutationError.message}</p>}
+
           </CardContent>
         </Card>
-        {/**Html de previsualizacion */}
+
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-slate-800">
             Previsualización
           </h2>
-          <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm">
+          <Card className="group transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm">
             <div className="relative overflow-hidden rounded-t-lg">
               <img
                 src={imagePreview || "/img/noImage.jpg"}
-                alt={courseData.name || "Vista previa del curso"}
-                className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+                alt={watchedValues.name || "Vista previa del curso"}
+                className="w-full h-48 object-cover transition-transform duration-300"
               />
-              <div className="absolute top-3 right-3">
-                <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
-                  En desarrollo
-                </Badge>
-              </div>
-              <div className="absolute top-3 left-3">
-                <Badge className="bg-white/90 text-slate-700 border-0">
-                  <Star className="w-3 h-3 mr-1 fill-current text-yellow-500" />
-                  Nuevo
-                </Badge>
-              </div>
             </div>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-semibold text-slate-800 line-clamp-2">
-                {courseData.name || "Nombre del curso"}
+                {watchedValues.name || "Nombre del curso"}
               </CardTitle>
-              <p className="text-sm text-slate-600">
-                {courseData.description ||
-                  "La descripción del curso aparecerá aquí..."}
+              <p className="text-sm text-slate-600 min-h-[40px]">
+                {watchedValues.description || "La descripción del curso aparecerá aquí..."}
               </p>
             </CardHeader>
-            <CardContent className="pt-0">
+            <CardContent className="pt-2">
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-4 text-sm text-slate-600">
                   <div className="flex items-center space-x-1">
@@ -271,16 +234,16 @@ export default function ProfessorCourseCreation() {
                     <span>0 lecciones</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between pt-2 border-t">
                   <div className="text-lg font-bold text-slate-800">
-                    {courseData.isFree ? (
+                    {watchedValues.isFree ? (
                       <span className="text-green-600">Gratis</span>
                     ) : (
-                      <span>${courseData.price || "0"}</span>
+                      <span>${watchedValues.price || "0"}</span>
                     )}
                   </div>
                   <Badge className="bg-blue-100 text-blue-700 border-blue-200">
-                    Vista previa
+                    {courseTypes.find(ct => ct.id === watchedValues.courseTypeId)?.name || 'Categoría'}
                   </Badge>
                 </div>
               </div>
@@ -289,12 +252,11 @@ export default function ProfessorCourseCreation() {
           <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
             <p className="text-sm text-blue-700">
               <strong>Nota:</strong> Esta es una vista previa de cómo se verá tu
-              curso en el dashboard. Una vez creado, podrás agregar contenido,
-              unidades y configurar todos los detalles.
+              curso en el dashboard. Una vez creado, podrás agregar contenido.
             </p>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
