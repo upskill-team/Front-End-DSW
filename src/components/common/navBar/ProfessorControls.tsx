@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, Users, type LucideIcon } from "lucide-react";
+import { BarChart3, BookOpen, Users} from "lucide-react";
 import { Link } from "react-router-dom";
 import type { Location } from "react-router-dom";
 

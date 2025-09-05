@@ -4,8 +4,7 @@ import {
   ClipboardList,
   GraduationCap,
   LayoutDashboard,
-  Users,
-  type LucideIcon,
+  Users
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { Location } from "react-router-dom";
