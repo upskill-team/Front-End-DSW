@@ -7,11 +7,7 @@ import {
   GraduationCap,
   Bell,
   Menu,
-  X,
-  LayoutDashboard,
-  BarChart3,
-  Users,
-  ClipboardList,
+  X
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import Button from "../ui/Button"; // Asegúrate de que la importación esté presente
