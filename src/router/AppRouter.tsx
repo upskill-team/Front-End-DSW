@@ -46,7 +46,7 @@ const AppRouter = () => {
             <Route index element={<Navigate to="courses" replace />} />
             <Route path="courses" element={<ProfessorCoursesPage />} />
             <Route path='courses/new' element={<ProfessorCourseCreation />} />
-            <Route path="courses/edit" element={<ProfessorCourseEdition/>}/>
+            <Route path="courses/:courseId/edit" element={<ProfessorCourseEdition/>}/>
             <Route path="analytics" element={<ProfessorAnalyticsPage />} />
             <Route path="students" element={<ProfessorStudentsPage />} />
         </Route>

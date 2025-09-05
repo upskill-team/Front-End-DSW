@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, /*useNavigate,*/ useParams } from 'react-router-dom';
 import {
   Card,
   CardContent,
@@ -25,8 +25,21 @@ import {
   GripVertical,
 } from 'lucide-react';
 
+const initialUnits = [
+  {
+    unitNumber: 1,
+    name: 'Unidad 1: Introducción',
+    description: 'Conceptos básicos e iniciales.',
+    detail: 'Este es el contenido de la primera unidad...',
+    activities: [],
+    materials: [],
+  },
+];
+
+type Unit = typeof initialUnits[0];
+
 export default function ProfessorCourseEditorPage() {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const { courseId } = useParams();
 
   // Estado del curso (debería venir de tu API)
@@ -39,38 +52,29 @@ export default function ProfessorCourseEditorPage() {
   });
 
   // Estado de las unidades (debería venir de tu API)
-  const [units, setUnits] = useState([
-    {
-      unitNumber: 1,
-      name: 'Unidad 1: Introducción',
-      description: 'Conceptos básicos e iniciales.',
-      detail: 'Este es el contenido de la primera unidad...',
-      activities: [],
-      materials: [],
-    },
-  ]);
+  const [units, setUnits] = useState(initialUnits)
 
-  const [draggedUnit, setDraggedUnit] = useState<any>(null);
+  const [draggedUnit, setDraggedUnit] = useState<Unit | null>(null);
 
   // Estados de los modales
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
   const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
-  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
-  const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
-  const [editingUnit, setEditingUnit] = useState<any>(null);
+  //const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
+  //const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
+  const [editingUnit, setEditingUnit] = useState<Unit | null>(null);
   const [selectedUnitId, setSelectedUnitId] = useState(1);
 
   // Estados de los formularios
   const [newUnitName, setNewUnitName] = useState('');
   const [newUnitDescription, setNewUnitDescription] = useState('');
 
-  const [newActivity, setNewActivity] = useState({
+  /*const [newActivity, setNewActivity] = useState({
     question: '',
     options: ['', '', '', ''],
     correctAnswer: 0,
-  });
+  });*/
 
-  const handleDragStart = (e: React.DragEvent, unit: any) => {
+  const handleDragStart = (e: React.DragEvent, unit: Unit) => {
     setDraggedUnit(unit);
   };
 
@@ -78,11 +82,11 @@ export default function ProfessorCourseEditorPage() {
     e.preventDefault();
   };
 
-  const handleDrop = (e: React.DragEvent, targetUnit: any) => {
+  const handleDrop = (e: React.DragEvent, targetUnit: Unit) => {
     e.preventDefault();
-    if (draggedUnit && draggedUnit.id !== targetUnit.id) {
-      const draggedIndex = units.findIndex((u) => u.unitNumber === draggedUnit.id);
-      const targetIndex = units.findIndex((u) => u.unitNumber === targetUnit.id);
+    if (draggedUnit && draggedUnit.unitNumber !== targetUnit.unitNumber) {
+      const draggedIndex = units.findIndex((u) => u.unitNumber === draggedUnit.unitNumber);
+      const targetIndex = units.findIndex((u) => u.unitNumber === targetUnit.unitNumber);
       const newUnits = [...units];
       const [removed] = newUnits.splice(draggedIndex, 1);
       newUnits.splice(targetIndex, 0, removed);
@@ -96,7 +100,7 @@ export default function ProfessorCourseEditorPage() {
       // Lógica de actualización (usar mutación)
       setUnits(
         units.map((u) =>
-          u.unitNumber === editingUnit.id
+          u.unitNumber === editingUnit.unitNumber
             ? { ...u, name: newUnitName, description: newUnitDescription }
             : u
         )
@@ -119,7 +123,7 @@ export default function ProfessorCourseEditorPage() {
     setIsUnitModalOpen(false);
   };
 
-  const handleEditUnitClick = (unit: any) => {
+  const handleEditUnitClick = (unit: Unit) => {
     setEditingUnit(unit);
     setNewUnitName(unit.name);
     setNewUnitDescription(unit.description);
@@ -270,7 +274,7 @@ export default function ProfessorCourseEditorPage() {
                       <Button
                         size="md"
                         variant="outline"
-                        onClick={() => setIsActivityModalOpen(true)}
+                        onClick={() => alert('Funcionalidad de "Crear Actividad" pendiente.')}
                       >
                         <Plus className="w-4 h-4 mr-2" />
                         Crear Actividad
@@ -278,7 +282,7 @@ export default function ProfessorCourseEditorPage() {
                       <Button
                         size="md"
                         variant="outline"
-                        onClick={() => setIsMaterialModalOpen(true)}
+                        onClick={() => alert('Funcionalidad de "Subir Material" pendiente.')}
                       >
                         <Upload className="w-4 h-4 mr-2" />
                         Subir Material

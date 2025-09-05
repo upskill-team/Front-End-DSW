@@ -20,6 +20,10 @@ const ProfessorCoursesPage = () => {
     navigate('new');
   };
 
+  const handleNavigateToEdit = (courseId: string) => {
+    navigate(`/professor/dashboard/courses/${courseId}/edit`);
+  };
+
   if (isLoading) {
     return (
       <div className="text-center p-8">
@@ -78,7 +82,7 @@ const ProfessorCoursesPage = () => {
           >
             <div className="relative overflow-hidden rounded-t-lg">
               <img
-                src={'/img/noImage.jpg'} 
+                src={course.imageUrl || '/img/noImage.jpg'} 
                 alt={course.name}
                 className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
               />
@@ -107,12 +111,12 @@ const ProfessorCoursesPage = () => {
                 <div className="grid grid-cols-2 gap-4 text-sm text-slate-600">
                   <div className="flex items-center space-x-1">
                     <Users className="w-3 h-3" />
-                    <span>{course.students.length} estudiantes</span>
+                    <span>{(course.students ?? []).length} estudiantes</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <BookOpen className="w-3 h-3" />
                     <span>
-                      {course.units.reduce((acc, unit) => acc + unit.materials.length + unit.activities.length, 0)} lecciones
+                      {course.units.reduce((acc, unit) => acc + (unit.materials ?? []).length + (unit.activities ?? []).length, 0)} lecciones
                     </span>
                   </div>
                   <div className="flex items-center space-x-1 col-span-2">
@@ -121,7 +125,7 @@ const ProfessorCoursesPage = () => {
                   </div>
                 </div>
                 <div className="flex justify-end pt-2">
-                  <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                  <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => handleNavigateToEdit(course.id)}>
                     <Edit className="w-4 h-4" />
                   </Button>
                 </div>

@@ -31,6 +31,7 @@ export interface Course {
   name: string;
   description: string;
   password: string;
+  imageUrl: string;
   courseType: CourseType;
   professor: Professor;
   students: Student[];

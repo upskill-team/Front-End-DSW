@@ -20,17 +20,26 @@ import { useCreateCourse } from "../../hooks/useCourses.ts";
 import * as v from 'valibot';
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
+import { AxiosError } from "axios";
 
-const CourseSchema = v.object({
-  name: v.pipe(v.string(), v.minLength(1, 'El nombre es requerido.')),
-  description: v.pipe(v.string(), v.minLength(1, 'La descripción es requerida.')),
-  isFree: v.boolean(),
-  price: v.optional(v.pipe(v.number(), v.minValue(0, "El precio no puede ser negativo"))),
-  courseTypeId: v.pipe(v.string(), v.minLength(1, "Debes seleccionar una categoría.")),
-  // image: v.optional(v.instance(FileList)), // La subida de archivos se maneja por separado
-});
+const CourseSchema = v.pipe(
+  v.object({
+    name: v.pipe(v.string(), v.minLength(1, 'El nombre es requerido.')),
+    description: v.pipe(v.string(), v.minLength(1, 'La descripción es requerida.')),
+    isFree: v.boolean(),
+    price: v.optional(v.number("El precio debe ser un número")),
+    courseTypeId: v.pipe(v.string(), v.minLength(1, "Debes seleccionar una categoría.")),
+  }),
+  v.forward(
+    v.check(
+      (input) => !input.isFree ? input.price !== undefined && input.price >= 0 : true,
+      'Si el curso no es gratuito, debes especificar un precio válido (0 o más).'
+    ),
+    ['price']
+  )
+);
 
-type CreateCoursePayload = v.InferInput<typeof CourseSchema>;
+type CourseFormValues = v.InferInput<typeof CourseSchema>;
 
 export default function ProfessorCourseCreation() {
   const navigate = useNavigate();
@@ -38,7 +47,7 @@ export default function ProfessorCourseCreation() {
   const { mutate: createCourse, isPending, error: mutationError } = useCreateCourse();
   const { data: courseTypes = [], isLoading: isLoadingTypes } = useCourseTypes();
 
-  const { register, handleSubmit, formState: { errors }, watch } = useForm<CreateCoursePayload>({
+  const { register, handleSubmit, formState: { errors }, watch } = useForm<CourseFormValues>({
     resolver: valibotResolver(CourseSchema),
     defaultValues: {
       name: "",
@@ -64,14 +73,15 @@ export default function ProfessorCourseCreation() {
     }
   }
 
-  const onSubmit = (formData: CreateCoursePayload) => {
+  const onSubmit = (formData: CourseFormValues) => {
     const dataToSend = new FormData();
 
     dataToSend.append('name', formData.name);
     dataToSend.append('description', formData.description);
     dataToSend.append('courseTypeId', formData.courseTypeId);
     dataToSend.append('isFree', String(formData.isFree));
-    dataToSend.append('price', String(formData.isFree ? 0 : formData.price || 0))
+    dataToSend.append('price', String(formData.isFree ? 0 : formData.price || 0)); 
+
     const imageInput = document.getElementById('course-image') as HTMLInputElement;
     if (imageInput.files && imageInput.files[0]) {
       dataToSend.append('image', imageInput.files[0]);
@@ -82,9 +92,10 @@ export default function ProfessorCourseCreation() {
         alert('¡Curso creado con éxito! Ahora puedes empezar a añadir contenido.');
         navigate(`/professor/dashboard/courses/${createdCourse.id}/edit`);
       },
-      onError: (err: any) => {
+      onError: (err: AxiosError) => {
         console.error("Error al crear el curso:", err);
-        const message = err.response?.data?.message || err.message;
+        const responseData = err.response?.data as { message?: string };
+        const message = responseData?.message || err.message;
         alert(`Error al crear el curso: ${message}`);
       },
     });
