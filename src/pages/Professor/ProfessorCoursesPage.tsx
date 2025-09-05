@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import {
   Card,
   CardContent,
@@ -12,6 +13,12 @@ import { useProfessorCourses } from '../../hooks/useCourses.ts'
 
 const ProfessorCoursesPage = () => {
   const { data: courses, isLoading, error } = useProfessorCourses()
+
+  const navigate = useNavigate()
+
+  const handleNavigateToCreate = () => {
+    navigate('new');
+  };
 
   if (isLoading) {
     return (
@@ -35,7 +42,7 @@ const ProfessorCoursesPage = () => {
       <div className="text-center p-12 bg-slate-50 border rounded-lg">
         <h3 className="text-slate-800 font-semibold text-xl">Aún no tienes cursos</h3>
         <p className="text-slate-600 mt-2 mb-4">¡Es un buen momento para empezar a crear!</p>
-        <Button size="md" className="bg-green-500 hover:bg-green-600 text-white">
+        <Button size="md" className="bg-green-500 hover:bg-green-600 text-white" onClick={handleNavigateToCreate}>
           <Plus className="w-4 h-4 mr-2" />
           Crear tu Primer Curso
         </Button>
@@ -55,7 +62,7 @@ const ProfessorCoursesPage = () => {
           <div className="flex gap-3">
             <Button
               size="md"
-              className="bg-green-500 hover:bg-green-600 text-white"
+              className="bg-green-500 hover:bg-green-600 text-white" onClick={handleNavigateToCreate}
             >
               <Plus className="w-4 h-4 mr-2" />
               Crear Curso
