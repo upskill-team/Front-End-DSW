@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { X } from 'lucide-react';
+import { X, XIcon } from 'lucide-react';
 import Button from './Button';
 
 interface DialogProps {
@@ -14,6 +14,16 @@ const DialogHeader = ({ children }: { children: React.ReactNode }) => (
 );
 const DialogTitle = ({ children }: { children: React.ReactNode }) => (
   <h2 className="text-lg font-semibold text-slate-900">{children}</h2>
+);
+
+const DialogFooter = ({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    data-slot="dialog-footer"
+    className={`flex flex-col-reverse gap-2 sm:flex-row sm:justify-end ${className}`}
+    {...props}
+  >
+    {children}
+  </div>
 );
 
 const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
@@ -62,4 +72,41 @@ const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
   );
 };
 
-export { Dialog, DialogHeader, DialogTitle };
+const DialogContent = ({
+  className,
+  children,
+  showCloseButton = true,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & {
+  showCloseButton?: boolean;
+}) => (
+  <>
+    {/* Overlay oscuro */}
+    <div
+      data-slot="dialog-overlay"
+      className="fixed inset-0 z-40 bg-black/50"
+    />
+
+    {/* Contenido del modal */}
+    <div
+      data-slot="dialog-content"
+      className={`fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] sm:max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-white p-6 shadow-lg`}
+      {...props}
+    >
+      {children}
+
+      {showCloseButton && (
+        <button
+          type="button"
+          data-slot="dialog-close"
+          className="absolute top-4 right-4 rounded opacity-70 hover:opacity-100 transition-opacity disabled:pointer-events-none"
+        >
+          <XIcon className="w-4 h-4 text-gray-500" />
+          <span className="sr-only">Close</span>
+        </button>
+      )}
+    </div>
+  </>
+);
+
+export { Dialog, DialogHeader, DialogTitle,DialogFooter,DialogContent };

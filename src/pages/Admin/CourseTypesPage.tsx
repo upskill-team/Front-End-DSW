@@ -43,6 +43,7 @@ export default function CourseTypesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
+  // Form setup
   const {
     register,
     handleSubmit,

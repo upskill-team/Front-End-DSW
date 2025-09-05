@@ -3,23 +3,54 @@ import type React from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, BookOpen, Star, Upload, Users } from "lucide-react";
 import Button from "../../components/ui/Button.tsx";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card.tsx";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/Card.tsx";
 import Input from "../../components/ui/Input.tsx";
 import Textarea from "../../components/ui/TextArea.tsx";
 import Badge from "../../components/ui/Badge.tsx";
 import Switch from "../../components/ui/Switch.tsx";
-import Label from "../../components/ui/Label.tsx"
+import Label from "../../components/ui/Label.tsx";
+import Select from "../../components/ui/Select.tsx";
+import { useCourseTypes } from "../../hooks/useCourseTypes.ts";
+import { useCreateCourse } from "../../hooks/useCourses.ts";
+import * as v from 'valibot';
+import { useForm } from "react-hook-form";
+
+// Define the schema for course creation form validation
+const CourseSchema = v.object({
+  name: v.pipe(v.string(), v.minLength(1, 'El nombre es requerido.')),
+  description: v.pipe(v.string(), v.minLength(1, 'La descripción es requerida.')),
+  price: v.union([v.string(), v.number()]),
+  isFree: v.boolean(),
+  image: v.union([v.instance(File), v.null()]),
+  courseTypeId: v.string()
+})
+
+type CreateCoursePayload = v.InferInput<typeof CourseSchema>;
+
 
 export default function ProfessorCourseCreation() {
-
   const [courseData, setCourseData] = useState({
     name: "",
     description: "",
     price: "",
     isFree: false,
     image: null as File | null,
+    courseTypeId: "",
   });
   const [imagePreview, setImagePreview] = useState<string>("");
+
+  const { data: courseTypes = [] } = useCourseTypes();
+  const createMutation = useCreateCourse()
+
+  const {register} = useForm<CreateCoursePayload>();
+
+
+
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -33,10 +64,33 @@ export default function ProfessorCourseCreation() {
     }
   };
 
+/*
+  const onFormSubmit =(data:CreateCoursePayload)=>{
+      const payload= {
+        name: data.name,
+        description: data.description,
+        price: data.isFree ? 0 : Number(data.price),
+        isFree: data.isFree,
+        image: data.image,
+        courserTypeId: courseData.courseTypeId
+      }
+
+      createMutation.mutate(data,{
+        onSuccess:(newCourse)=>{
+          alert("Curso creado exitosamente. Ahora serías redirigido al editor del curso.")
+        },
+        onError:()=>{
+          alert("Error al crear el curso. Intenta nuevamente.")
+        }
+      })
+  }
+*/
   const handleCreateCourse = () => {
     if (courseData.name.trim() && courseData.description.trim()) {
       //Add the navigation to the edit course page
-      alert("Curso creado (simulación). Ahora serías redirigido al editor del curso.");
+      alert(
+        "Curso creado (simulación). Ahora serías redirigido al editor del curso."
+      );
     }
   };
 
@@ -60,6 +114,7 @@ export default function ProfessorCourseCreation() {
         </p>
       </div>
 
+      {/**Html del formulario */}
       <div className="grid lg:grid-cols-2 gap-8">
         <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
           <CardHeader>
@@ -97,6 +152,16 @@ export default function ProfessorCourseCreation() {
             </div>
 
             <div className="space-y-2">
+              <Select id="typeCourse-select" label="Tipo de Curso">
+                {courseTypes.map((type) => (
+                  <option className="w-full py-3 px-4 border rounded-lg transition-all bg-slate-100/70 border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 focus:bg-white" key={type.id} value={type.id}>
+                    {type.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+
+            <div className="space-y-2">
               <Label>Imagen del curso</Label>
               <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center bg-slate-50 hover:bg-slate-100">
                 <input
@@ -123,7 +188,10 @@ export default function ProfessorCourseCreation() {
                   id="is-free"
                   checked={courseData.isFree}
                   onChange={(e) =>
-                    setCourseData((prev) => ({ ...prev, isFree: e.target.checked }))
+                    setCourseData((prev) => ({
+                      ...prev,
+                      isFree: e.target.checked,
+                    }))
                   }
                 />
               </div>
@@ -158,7 +226,7 @@ export default function ProfessorCourseCreation() {
             </Button>
           </CardContent>
         </Card>
-
+        {/**Html de previsualizacion */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-slate-800">
             Previsualización

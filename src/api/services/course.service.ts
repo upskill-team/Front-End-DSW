@@ -5,6 +5,10 @@ type CreateCoursePayload = {
   name: string
   description: string
   courseTypeId: string
+  price: number
+  isFree: boolean,
+  image: File | null
+  
 }
 
 type UpdateCoursePayload = Partial<CreateCoursePayload>
