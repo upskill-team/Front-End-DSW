@@ -24,6 +24,7 @@ import {
   Eye,
   GripVertical,
 } from 'lucide-react';
+import UnitEditor from '../../components/landing/UnitEditor.tsx';
 
 const initialUnits = [
   {
@@ -37,6 +38,10 @@ const initialUnits = [
 ];
 
 type Unit = typeof initialUnits[0];
+
+
+
+// Uploads a file to tmpfiles.org and returns the URL to the uploaded file.
 
 export default function ProfessorCourseEditorPage() {
   //const navigate = useNavigate();
@@ -53,6 +58,9 @@ export default function ProfessorCourseEditorPage() {
 
   // Estado de las unidades (debería venir de tu API)
   const [units, setUnits] = useState(initialUnits)
+
+  // Estado de si el editor es editable o solo lectura
+  const [editable, setEditable] = useState(true);
 
   const [draggedUnit, setDraggedUnit] = useState<Unit | null>(null);
 
@@ -168,7 +176,7 @@ export default function ProfessorCourseEditorPage() {
           </div>
 
           <div className="flex items-center space-x-3">
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => setEditable(!editable)}>
               <Eye className="w-4 h-4 mr-2" />
               Vista previa
             </Button>
@@ -261,7 +269,9 @@ export default function ProfessorCourseEditorPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+
+                  <UnitEditor editable={editable}/>
+                  {/*<div className="space-y-4">
                     <Textarea
                       id="unit-content"
                       label="Contenido de la unidad (soporta Markdown)"
@@ -288,7 +298,7 @@ export default function ProfessorCourseEditorPage() {
                         Subir Material
                       </Button>
                     </div>
-                  </div>
+                  </div>*/}
                 </CardContent>
               </Card>
 
