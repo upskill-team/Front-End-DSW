@@ -119,6 +119,21 @@ export default function ProfessorCourseEditorPage() {
     setDraggedUnit(null);
   };
 
+  const handleCloseUnitModal = () => {
+    setIsUnitModalOpen(false);
+    setEditingUnit(null);
+    setNewUnitName('');
+    setNewUnitDescription('');
+  };
+
+  // Nueva función para abrir el modal en modo "Crear"
+  const handleOpenCreateUnitModal = () => {
+    setEditingUnit(null); // Aseguramos que no esté en modo edición
+    setNewUnitName('');
+    setNewUnitDescription('');
+    setIsUnitModalOpen(true);
+  };
+
   const handleAddOrUpdateUnit = () => {
     if (editingUnit) {
       // Lógica de actualización (usar mutación)
@@ -141,11 +156,9 @@ export default function ProfessorCourseEditorPage() {
       };
       setUnits([...units, newUnit]);
     }
-    setNewUnitName('');
-    setNewUnitDescription('');
-    setEditingUnit(null);
-    setIsUnitModalOpen(false);
-  };
+    // La lógica de limpieza ahora está en handleCloseUnitModal
+    handleCloseUnitModal();
+  }
 
   const handleEditUnitClick = (unit: Unit) => {
     setEditingUnit(unit);
@@ -451,7 +464,7 @@ export default function ProfessorCourseEditorPage() {
         </div>
       </Dialog>
       
-      <Dialog open={isUnitModalOpen} onOpenChange={setIsUnitModalOpen}>
+      <Dialog open={isUnitModalOpen} onOpenChange={(isOpen) => !isOpen && handleCloseUnitModal()}>
         <DialogHeader>
           <DialogTitle>{editingUnit ? 'Editar Unidad' : 'Nueva Unidad'}</DialogTitle>
         </DialogHeader>
@@ -459,18 +472,21 @@ export default function ProfessorCourseEditorPage() {
           <Input
             id="unit-name"
             label="Nombre de la unidad"
+            placeholder="Unidad 2: Conceptos básicos"
             value={newUnitName}
             onChange={(e) => setNewUnitName(e.target.value)}
           />
           <Textarea
             id="unit-description"
             label="Descripción"
+            placeholder="En esta unidad se tratará..."
             value={newUnitDescription}
             onChange={(e) => setNewUnitDescription(e.target.value)}
           />
         </div>
         <div className='flex justify-end gap-2'>
-            <Button variant="outline" onClick={() => setIsUnitModalOpen(false)}>Cancelar</Button>
+            {/* MODIFICADO: El botón de cancelar ahora también usa la nueva función */}
+            <Button variant="outline" onClick={handleCloseUnitModal}>Cancelar</Button>
             <Button onClick={handleAddOrUpdateUnit}>{editingUnit ? 'Actualizar' : 'Crear'}</Button>
         </div>
       </Dialog>

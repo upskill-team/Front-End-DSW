@@ -121,7 +121,7 @@ const ProfessorCoursesPage = () => {
                   </div>
                   <div className="flex items-center space-x-1 col-span-2">
                     <DollarSign className="w-3 h-3" />
-                    <span>$0</span>
+                    <span>{course.price}</span>
                   </div>
                 </div>
                 <div className="flex justify-end pt-2">
