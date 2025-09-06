@@ -1,4 +1,4 @@
-import { DragHandleButton, SideMenu, SideMenuController, useCreateBlockNote } from "@blocknote/react";
+import { useCreateBlockNote } from "@blocknote/react";
 // Or, you can use ariakit, shadcn, etc.
 import { BlockNoteView } from "@blocknote/mantine";
 // Default styles for the mantine editor
@@ -8,6 +8,7 @@ import "@blocknote/core/fonts/inter.css";
 import type { Block } from "@blocknote/core";
 import { useState } from "react";
 import { useUploadUnitFile } from "../../hooks/useUnits.ts";
+
 
 // Nota: referencia para pasarlo a api/services/fileService.ts
 /*async function uploadFile(file: File) {
@@ -24,19 +25,15 @@ import { useUploadUnitFile } from "../../hooks/useUnits.ts";
 }
 */
 
-export default function UnitEditor({
-  editable = true,
-}: {
-  editable?: boolean;
-}) {
+export default function UnitEditor({editable=true}:{editable?:boolean}) {
   // Stores the document JSON.
   const [blocks, setBlocks] = useState<Block[]>([]);
-  const { mutateAsync: uploadFileToServer } = useUploadUnitFile();
+  const {mutateAsync:uploadFileToServer}= useUploadUnitFile()
 
   const uploadFile = async (file: File, blockId?: string): Promise<string> => {
-    console.log("Subiendo archivo para el bloque:", blockId); // útil para debug
-    const url = await uploadFileToServer(file);
-    return url; // debe ser string (ej: "https://.../imagen.png")
+      console.log("Subiendo archivo para el bloque:", blockId); // útil para debug
+      const url = await uploadFileToServer(file);
+      return url; // debe ser string (ej: "https://.../imagen.png")
   };
   console.log("Document JSON:", blocks);
   // Create a new editor instance
@@ -44,33 +41,15 @@ export default function UnitEditor({
     initialContent: [
       {
         type: "heading",
-        content: "Nueva Unidad",
+        content: "Nueva Unidad"
       },
       {
         type: "paragraph",
-        content: "Escribe el contenido de la unidad aquí...",
-      },
+        content: "Escribe el contenido de la unidad aquí..."
+      }
     ],
-    uploadFile,
+    uploadFile
   });
   // Render the editor
-  return (
-    <BlockNoteView
-      theme="light"
-      editable={editable}
-      editor={editor}
-      onChange={() => setBlocks(editor.document)}
-      sideMenu={false}
-    >
-      <SideMenuController
-        sideMenu={(props) => (
-          <SideMenu {...props}>
-            {/* Button which removes the hovered block. */}
-            
-            <DragHandleButton {...props} />
-          </SideMenu>
-        )}
-      />
-    </BlockNoteView>
-  );
+  return <BlockNoteView theme="light" editable={editable} editor={editor} onChange={()=>setBlocks(editor.document)} />;
 }
