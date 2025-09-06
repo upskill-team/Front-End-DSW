@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, /*useNavigate,*/ useParams } from 'react-router-dom';
 import {
   Card,
@@ -19,12 +19,11 @@ import {
   Plus,
   Edit,
   Settings,
-  Upload,
   ArrowLeft,
-  Eye,
   GripVertical,
 } from 'lucide-react';
 import UnitEditor from '../../components/landing/UnitEditor.tsx';
+import { useProfessorCourses } from '../../hooks/useCourses.ts'
 
 const initialUnits = [
   {
@@ -44,17 +43,34 @@ type Unit = typeof initialUnits[0];
 // Uploads a file to tmpfiles.org and returns the URL to the uploaded file.
 
 export default function ProfessorCourseEditorPage() {
-  //const navigate = useNavigate();
   const { courseId } = useParams();
+  //const { courseName } = useParams()
+
+  const { data: courses, isLoading: isLoadingCourses } = useProfessorCourses()
 
   // Estado del curso (debería venir de tu API)
   const [courseConfig, setCourseConfig] = useState({
-    name: `Editando Curso ${courseId}`,
-    description: 'Descripción inicial del curso cargada desde la API.',
+    name: '',
+    description: '',
     status: 'en-desarrollo',
     isFree: false,
-    price: 50000,
+    price: 0,
   });
+
+  useEffect(() => {
+    if (courses && courseId) {
+      const currentCourse = courses.find(course => course.id === courseId);
+      if (currentCourse) {
+        setCourseConfig({
+          name: currentCourse.name,
+          description: currentCourse.description,
+          status: 'en-desarrollo',
+          isFree: currentCourse.isFree,
+          price: currentCourse.price,
+        });
+      }
+    }
+  }, [courses, courseId])
 
   // Estado de las unidades (debería venir de tu API)
   const [units, setUnits] = useState(initialUnits)
@@ -153,6 +169,25 @@ export default function ProfessorCourseEditorPage() {
   
   const selectedUnit = units.find((u) => u.unitNumber === selectedUnitId);
 
+  if (isLoadingCourses) {
+    return <p>Cargando información del curso...</p>;
+  }
+
+  if (!isLoadingCourses && !courses?.find(c => c.id === courseId)) {
+    return (
+      <div>
+        <h1 className="text-2xl font-bold">Curso no encontrado</h1>
+        <p>El curso que intentas editar no existe o no tienes permiso para verlo.</p>
+        <Link to="/professor/dashboard/courses">
+          <Button variant="outline" className="mt-4">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Volver a Mis Cursos
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto max-w-7xl">
       <div className="mb-8">
@@ -177,8 +212,8 @@ export default function ProfessorCourseEditorPage() {
 
           <div className="flex items-center space-x-3">
             <Button variant="outline" onClick={() => setEditable(!editable)}>
-              <Eye className="w-4 h-4 mr-2" />
-              Vista previa
+              Editar Contenido
+              <Edit className="w-4 h-4 flex items-right" />
             </Button>
           </div>
         </div>

@@ -19,7 +19,6 @@ export const useProfessorCourses = () => {
 export const useCreateCourse = () => {
   const queryClient = useQueryClient();
 
-  // --- 2. AÑADE LOS TIPOS GENÉRICOS A useMutation ---
   return useMutation<
     Course,
     AxiosError,

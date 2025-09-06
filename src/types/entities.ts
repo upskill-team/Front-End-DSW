@@ -34,6 +34,8 @@ export interface Course {
   imageUrl: string;
   courseType: CourseType;
   professor: Professor;
+  isFree: boolean;
+  price: number
   students: Student[];
   units: Unit[];
 }
