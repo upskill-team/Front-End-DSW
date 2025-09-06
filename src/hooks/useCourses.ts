@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { courseService } from '../api/services/course.service';
+import type { Course } from '../types/entities.ts';
+import type { AxiosError } from 'axios';
 
-type CreateCoursePayload = Parameters<typeof courseService.create>[0];
+type FormData = Parameters<typeof courseService.create>[0];
 type UpdateCoursePayload = {
   courseId: string;
   data: Parameters<typeof courseService.update>[1];
@@ -17,8 +19,13 @@ export const useProfessorCourses = () => {
 export const useCreateCourse = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (payload: CreateCoursePayload) => courseService.create(payload),
+  // --- 2. AÑADE LOS TIPOS GENÉRICOS A useMutation ---
+  return useMutation<
+    Course,
+    AxiosError,
+    FormData
+  >({
+    mutationFn: (payload: FormData) => courseService.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['professorCourses'] });
     },

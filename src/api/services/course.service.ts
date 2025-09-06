@@ -5,6 +5,10 @@ type CreateCoursePayload = {
   name: string
   description: string
   courseTypeId: string
+  price: number
+  isFree: boolean,
+  image: File | null
+  
 }
 
 type UpdateCoursePayload = Partial<CreateCoursePayload>
@@ -20,7 +24,7 @@ const getProfessorCourses = async (): Promise<Course[]> => {
   return response.data.data
 }
 
-const create = async (payload: CreateCoursePayload): Promise<Course> => {
+const create = async (payload: FormData): Promise<Course> => {
   const response = await apiClient.post<ApiResponse<Course>>('/courses', payload)
   return response.data.data
 }

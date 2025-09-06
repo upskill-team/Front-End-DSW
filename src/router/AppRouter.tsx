@@ -21,6 +21,8 @@ import ProfessorCoursesPage from '../pages/Professor/ProfessorCoursesPage.tsx';
 import ProfessorAnalyticsPage from '../pages/Professor/ProfessorAnalyticsPage.tsx';
 import ProfessorStudentsPage from '../pages/Professor/ProfessorStudentsPage.tsx';
 import ScrollToTop from '../components/layouts/ScrollToTop';
+import ProfessorCourseCreation from '../pages/Professor/ProfessorCourseCreation.tsx';
+import ProfessorCourseEdition from '../pages/Professor/ProfessorCourseEdition.tsx';
 
 const AppRouter = () => {
   return (
@@ -43,6 +45,8 @@ const AppRouter = () => {
         <Route path="/professor/dashboard" element={<ProtectedRoute allowedRoles={['professor']}><ProfessorDashboard /></ProtectedRoute>}>
             <Route index element={<Navigate to="courses" replace />} />
             <Route path="courses" element={<ProfessorCoursesPage />} />
+            <Route path='courses/new' element={<ProfessorCourseCreation />} />
+            <Route path="courses/:courseId/edit" element={<ProfessorCourseEdition/>}/>
             <Route path="analytics" element={<ProfessorAnalyticsPage />} />
             <Route path="students" element={<ProfessorStudentsPage />} />
         </Route>
