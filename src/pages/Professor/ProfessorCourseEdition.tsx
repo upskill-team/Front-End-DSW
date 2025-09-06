@@ -56,9 +56,9 @@ type Material = {
 
 export default function ProfessorCourseEditorPage() {
   const { courseId } = useParams();
-  //const { courseName } = useParams()
 
   const { data: courses, isLoading: isLoadingCourses } = useProfessorCourses()
+  const { mutate: updateCourse, isPending: isUpdatingCourse } = useUpdateCourse();
 
   // Estado del curso (debería venir de tu API)
   const [courseConfig, setCourseConfig] = useState({
@@ -76,7 +76,7 @@ export default function ProfessorCourseEditorPage() {
         setCourseConfig({
           name: currentCourse.name,
           description: currentCourse.description,
-          status: 'en-desarrollo',
+          status: 'en-desarrollo', // Este estado es local, no se envía al backend
           isFree: currentCourse.isFree,
           price: currentCourse.price,
         });
@@ -97,22 +97,12 @@ export default function ProfessorCourseEditorPage() {
   const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
   const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
   const [stagedFiles, setStagedFiles] = useState<File[]>([])
-  //const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
-  //const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
   const [editingUnit, setEditingUnit] = useState<Unit | null>(null);
   const [selectedUnitId, setSelectedUnitId] = useState<number | null>(1)
 
   // Estados de los formularios
   const [newUnitName, setNewUnitName] = useState('');
   const [newUnitDescription, setNewUnitDescription] = useState('');
-  
-
-
-  /*const [newActivity, setNewActivity] = useState({
-    question: '',
-    options: ['', '', '', ''],
-    correctAnswer: 0,
-  });*/
 
   const handleDragStart = (e: React.DragEvent, unit: Unit) => {
     setDraggedUnit(unit);
@@ -142,9 +132,8 @@ export default function ProfessorCourseEditorPage() {
     setNewUnitDescription('');
   };
 
-  // Nueva función para abrir el modal en modo "Crear"
   const handleOpenCreateUnitModal = () => {
-    setEditingUnit(null); // Aseguramos que no esté en modo edición
+    setEditingUnit(null);
     setNewUnitName('');
     setNewUnitDescription('');
     setIsUnitModalOpen(true);
@@ -152,7 +141,6 @@ export default function ProfessorCourseEditorPage() {
 
   const handleAddOrUpdateUnit = () => {
     if (editingUnit) {
-      // Lógica de actualización (usar mutación)
       setUnits(
         units.map((u) =>
           u.unitNumber === editingUnit.unitNumber
@@ -174,7 +162,6 @@ export default function ProfessorCourseEditorPage() {
       };
       setUnits([...units, newUnit]);
     }
-    // La lógica de limpieza ahora está en handleCloseUnitModal
     handleCloseUnitModal();
   }
 
@@ -189,32 +176,22 @@ export default function ProfessorCourseEditorPage() {
     const isConfirmed = window.confirm(
       '¿Estás seguro de que quieres eliminar esta unidad? Esta acción no se puede deshacer.'
     );
-  
+
     if (isConfirmed) {
       const updatedUnits = units.filter(
         (unit) => unit.unitNumber !== unitNumberToDelete
       );
       setUnits(updatedUnits);
-  
-      // Si la unidad eliminada era la seleccionada, se selecciona la primera o ninguna.
+
       if (selectedUnitId === unitNumberToDelete) {
         setSelectedUnitId(updatedUnits.length > 0 ? updatedUnits[0].unitNumber : null);
       }
     }
   }
 
-  const handleContentChange = (newContent: string) => {
-    setUnits(
-      units.map((unit) =>
-        unit.unitNumber === selectedUnitId ? { ...unit, content: newContent } : unit
-      )
-    );
-  };
-
   const handleUnitDetailChange = (newBlocks: Block[]) => {
     if (!selectedUnitId) return;
 
-    // Convertimos el contenido a JSON para guardarlo en el estado
     const newDetailJson = JSON.stringify(newBlocks);
 
     setUnits(currentUnits =>
@@ -227,11 +204,36 @@ export default function ProfessorCourseEditorPage() {
   }
 
   const handleSaveCourseConfig = () => {
-    console.log('Guardando configuración:', courseConfig);
-    setIsConfigModalOpen(false);
+    if (!courseId) {
+      alert("No se pudo encontrar el ID del curso.");
+      return;
+    }
+
+    const payload = {
+      name: courseConfig.name,
+      description: courseConfig.description,
+      isFree: courseConfig.isFree,
+      price: courseConfig.isFree ? 0 : courseConfig.price,
+    };
+
+    updateCourse(
+      { courseId, data: payload },
+      {
+        onSuccess: () => {
+          alert('¡Configuración del curso actualizada con éxito!');
+          setIsConfigModalOpen(false);
+          // El hook useUpdateCourse invalidará la query 'professorCourses'
+          // y los datos se actualizarán automáticamente.
+        },
+        onError: (error) => {
+          console.error("Error al actualizar el curso:", error);
+          alert(`Error al actualizar: ${error.message}`);
+        },
+      }
+    );
   }
-  
-    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
       const allowedTypes = [
@@ -243,7 +245,7 @@ export default function ProfessorCourseEditorPage() {
         allowedTypes.includes(file.type)
       );
 
-      if(validFiles.length !== files.length){
+      if (validFiles.length !== files.length) {
         alert("Algunos archivos fueron descartados por tener un formato no permitido (solo PDF, DOCX, XLSX).");
       }
       setStagedFiles(prev => [...prev, ...validFiles]);
@@ -258,7 +260,7 @@ export default function ProfessorCourseEditorPage() {
     if (!selectedUnitId || stagedFiles.length === 0) return;
 
     const newMaterials: Material[] = stagedFiles.map(file => ({
-      id: Date.now() + Math.random(), // ID simple para el frontend
+      id: Date.now() + Math.random(),
       name: file.name,
       file: file,
     }));
@@ -271,14 +273,13 @@ export default function ProfessorCourseEditorPage() {
       )
     );
 
-    // Limpiar y cerrar el modal
     setStagedFiles([]);
     setIsMaterialModalOpen(false);
   };
 
   const handleDeleteMaterial = (materialIdToDelete: number) => {
     if (!selectedUnitId) return;
-    
+
     const isConfirmed = window.confirm('¿Estás seguro de que quieres eliminar este material?');
     if (isConfirmed) {
       setUnits(currentUnits =>
@@ -335,9 +336,9 @@ export default function ProfessorCourseEditorPage() {
           </div>
 
           <div className="flex items-center space-x-3">
-            <Button variant="outline" onClick={() => setEditable(!editable)}>
+            <Button variant="outline" onClick={() => setEditable(!editable)} className='flex items-center gap-2'>
               Editar Contenido
-              <Edit className="w-4 h-4 flex items-right" />
+              <Edit className="w-4 h-4" />
             </Button>
           </div>
         </div>
@@ -366,11 +367,10 @@ export default function ProfessorCourseEditorPage() {
                     onDragStart={(e) => handleDragStart(e, unit)}
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDrop(e, unit)}
-                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                      selectedUnitId === unit.unitNumber
+                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${selectedUnitId === unit.unitNumber
                         ? 'bg-blue-50 border-blue-200'
                         : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
-                    }`}
+                      }`}
                     onClick={() => setSelectedUnitId(unit.unitNumber)}
                   >
                     <div className="flex items-center justify-between">
@@ -443,7 +443,7 @@ export default function ProfessorCourseEditorPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  
+
                   <UnitEditor
                     editable={editable}
                     initialContent={selectedUnit.detail}
@@ -492,7 +492,7 @@ export default function ProfessorCourseEditorPage() {
                     )}
                   </CardContent>
                 </Card>
-                
+
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg">
@@ -509,8 +509,8 @@ export default function ProfessorCourseEditorPage() {
                         {selectedUnit.materials.map((material) => (
                           <div key={material.id} className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border">
                             <div className="flex items-center space-x-2 min-w-0">
-                               <FileText className="w-4 h-4 text-slate-500 flex-shrink-0" />
-                               <span className="text-sm text-slate-700 truncate">{material.name}</span>
+                              <FileText className="w-4 h-4 text-slate-500 flex-shrink-0" />
+                              <span className="text-sm text-slate-700 truncate">{material.name}</span>
                             </div>
                             <Button
                               size="sm"
@@ -541,9 +541,9 @@ export default function ProfessorCourseEditorPage() {
           )}
         </div>
       </div>
-      
+
       {/* --- Modals / Dialogs --- */}
-      
+
       <Dialog open={isConfigModalOpen} onOpenChange={setIsConfigModalOpen}>
         <DialogHeader>
           <DialogTitle>Configuración del Curso</DialogTitle>
@@ -555,6 +555,14 @@ export default function ProfessorCourseEditorPage() {
             value={courseConfig.name}
             onChange={(e) =>
               setCourseConfig({ ...courseConfig, name: e.target.value })
+            }
+          />
+          <Textarea
+            id="course-description-config"
+            label="Descripción del curso"
+            value={courseConfig.description}
+            onChange={(e) =>
+              setCourseConfig({ ...courseConfig, description: e.target.value })
             }
           />
           <Select
@@ -608,10 +616,12 @@ export default function ProfessorCourseEditorPage() {
           >
             Cancelar
           </Button>
-          <Button onClick={handleSaveCourseConfig}>Guardar cambios</Button>
+          <Button onClick={handleSaveCourseConfig} isLoading={isUpdatingCourse} disabled={isUpdatingCourse}>
+            Guardar cambios
+          </Button>
         </div>
       </Dialog>
-      
+
       <Dialog open={isUnitModalOpen} onOpenChange={(isOpen) => !isOpen && handleCloseUnitModal()}>
         <DialogHeader>
           <DialogTitle>{editingUnit ? 'Editar Unidad' : 'Nueva Unidad'}</DialogTitle>
@@ -631,58 +641,58 @@ export default function ProfessorCourseEditorPage() {
           />
         </div>
         <div className='flex justify-end gap-2'>
-            <Button variant="outline" onClick={handleCloseUnitModal}>Cancelar</Button>
-            <Button onClick={handleAddOrUpdateUnit}>{editingUnit ? 'Actualizar' : 'Crear'}</Button>
+          <Button variant="outline" onClick={handleCloseUnitModal}>Cancelar</Button>
+          <Button onClick={handleAddOrUpdateUnit}>{editingUnit ? 'Actualizar' : 'Crear'}</Button>
         </div>
       </Dialog>
-            
-    <Dialog open={isMaterialModalOpen} onOpenChange={setIsMaterialModalOpen}>
-          <DialogHeader>
-              <DialogTitle>Subir Materiales a la Unidad</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-              <div className="flex items-center justify-center w-full">
-                  <label htmlFor="material-files" className="flex flex-col items-center justify-center w-full h-40 border-2 border-slate-200 border-dashed rounded-lg cursor-pointer bg-slate-50 hover:bg-slate-100">
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <Upload className="w-8 h-8 mb-2 text-slate-400" />
-                          <p className="mb-2 text-sm text-slate-500">
-                              <span className="font-semibold">Haz clic o arrastra</span>
-                          </p>
-                          <p className="text-xs text-slate-400">PDF, DOCX, XLSX</p>
-                      </div>
-                      <input
-                          id="material-files"
-                          type="file"
-                          className="hidden"
-                          multiple // Permite seleccionar múltiples archivos
-                          accept=".pdf,.docx,.xlsx"
-                          onChange={handleFileSelect}
-                      />
-                  </label>
-              </div>
 
-              {stagedFiles.length > 0 && (
-                  <div>
-                      <h4 className="font-medium text-sm mb-2">Archivos seleccionados:</h4>
-                      <div className="space-y-2 max-h-48 overflow-y-auto">
-                          {stagedFiles.map((file, index) => (
-                              <div key={index} className="flex items-center justify-between p-2 rounded-md bg-slate-100">
-                                  <span className="text-sm truncate">{file.name}</span>
-                                  <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-100" onClick={() => handleRemoveStagedFile(index)}>
-                                      <X className="w-3 h-3 text-red-500"/>
-                                  </Button>
-                              </div>
-                          ))}
-                      </div>
+      <Dialog open={isMaterialModalOpen} onOpenChange={setIsMaterialModalOpen}>
+        <DialogHeader>
+          <DialogTitle>Subir Materiales a la Unidad</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div className="flex items-center justify-center w-full">
+            <label htmlFor="material-files" className="flex flex-col items-center justify-center w-full h-40 border-2 border-slate-200 border-dashed rounded-lg cursor-pointer bg-slate-50 hover:bg-slate-100">
+              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <Upload className="w-8 h-8 mb-2 text-slate-400" />
+                <p className="mb-2 text-sm text-slate-500">
+                  <span className="font-semibold">Haz clic o arrastra</span>
+                </p>
+                <p className="text-xs text-slate-400">PDF, DOCX, XLSX</p>
+              </div>
+              <input
+                id="material-files"
+                type="file"
+                className="hidden"
+                multiple
+                accept=".pdf,.docx,.xlsx"
+                onChange={handleFileSelect}
+              />
+            </label>
+          </div>
+
+          {stagedFiles.length > 0 && (
+            <div>
+              <h4 className="font-medium text-sm mb-2">Archivos seleccionados:</h4>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {stagedFiles.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between p-2 rounded-md bg-slate-100">
+                    <span className="text-sm truncate">{file.name}</span>
+                    <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-100" onClick={() => handleRemoveStagedFile(index)}>
+                      <X className="w-3 h-3 text-red-500" />
+                    </Button>
                   </div>
-              )}
-          </div>
-          <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => { setIsMaterialModalOpen(false); setStagedFiles([]); }}>Cancelar</Button>
-              <Button onClick={handleAddMaterials} disabled={stagedFiles.length === 0}>
-                  Añadir {stagedFiles.length > 0 ? `(${stagedFiles.length})` : ''} Materiales
-              </Button>
-          </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" onClick={() => { setIsMaterialModalOpen(false); setStagedFiles([]); }}>Cancelar</Button>
+          <Button onClick={handleAddMaterials} disabled={stagedFiles.length === 0}>
+            Añadir {stagedFiles.length > 0 ? `(${stagedFiles.length})` : ''} Materiales
+          </Button>
+        </div>
       </Dialog>
     </div>
   );
