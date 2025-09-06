@@ -30,7 +30,6 @@ export interface Course {
   id: string;
   name: string;
   description: string;
-  password: string;
   imageUrl: string;
   courseType: CourseType;
   professor: Professor;
