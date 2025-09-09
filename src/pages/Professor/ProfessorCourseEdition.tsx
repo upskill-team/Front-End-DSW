@@ -87,6 +87,7 @@ export default function ProfessorCourseEditorPage() {
     isFree: false,
     price: 0,
   });
+  const [tempConfig, setTempConfig] = useState(courseConfig);
 
   // Estado de la nueva actividad
   const [newActivity, setNewActivity] = useState({
@@ -224,6 +225,16 @@ export default function ProfessorCourseEditorPage() {
       )
     );
   };
+
+  const handleOpenConfigModal = () => {
+    setTempConfig({ ...courseConfig })
+    setIsConfigModalOpen(true)
+  }
+
+  const handleApplyConfigChanges = () => {
+    setCourseConfig(tempConfig);
+    setIsConfigModalOpen(false);
+  }
 
   const handleGlobalSave = () => {
     if (!courseId) {
@@ -531,7 +542,7 @@ export default function ProfessorCourseEditorPage() {
                 variant="outline"
                 className="w-full bg-transparent"
                 size="sm"
-                onClick={() => setIsConfigModalOpen(true)}
+                onClick={handleOpenConfigModal}
               >
                 <Settings className="w-4 h-4 mr-2" />
                 Configuración del curso
@@ -680,25 +691,25 @@ export default function ProfessorCourseEditorPage() {
           <Input
             id="course-name-config"
             label="Nombre del curso"
-            value={courseConfig.name}
+            value={tempConfig.name}
             onChange={(e) =>
-              setCourseConfig({ ...courseConfig, name: e.target.value })
+              setTempConfig({ ...tempConfig, name: e.target.value })
             }
           />
           <Textarea
             id="course-description-config"
             label="Descripción del curso"
-            value={courseConfig.description}
+            value={tempConfig.description}
             onChange={(e) =>
-              setCourseConfig({ ...courseConfig, description: e.target.value })
+              setTempConfig({ ...tempConfig, description: e.target.value })
             }
           />
           <Select
             id="course-status"
             label="Estado del curso"
-            value={courseConfig.status}
+            value={tempConfig.status}
             onChange={(e) =>
-              setCourseConfig({ ...courseConfig, status: e.target.value })
+              setTempConfig({ ...tempConfig, status: e.target.value })
             }
           >
             <option value="en-desarrollo">En desarrollo</option>
@@ -711,9 +722,9 @@ export default function ProfessorCourseEditorPage() {
               <Label htmlFor="is-free">Curso gratuito</Label>
               <Switch
                 id="is-free"
-                checked={courseConfig.isFree}
+                checked={tempConfig.isFree}
                 onChange={(e) =>
-                  setCourseConfig((prev) => ({
+                  setTempConfig((prev) => ({
                     ...prev,
                     isFree: e.target.checked,
                   }))
@@ -721,15 +732,15 @@ export default function ProfessorCourseEditorPage() {
               />
             </div>
 
-            {!courseConfig.isFree && (
+            {!tempConfig.isFree && (
               <div className="space-y-2">
                 <Input
                   id="course-price"
                   label="Precio del curso (ARS)"
                   type="number"
-                  value={courseConfig.price}
+                  value={tempConfig.price}
                   onChange={(e) =>
-                    setCourseConfig((prev) => ({
+                    setTempConfig((prev) => ({
                       ...prev,
                       price: Number(e.target.value),
                     }))
@@ -745,7 +756,7 @@ export default function ProfessorCourseEditorPage() {
             Cancelar
           </Button>
           <Button
-            onClick={() => setIsConfigModalOpen(false)}
+            onClick={handleApplyConfigChanges}
           >
             Guardar cambios
           </Button>
