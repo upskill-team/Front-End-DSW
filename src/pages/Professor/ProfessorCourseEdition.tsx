@@ -25,7 +25,7 @@ import {
   Upload,
   FileText,
   X,
-  Check,
+  //Check,
 } from "lucide-react";
 import UnitEditor from "../../components/landing/UnitEditor.tsx";
 import {
@@ -225,7 +225,7 @@ export default function ProfessorCourseEditorPage() {
     );
   };
 
-  const handleSaveCourseConfig = () => {
+  const handleGlobalSave = () => {
     if (!courseId) {
       alert("No se pudo encontrar el ID del curso.");
       return;
@@ -236,24 +236,23 @@ export default function ProfessorCourseEditorPage() {
       description: courseConfig.description,
       isFree: courseConfig.isFree,
       price: courseConfig.isFree ? 0 : courseConfig.price,
+      // Aquí incluirías también las unidades con su contenido
+      // units: units,
     };
 
     updateCourse(
       { courseId, data: payload },
       {
         onSuccess: () => {
-          alert("¡Configuración del curso actualizada con éxito!");
-          setIsConfigModalOpen(false);
-          // El hook useUpdateCourse invalidará la query 'professorCourses'
-          // y los datos se actualizarán automáticamente.
+          alert("¡Curso guardado con éxito!")
         },
         onError: (error) => {
-          console.error("Error al actualizar el curso:", error);
-          alert(`Error al actualizar: ${error.message}`);
+          console.error("Error al guardar el curso:", error)
+          alert(`Error al guardar: ${error.message}`);
         },
       }
-    );
-  };
+    )
+  }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -419,6 +418,14 @@ export default function ProfessorCourseEditorPage() {
 
           <div className="flex items-center space-x-3">
             <Button
+              onClick={handleGlobalSave}
+              isLoading={isUpdatingCourse}
+              disabled={isUpdatingCourse}
+              className="bg-green-500 hover:bg-green-600"
+            >
+              Guardar Cambios
+            </Button>
+            <Button
               variant="outline"
               onClick={() => setEditable(!editable)}
               className="flex items-center gap-2"
@@ -427,6 +434,7 @@ export default function ProfessorCourseEditorPage() {
               <Edit className="w-4 h-4" />
             </Button>
           </div>
+
         </div>
       </div>
 
@@ -724,9 +732,7 @@ export default function ProfessorCourseEditorPage() {
             Cancelar
           </Button>
           <Button
-            onClick={handleSaveCourseConfig}
-            isLoading={isUpdatingCourse}
-            disabled={isUpdatingCourse}
+            onClick={() => setIsConfigModalOpen(false)}
           >
             Guardar cambios
           </Button>
