@@ -49,13 +49,13 @@ const initialUnits = [
       },
     ]),
     activities: [] as Activity[],
-    materials: [] as Material[],
+    materials: [] as StagedMaterial[],
   },
 ];
 
 type Unit = (typeof initialUnits)[0];
 
-type Material = {
+type StagedMaterial = {
   id: number;
   name: string;
   file: File;
@@ -107,7 +107,7 @@ export default function ProfessorCourseEditorPage() {
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
   const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
   const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
-  const [stagedFiles, setStagedFiles] = useState<File[]>([]);
+  const [stagedMaterials, setStagedMaterials] = useState<StagedMaterial[]>([])
   const [editingUnit, setEditingUnit] = useState<Unit | null>(null);
   const [selectedUnitId, setSelectedUnitId] = useState<number | null>(1);
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
@@ -271,34 +271,47 @@ export default function ProfessorCourseEditorPage() {
           "Algunos archivos fueron descartados por tener un formato no permitido (solo PDF, DOCX, XLSX)."
         );
       }
-      setStagedFiles((prev) => [...prev, ...validFiles]);
-    }
-  };
 
-  const handleRemoveStagedFile = (indexToRemove: number) => {
-    setStagedFiles((prev) =>
-      prev.filter((_, index) => index !== indexToRemove)
-    );
-  };
+      const newMaterials: StagedMaterial[] = validFiles.map(file => ({
+        id: Date.now() + Math.random(),
+        file: file,
+        name: file.name.replace(/\.[^/.]+$/, "")
+      }));
+      
+      setStagedMaterials(prev => [...prev, ...newMaterials]);
+    }
+  }
+
+  const handleTitleChange = (id: number, newTitle: string) => {
+    setStagedMaterials(prev =>
+      prev.map(material =>
+        material.id === id ? { ...material, name: newTitle } : material
+      )
+    )
+  }
+
+  const handleRemoveStagedFile = (idToRemove: number) => {
+    setStagedMaterials(prev => prev.filter(material => material.id !== idToRemove))
+  }
 
   const handleAddMaterials = () => {
-    if (!selectedUnitId || stagedFiles.length === 0) return;
+    if (!selectedUnitId || stagedMaterials.length === 0) return;
 
-    const newMaterials: Material[] = stagedFiles.map((file) => ({
-      id: Date.now() + Math.random(),
-      name: file.name,
-      file: file,
+    const newMaterials: StagedMaterial[] = stagedMaterials.map(material => ({
+      id: material.id,
+      name: material.name,
+      file: material.file,
     }));
 
-    setUnits((currentUnits) =>
-      currentUnits.map((unit) =>
+    setUnits(currentUnits =>
+      currentUnits.map(unit =>
         unit.unitNumber === selectedUnitId
           ? { ...unit, materials: [...unit.materials, ...newMaterials] }
           : unit
       )
     );
 
-    setStagedFiles([]);
+    setStagedMaterials([]);
     setIsMaterialModalOpen(false);
   };
 
@@ -808,26 +821,34 @@ export default function ProfessorCourseEditorPage() {
             </label>
           </div>
 
-          {stagedFiles.length > 0 && (
+          {stagedMaterials.length > 0 && (
             <div>
               <h4 className="font-medium text-sm mb-2">
                 Archivos seleccionados:
               </h4>
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {stagedFiles.map((file, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-2 rounded-md bg-slate-100"
-                  >
-                    <span className="text-sm truncate">{file.name}</span>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-6 w-6 p-0 hover:bg-red-100"
-                      onClick={() => handleRemoveStagedFile(index)}
-                    >
-                      <X className="w-3 h-3 text-red-500" />
-                    </Button>
+              <div className="space-y-3 max-h-60 overflow-y-auto p-1">
+                {stagedMaterials.map((material) => (
+                  <div key={material.id} className="space-y-2 p-3 rounded-lg bg-slate-100 border">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm truncate font-medium text-slate-600 flex items-center gap-2">
+                        <FileText size={14}/> {material.file.name}
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 w-6 p-0 hover:bg-red-100"
+                        onClick={() => handleRemoveStagedFile(material.id)}
+                      >
+                        <X className="w-3 h-3 text-red-500" />
+                      </Button>
+                    </div>
+                    <Input
+                      id={`material-title-${material.id}`}
+                      label="Título del material"
+                      value={material.name}
+                      onChange={(e) => handleTitleChange(material.id, e.target.value)}
+                      placeholder="Dale un nombre al material"
+                    />
                   </div>
                 ))}
               </div>
@@ -839,16 +860,16 @@ export default function ProfessorCourseEditorPage() {
             variant="outline"
             onClick={() => {
               setIsMaterialModalOpen(false);
-              setStagedFiles([]);
+              setStagedMaterials([]);
             }}
           >
             Cancelar
           </Button>
           <Button
             onClick={handleAddMaterials}
-            disabled={stagedFiles.length === 0}
+            disabled={stagedMaterials.length === 0}
           >
-            Añadir {stagedFiles.length > 0 ? `(${stagedFiles.length})` : ""}{" "}
+            Añadir {stagedMaterials.length > 0 ? `(${stagedMaterials.length})` : ""}{" "}
             Materiales
           </Button>
         </div>
