@@ -96,10 +96,8 @@ const create = async (payload: FormData): Promise<Course> => {
   return response.data.data
 }
 
-// La función 'update' usa el nuevo tipo y el helper actualizado
-const update = async (courseId: string, payload: UpdateCoursePayload): Promise<Course> => {
-  const formData = buildUpdateFormData(payload);
-  const response = await apiClient.patch<ApiResponse<Course>>(`/courses/${courseId}`, formData)
+const update = async (courseId: string, data: FormData): Promise<Course> => {
+  const response = await apiClient.put<ApiResponse<Course>>(`/courses/${courseId}`, data)
   return response.data.data
 }
 

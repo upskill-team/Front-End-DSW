@@ -3,11 +3,12 @@ import { Dialog, DialogHeader, DialogTitle } from "../../ui/Dialog.tsx";
 import Button from "../../ui/Button.tsx";
 import Input from "../../ui/Input.tsx";
 
-type StagedMaterial = {
-  id: number;
+type Material = {
+  id: number | string;
   name: string;
-  file: File;
-};
+  file?: File;
+  url?: string;
+}
 
 
 export default function UnitModalUpload({
@@ -22,11 +23,11 @@ export default function UnitModalUpload({
 }: {
   isMaterialModalOpen: boolean;
   setIsMaterialModalOpen: (open: boolean) => void;
-  stagedMaterials: StagedMaterial[];
-  setStagedMaterials: React.Dispatch<React.SetStateAction<StagedMaterial[]>>;
+  stagedMaterials: Material[];
+  setStagedMaterials: React.Dispatch<React.SetStateAction<Material[]>>;
   handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleRemoveStagedFile: (id: number) => void;
-  handleTitleChange: (id: number, title: string) => void;
+  handleRemoveStagedFile: (id: number | string) => void
+  handleTitleChange: (id: number | string, newTitle: string) => void;
   handleAddMaterials: () => void;
 }) {
   return (
@@ -68,10 +69,10 @@ export default function UnitModalUpload({
                 <div
                   key={material.id}
                   className="space-y-2 p-3 rounded-lg bg-slate-100 border"
-                >
+                > 
                   <div className="flex items-center justify-between">
                     <p className="text-sm truncate font-medium text-slate-600 flex items-center gap-2">
-                      <FileText size={14} /> {material.file.name}
+                      <FileText size={14} /> {material.file?.name || material.name}
                     </p>
                     <Button
                       size="sm"

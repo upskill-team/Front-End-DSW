@@ -3,10 +3,11 @@ import { courseService } from '../api/services/course.service';
 import type { Course } from '../types/entities.ts';
 import type { AxiosError } from 'axios';
 
-type FormData = Parameters<typeof courseService.create>[0];
+type CreateCourseFormData = Parameters<typeof courseService.create>[0];
+
 type UpdateCoursePayload = {
   courseId: string;
-  data: Parameters<typeof courseService.update>[1];
+  data: FormData;
 };
 
 export const useProfessorCourses = () => {
@@ -22,9 +23,9 @@ export const useCreateCourse = () => {
   return useMutation<
     Course,
     AxiosError,
-    FormData
+    CreateCourseFormData
   >({
-    mutationFn: (payload: FormData) => courseService.create(payload),
+    mutationFn: (payload: CreateCourseFormData) => courseService.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['professorCourses'] });
     },

@@ -50,17 +50,18 @@ const initialUnits = [
       },
     ]),
     activities: [] as Activity[],
-    materials: [] as StagedMaterial[],
+    materials: [] as Material[],
   },
 ];
 
-type Unit = (typeof initialUnits)[0];
+type Unit = typeof initialUnits[0];
 
-type StagedMaterial = {
-  id: number;
+type Material = {
+  id: number | string;
   name: string;
-  file: File;
-};
+  file?: File;
+  url?: string; // URL only for uploaded files
+}
 
 type Activity = {
   id: number;
@@ -88,7 +89,8 @@ export default function ProfessorCourseEditorPage() {
     isFree: false,
     price: 0,
   });
-  const [tempConfig, setTempConfig] = useState(courseConfig);
+  const [tempConfig, setTempConfig] = useState(courseConfig)
+  const [newImageFile, setNewImageFile] = useState<File | null>(null)
 
   // Estado de la nueva actividad
   const [newActivity, setNewActivity] = useState({
@@ -109,7 +111,7 @@ export default function ProfessorCourseEditorPage() {
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
   const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
   const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
-  const [stagedMaterials, setStagedMaterials] = useState<StagedMaterial[]>([]);
+  const [stagedMaterials, setStagedMaterials] = useState<Material[]>([]);
   const [editingUnit, setEditingUnit] = useState<Unit | null>(null);
   const [selectedUnitId, setSelectedUnitId] = useState<number | null>(1);
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
@@ -238,34 +240,73 @@ export default function ProfessorCourseEditorPage() {
   };
 
   const handleGlobalSave = () => {
-    if (!courseId) {
-      alert("No se pudo encontrar el ID del curso.");
-      return;
-    }
+  if (!courseId) {
+    alert("No se pudo encontrar el ID del curso.");
+    return;
+  }
 
-    const payload = {
-      name: courseConfig.name,
-      description: courseConfig.description,
-      isFree: courseConfig.isFree,
-      price: courseConfig.isFree ? 0 : courseConfig.price,
-      units: units
-      // Aquí incluirías también las unidades con su contenido
-      // units: units,
-    };
+  const formData = new FormData();
 
-    updateCourse(
-      { courseId, data: payload },
-      {
-        onSuccess: () => {
-          alert("¡Curso guardado con éxito!");
-        },
-        onError: (error) => {
-          console.error("Error al guardar el curso:", error);
-          alert(`Error al guardar: ${error.message}`);
-        },
-      }
-    );
+  const courseDataForBackend = {
+    name: courseConfig.name,
+    description: courseConfig.description,
+    status: courseConfig.status,
+    price: courseConfig.isFree ? 0 : courseConfig.price,
+
+    units: units.map(unit => {
+      const materialsForBackend = unit.materials.map(material => {
+        if (material.file && !material.url) {
+          return {
+            title: material.name,
+            url: material.file.name, 
+          };
+        }
+        return {
+          title: material.name,
+          url: material.url,
+        };
+      });
+
+      const questionsForBackend = unit.activities.map(activity => {
+        return {
+          questionText: activity.question,
+          questionType: 'MultipleChoiceOption',
+          payload: {
+            options: activity.options,
+            correctAnswer: activity.correctAnswer,
+          },
+        };
+      })
+
+      return {
+        unitNumber: unit.unitNumber,
+        name: unit.name,
+        detail: unit.detail,
+        materials: materialsForBackend,
+        questions: questionsForBackend,
+      };
+    }),
   };
+
+
+  console.log("Objeto JSON que se enviará al backend:", courseDataForBackend);
+
+  if (newImageFile) {
+    formData.append('image', newImageFile);
+  }
+
+  units.forEach(unit => {
+    unit.materials.forEach(material => {
+      if (material.file) {
+        formData.append('materials', material.file);
+      }
+    });
+  });
+
+  formData.append('courseData', JSON.stringify(courseDataForBackend));
+
+  updateCourse({ courseId, data: formData });
+}
 
   // Add file handlers for materials
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -286,7 +327,7 @@ export default function ProfessorCourseEditorPage() {
         );
       }
 
-      const newMaterials: StagedMaterial[] = validFiles.map((file) => ({
+      const newMaterials: Material[] = validFiles.map((file) => ({
         id: Date.now() + Math.random(),
         file: file,
         name: file.name.replace(/\.[^/.]+$/, ""),
@@ -294,21 +335,21 @@ export default function ProfessorCourseEditorPage() {
 
       setStagedMaterials((prev) => [...prev, ...newMaterials]);
     }
-  };
+  }; 
 
-  const handleTitleChange = (id: number, newTitle: string) => {
+  const handleTitleChange = (id: number | string, newTitle: string) => { // <-- CAMBIO AQUÍ
     setStagedMaterials((prev) =>
       prev.map((material) =>
         material.id === id ? { ...material, name: newTitle } : material
       )
     );
-  };
+  }
 
-  const handleRemoveStagedFile = (idToRemove: number) => {
+  const handleRemoveStagedFile = (idToRemove: number | string) => {
     setStagedMaterials((prev) =>
       prev.filter((material) => material.id !== idToRemove)
     );
-  };
+  }
 
   /*
   * Adds the staged materials to the selected unit and clears the staged list.
@@ -316,7 +357,7 @@ export default function ProfessorCourseEditorPage() {
   const handleAddMaterials = () => {
     if (!selectedUnitId || stagedMaterials.length === 0) return;
 
-    const newMaterials: StagedMaterial[] = stagedMaterials.map((material) => ({
+    const newMaterials: Material[] = stagedMaterials.map((material) => ({
       id: material.id,
       name: material.name,
       file: material.file,
@@ -334,7 +375,7 @@ export default function ProfessorCourseEditorPage() {
     setIsMaterialModalOpen(false);
   };
 
-  const handleDeleteMaterial = (materialIdToDelete: number) => {
+  const handleDeleteMaterial = (materialIdToDelete: number | string) => {
     if (!selectedUnitId) return;
 
     const isConfirmed = window.confirm(
@@ -724,6 +765,21 @@ export default function ProfessorCourseEditorPage() {
             <option value="publicado">Publicado</option>
             <option value="pausado">Pausado</option>
           </Select>
+
+          <div>
+            <Label htmlFor="course-image">Cambiar imagen del curso (opcional)</Label>
+            <Input
+              id="course-image"
+              type="file"
+              accept="image/png, image/jpeg, image/webp"
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  setNewImageFile(e.target.files[0]);
+                }
+              }}
+            />
+          </div>
+
           <div className="space-y-4 pt-4">
             <div className="flex items-center justify-between">
               <Label htmlFor="is-free">Curso gratuito</Label>
