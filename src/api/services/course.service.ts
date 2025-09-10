@@ -1,13 +1,37 @@
 import apiClient from '../apiClient'
 import type { Course } from '../../types/entities'
 
+type StagedMaterial = {
+  id: number;
+  name: string;
+  file: File;
+};
+
+type Activity = {
+  id: number;
+  type: string;
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  createdAt: string;
+};
+
+type Unit = {
+  unitNumber: number;
+  name: string;
+  detail: string;
+  activities: Activity[];
+  materials: StagedMaterial[];
+}
+
 type CreateCoursePayload = {
   name: string
   description: string
   courseTypeId: string
   price: number
   isFree: boolean,
-  image: File | null
+  image: File | null,
+  units?: Unit[]
   
 }
 
@@ -19,6 +43,49 @@ interface ApiResponse<T> {
   data: T
 }
 
+// Funcion helper para construir el FormData para la actualización
+const buildUpdateFormData = (payload: UpdateCoursePayload): FormData => {
+  const formData = new FormData();
+
+  // --- Añadir campos simples si existens ---
+  if (payload.name) {
+    formData.append('name', payload.name);
+  }
+  if (payload.description) {
+    formData.append('description', payload.description);
+  }
+
+  // ---Procesar unidades si exiten ---
+  if (payload.units) {
+    // Serializar el array de unidades (sin los archivos)
+    const unitsDataForJson = payload.units.map(unit => ({
+      unitNumber: unit.unitNumber,
+      name: unit.name,
+      detail: unit.detail,
+      activities: unit.activities,
+      materials: unit.materials.map(material => ({
+        id: material.id,
+        name: material.name,
+      })),
+    }));
+    formData.append('units', JSON.stringify(unitsDataForJson));
+
+    // Añadir solo los archivos de los materiales por separado
+    payload.units.forEach((unit, unitIndex) => {
+      unit.materials.forEach((material, materialIndex) => {
+        if (material.file instanceof File) {
+          const fileKey = `unit_${unitIndex}_material_${materialIndex}_file`;
+          formData.append(fileKey, material.file);
+        }
+      });
+    });
+  }
+
+  return formData;
+};
+
+
+
 const getProfessorCourses = async (): Promise<Course[]> => {
   const response = await apiClient.get<ApiResponse<Course[]>>('/courses/my-courses')
   return response.data.data
@@ -29,8 +96,10 @@ const create = async (payload: FormData): Promise<Course> => {
   return response.data.data
 }
 
+// La función 'update' usa el nuevo tipo y el helper actualizado
 const update = async (courseId: string, payload: UpdateCoursePayload): Promise<Course> => {
-  const response = await apiClient.patch<ApiResponse<Course>>(`/courses/${courseId}`, payload)
+  const formData = buildUpdateFormData(payload);
+  const response = await apiClient.patch<ApiResponse<Course>>(`/courses/${courseId}`, formData)
   return response.data.data
 }
 
