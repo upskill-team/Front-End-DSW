@@ -36,6 +36,7 @@ import type { Block } from "@blocknote/core";
 import ProfessorCourseActivityEdition from "./ProfessorCourseActivityEdition.tsx";
 import ActivityCard from "../../components/landing/professorCourseEdition/ActivityCard.tsx";
 import UnitModalUpload from "../../components/landing/professorCourseEdition/UnitModalUpload.tsx";
+import type { Question } from "../../types/entities.ts";
 
 const initialUnits = [
   {
@@ -54,7 +55,14 @@ const initialUnits = [
   },
 ];
 
-type Unit = typeof initialUnits[0];
+type Unit = {
+  unitNumber: number;
+  name: string;
+  description: string; // Este campo parece no estar en el backend, lo mantendremos localmente.
+  detail: string;
+  activities: Activity[];
+  materials: Material[];
+}
 
 type Material = {
   id: number | string;
@@ -89,6 +97,7 @@ export default function ProfessorCourseEditorPage() {
     isFree: false,
     price: 0,
   });
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [tempConfig, setTempConfig] = useState(courseConfig)
   const [newImageFile, setNewImageFile] = useState<File | null>(null)
 
@@ -100,7 +109,7 @@ export default function ProfessorCourseEditorPage() {
   });
 
   // Estado de las unidades (debería venir de tu API)
-  const [units, setUnits] = useState(initialUnits);
+  const [units, setUnits] = useState<Unit[]>([]);
 
   // Estado de si el editor es editable o solo lectura
   const [editable, setEditable] = useState(true);
@@ -254,29 +263,27 @@ export default function ProfessorCourseEditorPage() {
     price: courseConfig.isFree ? 0 : courseConfig.price,
 
     units: units.map(unit => {
-      const materialsForBackend = unit.materials.map(material => {
-        if (material.file && !material.url) {
+        const materialsForBackend = unit.materials.map(material => {
+          if (material.file) {
+            return {
+              title: material.name,
+              url: material.file.name, // Placeholder
+            };
+          }
           return {
             title: material.name,
-            url: material.file.name, 
+            url: material.url,
           };
-        }
-        return {
-          title: material.name,
-          url: material.url,
-        };
-      });
+        })
 
-      const questionsForBackend = unit.activities.map(activity => {
-        return {
+      const questionsForBackend = unit.activities.map(activity => ({
           questionText: activity.question,
           questionType: 'MultipleChoiceOption',
           payload: {
             options: activity.options,
             correctAnswer: activity.correctAnswer,
           },
-        };
-      })
+      }))
 
       return {
         unitNumber: unit.unitNumber,
@@ -287,9 +294,6 @@ export default function ProfessorCourseEditorPage() {
       };
     }),
   };
-
-
-  console.log("Objeto JSON que se enviará al backend:", courseDataForBackend);
 
   if (newImageFile) {
     formData.append('image', newImageFile);
@@ -437,13 +441,44 @@ export default function ProfessorCourseEditorPage() {
         setCourseConfig({
           name: currentCourse.name,
           description: currentCourse.description,
-          status: "en-desarrollo", // Este estado es local, no se envía al backend
+          status: "en-desarrollo", // El estado es local del frontend por ahora
           isFree: currentCourse.isFree,
           price: currentCourse.price,
         });
+
+        if (currentCourse.imageUrl) {
+          setImagePreview(currentCourse.imageUrl);
+        }
+
+        const unitsFromBackend: Unit[] = (currentCourse.units || []).map(unitBackend => ({
+          unitNumber: unitBackend.unitNumber,
+          name: unitBackend.name,
+          description: "Descripción de la unidad",
+          detail: unitBackend.detail,
+          materials: (unitBackend.materials || []).map(materialBackend => ({
+            id: materialBackend.url,
+            name: materialBackend.title,
+            url: materialBackend.url,
+            file: undefined
+          })),
+          activities: (unitBackend.questions || []).map((questionBackend: Question, index: number) => ({
+            id: index,
+            type: "multiple-choice",
+            question: questionBackend.questionText,
+            options: questionBackend.payload.options,
+            correctAnswer: questionBackend.payload.correctAnswer as number,
+            createdAt: new Date().toISOString()
+          }))
+        }));
+
+        setUnits(unitsFromBackend);
+
+        if (unitsFromBackend.length > 0) {
+          setSelectedUnitId(unitsFromBackend[0].unitNumber);
+        }
       }
     }
-  }, [courses, courseId]);
+  }, [courses, courseId])
 
   if (isLoadingCourses) {
     return <p>Cargando información del curso...</p>;

@@ -63,6 +63,17 @@ export interface Appeal {
   date: Date;
 }
 
+export interface QuestionPayload {
+  options: string[];
+  correctAnswer: number | string;
+}
+
+export interface Question {
+  questionText: string;
+  questionType: string;
+  payload: QuestionPayload;
+}
+
 export interface MultipleChoiceOption {
   text: string;
   isCorrect: boolean;
@@ -90,6 +101,6 @@ export interface Unit {
   unitNumber: number;
   name: string;
   detail: string;
-  activities: Activity[];
+  questions: Question[];
   materials: Material[];
 }
