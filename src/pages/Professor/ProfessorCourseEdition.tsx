@@ -24,8 +24,6 @@ import {
   Trash2,
   Upload,
   FileText,
-  X,
-  //Check,
 } from "lucide-react";
 import UnitEditor from "../../components/landing/UnitEditor.tsx";
 import {
@@ -37,23 +35,6 @@ import ProfessorCourseActivityEdition from "./ProfessorCourseActivityEdition.tsx
 import ActivityCard from "../../components/landing/professorCourseEdition/ActivityCard.tsx";
 import UnitModalUpload from "../../components/landing/professorCourseEdition/UnitModalUpload.tsx";
 import type { Question } from "../../types/entities.ts";
-
-const initialUnits = [
-  {
-    unitNumber: 1,
-    name: "Unidad 1: Introducción",
-    description: "Conceptos básicos e iniciales.",
-    detail: JSON.stringify([
-      { type: "heading", content: "Bienvenido a la Unidad 1" },
-      {
-        type: "paragraph",
-        content: "Aquí puedes empezar a escribir el contenido...",
-      },
-    ]),
-    activities: [] as Activity[],
-    materials: [] as Material[],
-  },
-];
 
 type Unit = {
   unitNumber: number;
@@ -97,7 +78,7 @@ export default function ProfessorCourseEditorPage() {
     isFree: false,
     price: 0,
   });
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [, setImagePreview] = useState<string | null>(null)
   const [tempConfig, setTempConfig] = useState(courseConfig)
   const [newImageFile, setNewImageFile] = useState<File | null>(null)
 
