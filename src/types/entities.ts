@@ -30,10 +30,11 @@ export interface Course {
   id: string;
   name: string;
   description: string;
-  password: string;
   imageUrl: string;
   courseType: CourseType;
   professor: Professor;
+  isFree: boolean;
+  price: number
   students: Student[];
   units: Unit[];
 }
@@ -60,6 +61,17 @@ export interface Appeal {
   state: 'pending' | 'accepted' | 'rejected';
   user: User;
   date: Date;
+}
+
+export interface QuestionPayload {
+  options: string[];
+  correctAnswer: number | string;
+}
+
+export interface Question {
+  questionText: string;
+  questionType: string;
+  payload: QuestionPayload;
 }
 
 export interface MultipleChoiceOption {
@@ -89,6 +101,6 @@ export interface Unit {
   unitNumber: number;
   name: string;
   detail: string;
-  activities: Activity[];
+  questions: Question[];
   materials: Material[];
 }

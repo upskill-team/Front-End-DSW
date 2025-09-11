@@ -4,7 +4,7 @@ const ProfessorDashboard = () => {
 
   const location = useLocation()
   const isCreationPage = location.pathname.endsWith('/courses/new')
-  const isEditionPage = location.pathname.endsWith('/courses/edit')
+  const isEditionPage = location.pathname.endsWith('/edit')
 
   return (
     <div className="container mx-auto max-w-7xl">

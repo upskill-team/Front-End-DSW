@@ -14,9 +14,8 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    if (!(config.data instanceof FormData)) {
-      config.headers['Content-Type'] = 'application/json';
-    }
+    // ELIMINA TODA LA LÓGICA DEL 'Content-Type'.
+    // Axios lo manejará automáticamente de forma correcta.
 
     return config;
   },

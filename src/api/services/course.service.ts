@@ -1,18 +1,6 @@
 import apiClient from '../apiClient'
 import type { Course } from '../../types/entities'
 
-type CreateCoursePayload = {
-  name: string
-  description: string
-  courseTypeId: string
-  price: number
-  isFree: boolean,
-  image: File | null
-  
-}
-
-type UpdateCoursePayload = Partial<CreateCoursePayload>
-
 interface ApiResponse<T> {
   status: number
   message: string
@@ -29,8 +17,8 @@ const create = async (payload: FormData): Promise<Course> => {
   return response.data.data
 }
 
-const update = async (courseId: string, payload: UpdateCoursePayload): Promise<Course> => {
-  const response = await apiClient.patch<ApiResponse<Course>>(`/courses/${courseId}`, payload)
+const update = async (courseId: string, data: FormData): Promise<Course> => {
+  const response = await apiClient.put<ApiResponse<Course>>(`/courses/${courseId}`, data)
   return response.data.data
 }
 
