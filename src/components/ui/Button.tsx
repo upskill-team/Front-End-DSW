@@ -5,19 +5,32 @@ type ButtonVariant = 'primary' | 'outline' | 'ghost' | 'destructive';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 /**
+ * Props for the Button component.
  * @interface ButtonProps
  * @extends React.ButtonHTMLAttributes<HTMLButtonElement>
- * @property {React.ReactNode} children - The content to be displayed inside the button.
- * @property {boolean} [isLoading=false] - If true, displays a spinner and disables the button.
- * @property {'primary'|'outline'|'ghost'|'destructive'} [variant='primary'] - The visual style of the button.
- * @property {'sm'|'md'|'lg'} [size='md'] - The size of the button.
- * @property {boolean} [fullWidth=false] - If true, the button will occupy the full width of its container.
  */
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  /** The content to be displayed inside the button. */
   children: React.ReactNode;
+  /**
+   * If true, the button will be disabled and a loading spinner will be displayed.
+   * @default false
+   */
   isLoading?: boolean;
+  /**
+   * The visual style of the button.
+   * @default 'primary'
+   */
   variant?: ButtonVariant;
+  /**
+   * The size of the button.
+   * @default 'md'
+   */
   size?: ButtonSize;
+  /**
+   * If true, the button will occupy the full width of its container.
+   * @default false
+   */
   fullWidth?: boolean;
 }
 
@@ -37,11 +50,16 @@ const sizeClasses: Record<ButtonSize, string> = {
 
 /**
  * A versatile and reusable button component, foundational to the UI.
- * It supports different visual styles, sizes, and a loading state.
- * Built with accessibility and professional standards in mind.
+ * It supports different visual styles (variants), sizes, and a loading state.
+ * Built with accessibility and professional standards in mind, using the `cn` utility
+ * for flexible class name composition.
  *
  * @param {ButtonProps} props - The properties to configure the button.
  * @returns {JSX.Element} The rendered button component.
+ * @example
+ * <Button variant="primary" size="lg" onClick={() => alert('Clicked!')}>
+ *   Click Me
+ * </Button>
  */
 const Button = ({
   children,

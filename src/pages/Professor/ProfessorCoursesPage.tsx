@@ -116,7 +116,7 @@ const ProfessorCoursesPage = () => {
                   <div className="flex items-center space-x-1">
                     <BookOpen className="w-3 h-3" />
                     <span>
-                      {course.units.reduce((acc, unit) => acc + (unit.materials ?? []).length + (unit.activities ?? []).length, 0)} lecciones
+                      {course.units.reduce((acc, unit) => acc + (unit.materials ?? []).length + (unit.questions ?? []).length, 0)} lecciones
                     </span>
                   </div>
                   <div className="flex items-center space-x-1 col-span-2">
