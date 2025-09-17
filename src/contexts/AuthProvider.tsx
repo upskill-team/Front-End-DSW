@@ -1,9 +1,17 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { User } from '../types/entities.ts';
-import { authService } from '../api/services/auth.service.ts';
+import { userService } from '../api/services/user.service.ts';
 import { AuthContext } from './AuthContext';
 import apiClient, { TOKEN_STORAGE_KEY } from '../api/apiClient';
+
+export interface AuthContextType {
+  isAuthenticated: boolean;
+  user: User | null;
+  isLoading: boolean;
+  login: (token: string) => void;
+  logout: () => void;
+}
 
 // This provider handles authentication and user state globally.
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -14,7 +22,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Function to get the user's profile and update the global state.
   const fetchProfileAndSetUser = useCallback(async () => {
     try {
-      const userData = await authService.getProfile();
+      const userData = await userService.getProfile();
       setUser(userData);
     } catch (error) {
       // If it fails, we remove the token and log out the user.

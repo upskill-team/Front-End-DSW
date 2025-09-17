@@ -23,6 +23,7 @@ import ProfessorStudentsPage from '../pages/Professor/ProfessorStudentsPage.tsx'
 import ScrollToTop from '../components/layouts/ScrollToTop';
 import ProfessorCourseCreation from '../pages/Professor/ProfessorCourseCreation.tsx';
 import ProfessorCourseEdition from '../pages/Professor/ProfessorCourseEdition.tsx';
+import ProfilePage from '../pages/User/ProfilePage.tsx';
 
 const AppRouter = () => {
   return (
@@ -41,6 +42,8 @@ const AppRouter = () => {
         <Route path="/" element={<LandingPage />} />
 
         <Route path="/courses" element={<CourseListPage />} />
+
+        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
 
         <Route path="/professor/dashboard" element={<ProtectedRoute allowedRoles={['professor']}><ProfessorDashboard /></ProtectedRoute>}>
             <Route index element={<Navigate to="courses" replace />} />

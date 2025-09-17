@@ -7,10 +7,21 @@ import {
   GraduationCap,
   Bell,
   Menu,
-  X
+  X,
+  LogOut,
+  User as UserIcon,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../ui/DropdownMenu';
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/Avatar.tsx";
+import RoleBadge from "../ui/RoleBadge.tsx";
 import { useAuth } from "../../hooks/useAuth";
-import Button from "../ui/Button"; // Asegúrate de que la importación esté presente
+import Button from "../ui/Button"; 
 import { AdminControls } from "./navBar/AdminControls.tsx";
 import { ProfessorControls } from "./navBar/ProfessorControls.tsx";
 
@@ -126,13 +137,37 @@ export function NavBar() {
                   </Button>
                 </>
               )}
-              <div className="ml-2 flex items-center gap-4">
-                <span className="hidden md:inline text-sm font-medium text-slate-700">
-                  Hola, {user?.name}
-                </span>
-                <Button variant="ghost" size="sm" onClick={handleLogout}>
-                  Salir
-                </Button>
+              <div className="ml-4">
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={user?.profile_picture} alt={user?.name} />
+                        <AvatarFallback className="bg-gradient-to-br from-blue-400 to-green-400 text-white font-bold">
+                          {user?.name.charAt(0).toUpperCase()}
+                          {user?.surname.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56">
+                    <div className="p-2">
+                      <p className="text-sm font-medium">{user?.name} {user?.surname}</p>
+                      <p className="text-xs text-slate-500 mb-2">{user?.mail}</p>
+                      {user && <RoleBadge role={user.role} />}
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate('/profile')}>
+                      <UserIcon className="mr-2 h-4 w-4" />
+                      <span>Mi Perfil</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Cerrar sesión</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </>
           ) : (

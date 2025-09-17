@@ -5,7 +5,10 @@ export interface User {
   name: string;
   surname: string;
   mail: string;
-  profile_picture: string;
+  profile_picture?: string;
+  phone?: string;
+  location?: string;
+  birthdate?: string;
   role: UserRole;
   studentProfile?: Student;
   professorProfile?: Professor;
