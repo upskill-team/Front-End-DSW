@@ -42,6 +42,8 @@ export interface CourseCardListProps extends React.HTMLAttributes<HTMLDivElement
  */
 const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
   ({ course, className, ...props }, ref) => {
+
+
     return (
       <Card
         ref={ref}
@@ -55,7 +57,7 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
           <div className="flex flex-col md:flex-row gap-4 md:gap-6">
             <div className="relative flex-shrink-0">
               <img
-                src={course.image || '/placeholder.svg'}
+                src={course.imageUrl || 'public/img/noImage.jpg'}
                 alt={course.title}
                 className="w-full h-40 md:w-48 md:h-32 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
               />
@@ -78,14 +80,14 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                 <div className="flex-1 mb-4 lg:mb-0">
                   <div className="flex items-center flex-wrap gap-2 mb-2">
                     <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                      {course.category}
+                      {course.courseType.name}
                     </span>
                     <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium">
-                      {course.level}
+                      {course.name}
                     </span>
                   </div>
                   <CardTitle className="mb-2 group-hover:text-blue-600 transition-colors text-lg md:text-xl">
-                    {course.title}
+                    {course.name}
                   </CardTitle>
                   <CardDescription className="mb-2 line-clamp-2 text-sm">
                     {course.description}
@@ -116,7 +118,12 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                 <div className="text-left lg:text-right w-full lg:w-auto lg:ml-4 flex-shrink-0">
                   <div className="flex items-center lg:justify-end space-x-2 mb-3">
                     <span className="text-2xl font-bold text-slate-800">
-                      ${course.price}
+                      {
+                        course.price > 0 ?
+                        <>$ {course.price}</>
+                        : 
+                        <>GRATIS</>
+                      }
                     </span>
                     {course.originalPrice > course.price && (
                       <span className="text-lg text-slate-500 line-through">
