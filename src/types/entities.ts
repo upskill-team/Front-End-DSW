@@ -37,7 +37,7 @@ export interface Course {
   courseType: CourseType;
   professor: Professor;
   isFree: boolean;
-  price: number
+  price: number;
   students: Student[];
   units: Unit[];
 }
@@ -83,27 +83,91 @@ export interface MultipleChoiceOption {
 }
 
 export interface Material {
-  id: string;
+  // ⚠️ Material es embeddable - NO tiene id propio
   title: string;
-  description?: string;
   url: string;
 }
 
+// ❌ Activity no existe en backend - se reemplaza por Question
 export interface Activity {
-  id: string;
-  name: string;
-  description: string;
-  startDate?: Date;
-  endDate?: Date;
+  id: number;
+  type: string;
   question: string;
-  options: MultipleChoiceOption[];
+  options: string[];
+  correctAnswer: number;
+  createdAt: string;
 }
 
 export interface Unit {
-  id: string;
-  unitNumber: number;
+  // ⚠️ Unit es embeddable - NO tiene id propio
+  unitNumber: number; // Identificador único + orden
   name: string;
+  detail: string; // Contenido principal (no description)
+  questions: string[]; // Referencias a Question IDs (no objetos completos)
+  materials: Material[]; // Materiales embebidos
+}
+
+// Tipos específicos para edición de cursos
+export interface CreateUnitRequest {
+  name: string;
+  detail?: string;
+}
+
+export interface UpdateUnitRequest {
+  name?: string;
+  detail?: string;
+}
+
+export interface ReorderUnitsRequest {
+  units: { unitNumber: number; newOrder: number }[];
+}
+
+export interface CreateMaterialRequest {
+  title: string;
+}
+
+export interface QuickSaveRequest {
+  type: 'course-config' | 'unit-content' | 'unit-materials' | 'unit-questions';
+  data:
+    | CourseConfigData
+    | UnitContentData
+    | UnitMaterialsData
+    | UnitQuestionsData;
+}
+
+export interface CourseConfigData {
+  name?: string;
+  description?: string;
+  status?: string;
+  isFree?: boolean;
+  price?: number;
+}
+
+export interface UnitContentData {
+  unitNumber: number;
   detail: string;
-  questions: Question[];
+}
+
+export interface UnitMaterialsData {
+  unitNumber: number;
   materials: Material[];
+}
+
+export interface UnitQuestionsData {
+  unitNumber: number;
+  questions: string[];
+}
+
+// Tipos extendidos para el editor (incluyen datos locales)
+export interface UnitEditorData extends Unit {
+  // Datos adicionales para el editor
+  activities: Activity[]; // Mantenemos compatibilidad temporal
+  isLoading?: boolean;
+  hasUnsavedChanges?: boolean;
+}
+
+export interface MaterialEditorData extends Material {
+  id?: string | number; // ID temporal para el editor
+  file?: File; // Archivo pendiente de subida
+  isUploading?: boolean;
 }
