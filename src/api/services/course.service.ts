@@ -1,5 +1,6 @@
 import apiClient from '../apiClient'
 import type { Course } from '../../types/entities'
+import type { PaginatedCoursesResponse, SearchCoursesParams } from '../../types/shared.ts'
 
 interface ApiResponse<T> {
   status: number
@@ -25,10 +26,31 @@ const update = async (courseId: string, data: FormData): Promise<Course> => {
 const remove = async (courseId: string): Promise<void> => {
   await apiClient.delete(`/courses/${courseId}`)
 }
+/**
+ * Busca cursos con filtros, paginación y ordenación.
+ * @param params - Un objeto con los parámetros de búsqueda.
+ * @returns Una promesa con los cursos y el conteo total.
+ */
+const search = async (params: SearchCoursesParams): Promise<PaginatedCoursesResponse> => {
+
+  // Se encarga automáticamente de la codificación de caracteres especiales.
+  const queryParams = new URLSearchParams();
+
+  // Añadimos solo los parámetros que están definidos
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      queryParams.append(key, String(value));
+    }
+  });
+
+  const response = await apiClient.get<ApiResponse<PaginatedCoursesResponse>>(`/courses?${queryParams.toString()}`);
+  return response.data.data;
+};
 
 export const courseService = {
   getProfessorCourses,
   create,
   update,
   remove,
+  search
 }
