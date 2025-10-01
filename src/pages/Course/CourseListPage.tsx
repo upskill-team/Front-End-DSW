@@ -5,7 +5,7 @@ import { useSearchCourses } from "../../hooks/useCourses.ts";
 
 const CourseListPage = () => {
   //State para el futuro paginado
-  const [filters, setFilters] = useState<SearchCoursesParams>({
+  const [filters] = useState<SearchCoursesParams>({
     limit: 5,
     offset: 0,
     status: "publicado",
@@ -16,7 +16,7 @@ const CourseListPage = () => {
   console.log(data)
 
   //Funciones para paginado
-  const handleNextPage = () => {
+ /* const handleNextPage = () => {
     // Aseguramos que 'data.total' exista antes de paginar
     if (data && filters.offset! + filters.limit! < data.total) {
       setFilters((prev) => ({ ...prev, offset: prev.offset! + prev.limit! }));
@@ -28,7 +28,7 @@ const CourseListPage = () => {
       ...prev,
       offset: Math.max(0, prev.offset! - prev.limit!),
     }));
-  };
+  };*/
 
   // Manejo de estado y carga de error basico -- Borrar en futuras iteraciones
 
