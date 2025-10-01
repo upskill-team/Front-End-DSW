@@ -13,6 +13,17 @@ const getProfessorCourses = async (): Promise<Course[]> => {
   return response.data.data
 }
 
+/**
+ * Obtiene un único curso por su ID.
+ * @param courseId - El ID del curso a recuperar.
+ * @returns Una promesa que resuelve con los datos del curso.
+ */
+const getById = async (courseId: string): Promise<Course> => {
+  const response = await apiClient.get<ApiResponse<Course>>(`/courses/${courseId}`);
+  // Desenvolvemos el objeto del curso de la propiedad `data` de la respuesta
+  return response.data.data;
+};
+
 const create = async (payload: FormData): Promise<Course> => {
   const response = await apiClient.post<ApiResponse<Course>>('/courses', payload)
   return response.data.data
@@ -49,6 +60,7 @@ const search = async (params: SearchCoursesParams): Promise<PaginatedCoursesResp
 
 export const courseService = {
   getProfessorCourses,
+  getById,
   create,
   update,
   remove,

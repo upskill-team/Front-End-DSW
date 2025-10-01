@@ -18,6 +18,27 @@ export const useProfessorCourses = () => {
   });
 };
 
+/**
+ * Hook para obtener los datos de un único curso por su ID.
+ * @param courseId - El ID del curso que se desea obtener. Puede ser undefined mientras se carga desde la URL.
+ */
+export const useCourseById = (courseId: string | undefined) => {
+  return useQuery<Course, AxiosError>({
+  
+    // Usar un array con el nombre de la entidad y el ID es la convención estándar.
+    queryKey: ['course', courseId],
+
+    // La `queryFn` es la función que se ejecutará para obtener los datos.
+    // Llama a nuestro nuevo método del servicio.
+    // Usamos `courseId!` (non-null assertion) porque la opción `enabled` nos protege.
+    queryFn: () => courseService.getById(courseId!),
+
+    // La consulta no se ejecutará si `courseId` es undefined, null o un string vacío.
+    // Esto previene llamadas inútiles a la API como `/courses/undefined` mientras el router se inicializa.
+    enabled: !!courseId,
+  });
+};
+
 export const useCreateCourse = () => {
   const queryClient = useQueryClient();
 

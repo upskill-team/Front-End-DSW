@@ -3,6 +3,7 @@ import { Clock, Star, Users } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import Button from './Button';
 import { Card, CardContent, CardTitle, CardDescription } from './Card';
+import { Link } from 'react-router-dom';
 
 interface Course {
   id: number;
@@ -87,7 +88,10 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                     </span>
                   </div>
                   <CardTitle className="mb-2 group-hover:text-blue-600 transition-colors text-lg md:text-xl">
-                    {course.name}
+                    <Link to={`/courses/${course.id}`}>
+                      {course.name}
+                    </Link>
+                    
                   </CardTitle>
                   <CardDescription className="mb-2 line-clamp-2 text-sm">
                     {course.description}
