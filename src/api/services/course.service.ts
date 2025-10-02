@@ -20,6 +20,7 @@ const getProfessorCourses = async (): Promise<Course[]> => {
  */
 const getById = async (courseId: string): Promise<Course> => {
   const response = await apiClient.get<ApiResponse<Course>>(`/courses/${courseId}`);
+
   // Desenvolvemos el objeto del curso de la propiedad `data` de la respuesta
   return response.data.data;
 };
