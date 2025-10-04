@@ -53,7 +53,7 @@ type Material = {
 }
 
 type Activity = {
-  id: number;
+  id: number | string;
   type: string;
   question: string;
   options: string[];
@@ -242,56 +242,51 @@ export default function ProfessorCourseEditorPage() {
     description: courseConfig.description,
     status: courseConfig.status,
     price: courseConfig.isFree ? 0 : courseConfig.price,
+    isFree: courseConfig.isFree,
 
-    units: units.map(unit => {
-        const materialsForBackend = unit.materials.map(material => {
-          if (material.file) {
-            return {
-              title: material.name,
-              url: material.file.name, // Placeholder
-            };
-          }
-          return {
-            title: material.name,
-            url: material.url,
-          };
-        })
+    units: units.map(unit => ({
+      unitNumber: unit.unitNumber,
+      name: unit.name,
+      detail: unit.detail,
+      materials: unit.materials.map(material => ({
+        title: material.name,
+        url: material.url || (material.file ? material.file.name : 'error-no-url'),
+        })),
+      questions: unit.activities.map(activity => ({
+        questionText: activity.question,
+        questionType: 'MultipleChoiceOption',
+        payload: {
+          options: activity.options,
+          correctAnswer: activity.correctAnswer,
+        },
+        })),
+      })),
+    };
 
-      const questionsForBackend = unit.activities.map(activity => ({
-          questionText: activity.question,
-          questionType: 'MultipleChoiceOption',
-          payload: {
-            options: activity.options,
-            correctAnswer: activity.correctAnswer,
-          },
-      }))
+    if (newImageFile) {
+      formData.append('image', newImageFile);
+    }
 
-      return {
-        unitNumber: unit.unitNumber,
-        name: unit.name,
-        detail: unit.detail,
-        materials: materialsForBackend,
-        questions: questionsForBackend,
-      };
-    }),
-  };
+    units.forEach(unit => {
+      unit.materials.forEach(material => {
+        if (material.file) {
+          formData.append('materials', material.file, material.file.name);
+        }
+      });
+    });
 
-  if (newImageFile) {
-    formData.append('image', newImageFile);
-  }
+    formData.append('courseData', JSON.stringify(courseDataForBackend));
 
-  units.forEach(unit => {
-    unit.materials.forEach(material => {
-      if (material.file) {
-        formData.append('materials', material.file);
+    updateCourse({ courseId, data: formData }, {
+      onSuccess: () => {
+        alert("¡Curso guardado con éxito!");
+      },
+      onError: (error) => {
+        console.error("Error al guardar el curso:", error);
+        alert("Hubo un error al guardar el curso. Revisa la consola para más detalles.");
       }
     });
-  });
-
-  formData.append('courseData', JSON.stringify(courseDataForBackend));
-
-  updateCourse({ courseId, data: formData });
-}
+  }
 
   // Add file handlers for materials
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -388,7 +383,7 @@ export default function ProfessorCourseEditorPage() {
       newActivity.options.every((opt) => opt.trim())
     ) {
       const activity = {
-        id: Date.now(),
+        id: Date.now() + Math.random(), 
         type: "multiple-choice",
         question: newActivity.question,
         options: newActivity.options,
@@ -442,14 +437,19 @@ export default function ProfessorCourseEditorPage() {
             url: materialBackend.url,
             file: undefined
           })),
-          activities: (unitBackend.questions || []).map((questionBackend: Question, index: number) => ({
-            id: index,
-            type: "multiple-choice",
-            question: questionBackend.questionText,
-            options: questionBackend.payload.options,
-            correctAnswer: questionBackend.payload.correctAnswer as number,
-            createdAt: new Date().toISOString()
-          }))
+          activities: (unitBackend.questions || []).map((questionBackend: Question) => {
+            
+            const isObject = typeof questionBackend === 'object' && questionBackend !== null;
+            const payload = isObject && questionBackend.payload ? questionBackend.payload : { options: [], correctAnswer: 0 };
+            return {
+              id: isObject ? questionBackend.id : Date.now() + Math.random(), 
+              type: "multiple-choice",
+              question: isObject ? questionBackend.questionText : 'Error: Pregunta no cargada',
+              options: payload.options || [],
+              correctAnswer: payload.correctAnswer as number,
+              createdAt: new Date().toISOString()
+            };
+          })
         }));
 
         setUnits(unitsFromBackend);
@@ -673,11 +673,12 @@ export default function ProfessorCourseEditorPage() {
                       </p>
                     ) : (
                       <div className="space-y-3">
-                        {units
-                          .find((u) => u.unitNumber === selectedUnitId)
-                          ?.activities.map((activity) => (
-                            <ActivityCard activity={activity} />
-                          ))}
+                        {selectedUnit.activities.map((activity) => (
+                          <ActivityCard 
+                            key={activity.id} 
+                            activity={activity} 
+                          />
+                        ))}
                       </div>
                     )}
                   </CardContent>

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import Button from '../../components/ui/Button';
 import {
   Card,
@@ -22,38 +22,35 @@ import {
 } from 'lucide-react';
 import type { Appeal } from '../../types/entities';
 import { useAppeals, useUpdateAppealState } from '../../hooks/useAppeals.ts';
+import type { SearchAppealsParams } from '../../types/shared.ts';
 
 type StatusFilter = 'all' | 'pending' | 'accepted' | 'rejected';
 
 export default function ProfessorRequestsPage() {
-  const { data: requests = [], isLoading, error } = useAppeals();
-  const { mutate: updateAppeal, isPending: isUpdating } =
-    useUpdateAppealState();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOrder, setSortOrder] = useState('newest');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+
+  // Objeto de filtros que se pasará al hook.
+  // Se reconstruye en cada render, lo que activará una nueva petición si sus valores cambian.
+  const filters: SearchAppealsParams = {
+    q: searchTerm || undefined, // Envía 'q' solo si no está vacío
+    sortBy: 'date',
+    sortOrder: sortOrder === 'newest' ? 'DESC' : 'ASC',
+    status: statusFilter === 'all' ? undefined : statusFilter, // Envía 'status' solo si no es 'all'
+    // Aquí puedes añadir `limit` y `offset` para la paginación en el futuro
+    // limit: 10,
+    // offset: (currentPage - 1) * 10,
+  };
+
+  // El hook ahora recibe los filtros.
+  const { data, isLoading, error } = useAppeals(filters);
+  const { mutate: updateAppeal, isPending: isUpdating } = useUpdateAppealState();
 
   const [selectedRequest, setSelectedRequest] = useState<Appeal | null>(null);
   const [documentUrlToShow, setDocumentUrlToShow] = useState<string | null>(
     null
   );
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortOrder, setSortOrder] = useState('newest');
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
-
-  const filteredAndSortedRequests = useMemo(() => {
-    return requests
-      .filter((req) => {
-        const matchesSearch = `${req.user.name} ${req.user.surname}`
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
-        const matchesStatus =
-          statusFilter === 'all' || req.state === statusFilter;
-        return matchesSearch && matchesStatus;
-      })
-      .sort((a, b) => {
-        const dateA = new Date(a.date).getTime();
-        const dateB = new Date(b.date).getTime();
-        return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
-      });
-  }, [requests, searchTerm, sortOrder, statusFilter]);
 
   const handleStatusChange = (
     requestId: string,
@@ -61,6 +58,10 @@ export default function ProfessorRequestsPage() {
   ) => {
     updateAppeal({ appealId: requestId, payload: { state: newStatus } });
   };
+
+  // Se extraen los datos de la respuesta paginada, con valores por defecto seguros.
+  const requests = data?.appeals || [];
+  const totalRequests = data?.total || 0;
 
   if (isLoading)
     return <div className="text-center p-8">Cargando solicitudes...</div>;
@@ -83,7 +84,7 @@ export default function ProfessorRequestsPage() {
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div>
               <CardTitle>
-                Solicitudes ({filteredAndSortedRequests.length})
+                Solicitudes ({totalRequests})
               </CardTitle>
               <CardDescription>
                 Lista de todas las solicitudes de profesores
@@ -127,7 +128,7 @@ export default function ProfessorRequestsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {filteredAndSortedRequests.map((request) => {
+            {requests.map((request) => {
               const date = new Date(request.date);
               const formattedDate = !isNaN(date.getTime())
                 ? date.toLocaleDateString('es-ES', {
@@ -219,9 +220,9 @@ export default function ProfessorRequestsPage() {
               );
             })}
           </div>
-          {filteredAndSortedRequests.length === 0 && (
+          {requests.length === 0 && !isLoading && (
             <p className="text-center text-slate-500 py-8">
-              No se encontraron solicitudes.
+              No se encontraron solicitudes con los filtros aplicados.
             </p>
           )}
         </CardContent>

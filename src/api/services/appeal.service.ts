@@ -1,5 +1,7 @@
 import apiClient from '../apiClient';
 import type { Appeal } from '../../types/entities';
+import type { PaginatedAppealsResponse, SearchAppealsParams } from '../../types/shared.ts'
+
 
 type UpdateAppealPayload = {
   state: 'accepted' | 'rejected';
@@ -18,8 +20,16 @@ const createAppeal = async (formData: FormData): Promise<Appeal> => {
   return response.data.data;
 };
 
-const findAllAppeals = async (): Promise<Appeal[]> => {
-  const response = await apiClient.get<ApiResponse<Appeal[]>>('/appeals');
+const findAllAppeals = async (params: SearchAppealsParams = {}): Promise<PaginatedAppealsResponse> => {
+  const queryParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      queryParams.append(key, String(value));
+    }
+  });
+
+  const response = await apiClient.get<ApiResponse<PaginatedAppealsResponse>>(`/appeals?${queryParams.toString()}`);
   return response.data.data;
 };
 

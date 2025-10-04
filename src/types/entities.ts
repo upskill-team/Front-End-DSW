@@ -72,6 +72,7 @@ export interface QuestionPayload {
 }
 
 export interface Question {
+  id: string;
   questionText: string;
   questionType: string;
   payload: QuestionPayload;
