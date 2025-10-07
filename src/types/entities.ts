@@ -38,6 +38,9 @@ export interface Course {
   professor: Professor;
   isFree: boolean;
   price: number;
+  status: string;
+  rating?: number;
+  studentsCount?: number;
   students: Student[];
   units: Unit[];
 }
@@ -71,10 +74,19 @@ export interface QuestionPayload {
   correctAnswer: number | string;
 }
 
+export const QuestionType = {
+  MultipleChoiceOption: 'MultipleChoiceOption',
+} as const;
+
+export type QuestionTypeValue =
+  (typeof QuestionType)[keyof typeof QuestionType];
+
 export interface Question {
+  id?: string;
   questionText: string;
-  questionType: string;
+  questionType: QuestionTypeValue;
   payload: QuestionPayload;
+  unitNumber?: number;
 }
 
 export interface MultipleChoiceOption {
@@ -86,16 +98,6 @@ export interface Material {
   // ⚠️ Material es embeddable - NO tiene id propio
   title: string;
   url: string;
-}
-
-// ❌ Activity no existe en backend - se reemplaza por Question
-export interface Activity {
-  id: number;
-  type: string;
-  question: string;
-  options: string[];
-  correctAnswer: number;
-  createdAt: string;
 }
 
 export interface Unit {
@@ -111,6 +113,7 @@ export interface Unit {
 export interface CreateUnitRequest {
   name: string;
   detail?: string;
+  unitNumber: number;
 }
 
 export interface UpdateUnitRequest {
@@ -161,7 +164,6 @@ export interface UnitQuestionsData {
 // Tipos extendidos para el editor (incluyen datos locales)
 export interface UnitEditorData extends Unit {
   // Datos adicionales para el editor
-  activities: Activity[]; // Mantenemos compatibilidad temporal
   isLoading?: boolean;
   hasUnsavedChanges?: boolean;
 }
