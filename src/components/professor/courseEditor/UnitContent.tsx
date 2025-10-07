@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -6,23 +7,34 @@ import {
   CardTitle,
 } from '../../ui/Card';
 import Button from '../../ui/Button';
-import { BookOpen, Plus, Upload, FileText, Trash2 } from 'lucide-react';
+import {
+  BookOpen,
+  Plus,
+  Upload,
+  FileText,
+  Trash2,
+  Eye,
+  Edit2,
+} from 'lucide-react';
+import DocumentViewer from '../../ui/DocumentViewer';
 import UnitEditor from '../../landing/UnitEditor';
-import ActivityCard from '../../landing/professorCourseEdition/ActivityCard';
+// import ActivityCard from '../../landing/professorCourseEdition/ActivityCard'; // Obsoleto, ahora usamos questions
 import type { Block } from '@blocknote/core';
 import type {
   UnitEditorData,
-  Activity,
+  Question,
   Material,
 } from '../../../types/entities';
 
 interface UnitContentProps {
   selectedUnit: UnitEditorData | null;
-  activities: Activity[];
+  questions: Question[];
   materials: Material[];
   editable: boolean;
   onUnitDetailChange: (newBlocks: Block[]) => void;
-  onCreateActivity: () => void;
+  onCreateQuestion: () => void;
+  onEditQuestion: (question: Question) => void;
+  onDeleteQuestion: (questionId: string) => void;
   onUploadMaterial: () => void;
   onDeleteMaterial: (materialId: string | number) => void;
   onCreateUnit: () => void;
@@ -30,15 +42,19 @@ interface UnitContentProps {
 
 export default function UnitContent({
   selectedUnit,
-  activities,
+  questions,
   materials,
   editable,
   onUnitDetailChange,
-  onCreateActivity,
+  onCreateQuestion,
+  onEditQuestion,
+  onDeleteQuestion,
   onUploadMaterial,
   onDeleteMaterial,
   onCreateUnit,
 }: UnitContentProps) {
+  const [previewMaterial, setPreviewMaterial] = useState<Material | null>(null);
+
   if (!selectedUnit) {
     return (
       <div className="text-center p-12 bg-slate-50 border rounded-lg h-full flex flex-col justify-center items-center">
@@ -59,11 +75,19 @@ export default function UnitContent({
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className={editable ? 'ring-2 ring-blue-200 ring-offset-2' : ''}>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <BookOpen className="w-5 h-5 text-blue-600" />
-            <span>{selectedUnit.name}</span>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <BookOpen className="w-5 h-5 text-blue-600" />
+              <span>{selectedUnit.name}</span>
+            </div>
+            {editable && (
+              <div className="flex items-center space-x-2 text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                <Edit2 className="w-3 h-3" />
+                <span>Modo Edición</span>
+              </div>
+            )}
           </CardTitle>
           <CardDescription>Unidad {selectedUnit.unitNumber}</CardDescription>
         </CardHeader>
@@ -74,35 +98,90 @@ export default function UnitContent({
             onChange={onUnitDetailChange}
           />
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-end pt-4 gap-2">
-              <Button size="md" variant="outline" onClick={onCreateActivity}>
-                <Plus className="w-4 h-4 mr-2" />
-                Crear Actividad
-              </Button>
-              <Button size="md" variant="outline" onClick={onUploadMaterial}>
-                <Upload className="w-4 h-4 mr-2" />
-                Subir Material
-              </Button>
+          {editable && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-end pt-4 gap-2">
+                <Button size="md" variant="outline" onClick={onCreateQuestion}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Crear Pregunta
+                </Button>
+                <Button size="md" variant="outline" onClick={onUploadMaterial}>
+                  <Upload className="w-4 h-4 mr-2" />
+                  Subir Material
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
         </CardContent>
       </Card>
 
       <div className="grid md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Actividades de la Unidad</CardTitle>
+            <CardTitle className="text-lg">Preguntas de la Unidad</CardTitle>
           </CardHeader>
           <CardContent>
-            {activities.length === 0 ? (
+            {questions.length === 0 ? (
               <p className="text-sm text-slate-500 text-center py-8">
-                No hay actividades.
+                No hay preguntas.
               </p>
             ) : (
               <div className="space-y-3">
-                {activities.map((activity) => (
-                  <ActivityCard key={activity.id} activity={activity} />
+                {questions.map((question, index) => (
+                  <div
+                    key={question.id || `question-${index}`}
+                    className="p-3 border rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-700 line-clamp-2">
+                          {question.questionText}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Tipo: {question.questionType}
+                        </p>
+                        <p className="text-xs text-slate-400 mt-1">
+                          {question.payload.options.length} opciones
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-1 flex-shrink-0">
+                        {editable ? (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 w-8 p-0 text-slate-500 hover:text-blue-600"
+                              onClick={() => onEditQuestion(question)}
+                              title="Editar pregunta"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 w-8 p-0 text-slate-500 hover:text-red-600"
+                              onClick={() =>
+                                question.id && onDeleteQuestion(question.id)
+                              }
+                              title="Eliminar pregunta"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0 text-slate-500 hover:text-blue-600"
+                            onClick={() => onEditQuestion(question)}
+                            title="Ver pregunta"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
@@ -131,14 +210,26 @@ export default function UnitContent({
                         {material.title}
                       </span>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-6 w-6 p-0 text-slate-500 hover:text-red-600"
-                      onClick={() => onDeleteMaterial(index)}
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
+                    <div className="flex items-center space-x-1">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 w-6 p-0 text-slate-500 hover:text-blue-600"
+                        onClick={() => setPreviewMaterial(material)}
+                        title="Vista previa"
+                      >
+                        <Eye className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 w-6 p-0 text-slate-500 hover:text-red-600"
+                        onClick={() => onDeleteMaterial(index)}
+                        title="Eliminar"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -146,6 +237,14 @@ export default function UnitContent({
           </CardContent>
         </Card>
       </div>
+
+      {/* Modal de previsualización de materiales */}
+      {previewMaterial && (
+        <DocumentViewer
+          url={previewMaterial.url}
+          onClose={() => setPreviewMaterial(null)}
+        />
+      )}
     </div>
   );
 }
