@@ -6,6 +6,8 @@ const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
+// console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
+
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
@@ -13,9 +15,6 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
-    // ELIMINA TODA LA LÓGICA DEL 'Content-Type'.
-    // Axios lo manejará automáticamente de forma correcta.
 
     return config;
   },

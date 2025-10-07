@@ -65,6 +65,7 @@ const quickSave = async (
   courseId: string,
   data: QuickSaveRequest
 ): Promise<void> => {
+  console.log('Quick save request:', { courseId, data });
   await apiClient.patch(`/courses/${courseId}/quick-save`, data);
 };
 

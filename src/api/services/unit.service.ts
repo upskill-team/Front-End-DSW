@@ -19,7 +19,12 @@ const create = async (
 ): Promise<Unit> => {
   const response = await apiClient.post<ApiResponse<Unit>>(
     `/courses/${courseId}/units`,
-    data
+    data,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
   );
   return response.data.data;
 };
@@ -56,11 +61,12 @@ const reorder = async (
 
 // Subir archivo (mantener existente, pero corregir)
 const uploadFile = async (file: File): Promise<string> => {
-  const body = new FormData();
-  body.append('file', file);
-  const response = await apiClient.post('/unit', {
-    method: 'POST',
-    body: body,
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await apiClient.post('/unit', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   });
 
   return response.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
