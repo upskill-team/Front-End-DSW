@@ -14,6 +14,7 @@ interface CourseSidebarProps {
   onDragStart: (e: React.DragEvent, unit: UnitEditorData) => void;
   onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent, targetUnit: UnitEditorData) => void;
+  onUnitReorder?: (draggedUnitNumber: number, targetUnitNumber: number) => void;
 }
 
 export default function CourseSidebar({
@@ -27,6 +28,7 @@ export default function CourseSidebar({
   onDragStart,
   onDragOver,
   onDrop,
+  onUnitReorder,
 }: CourseSidebarProps) {
   return (
     <Card>
@@ -48,7 +50,13 @@ export default function CourseSidebar({
               draggable
               onDragStart={(e) => onDragStart(e, unit)}
               onDragOver={onDragOver}
-              onDrop={(e) => onDrop(e, unit)}
+              onDrop={(e) => {
+                onDrop(e, unit);
+                // Si hay función de reordenamiento disponible, se puede usar aquí
+                if (onUnitReorder) {
+                  // La lógica de reordenamiento se maneja en el componente padre
+                }
+              }}
               className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                 selectedUnitId === unit.unitNumber
                   ? 'bg-blue-50 border-blue-200'
