@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import Button from '../../ui/Button';
 import SaveStatus from './SaveStatus';
-import { ArrowLeft, Edit } from 'lucide-react';
+import Switch from '../../ui/Switch';
+import { ArrowLeft, Edit, Eye } from 'lucide-react';
 
 interface CourseHeaderProps {
   courseName: string;
@@ -11,6 +12,7 @@ interface CourseHeaderProps {
   hasUnsavedChanges?: boolean;
   saveError?: string | null;
   lastSavedAt?: Date;
+  isEditMode?: boolean;
 }
 
 export default function CourseHeader({
@@ -21,6 +23,7 @@ export default function CourseHeader({
   hasUnsavedChanges = false,
   saveError = null,
   lastSavedAt,
+  isEditMode = false,
 }: CourseHeaderProps) {
   return (
     <div className="mb-8">
@@ -59,14 +62,42 @@ export default function CourseHeader({
           >
             Guardar Cambios
           </Button>
-          <Button
-            variant="outline"
-            onClick={onToggleEdit}
-            className="flex items-center gap-2"
-          >
-            Editar Contenido
-            <Edit className="w-4 h-4" />
-          </Button>
+
+          <div className="flex items-center gap-3 bg-slate-50 rounded-lg px-4 py-2 border border-slate-200">
+            <div className="flex items-center gap-2">
+              <Eye
+                className={`w-4 h-4 ${
+                  !isEditMode ? 'text-blue-600' : 'text-slate-400'
+                }`}
+              />
+              <span
+                className={`text-sm font-medium ${
+                  !isEditMode ? 'text-slate-700' : 'text-slate-400'
+                }`}
+              >
+                Ver
+              </span>
+            </div>
+            <Switch
+              id="edit-mode-toggle"
+              checked={isEditMode}
+              onChange={onToggleEdit}
+            />
+            <div className="flex items-center gap-2">
+              <Edit
+                className={`w-4 h-4 ${
+                  isEditMode ? 'text-blue-600' : 'text-slate-400'
+                }`}
+              />
+              <span
+                className={`text-sm font-medium ${
+                  isEditMode ? 'text-slate-700' : 'text-slate-400'
+                }`}
+              >
+                Editar
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
