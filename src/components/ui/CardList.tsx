@@ -23,13 +23,15 @@ interface Course {
   isNew: boolean;
   isBestseller: boolean;
 }
+import type { Course } from '../../types/entities';
 
 /**
  * @interface CourseCardListProps
  * @extends React.HTMLAttributes<HTMLDivElement>
  * @property {Course} course - The course data object to display.
  */
-export interface CourseCardListProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface CourseCardListProps
+  extends React.HTMLAttributes<HTMLDivElement> {
   course: Course;
 }
 
@@ -43,8 +45,6 @@ export interface CourseCardListProps extends React.HTMLAttributes<HTMLDivElement
  */
 const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
   ({ course, className, ...props }, ref) => {
-
-
     return (
       <Card
         ref={ref}
@@ -59,18 +59,13 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
             <div className="relative flex-shrink-0">
               <img
                 src={course.imageUrl || 'public/img/noImage.jpg'}
-                alt={course.title}
+                alt={course.name}
                 className="w-full h-40 md:w-48 md:h-32 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
               />
               <div className="absolute top-2 left-2 flex flex-col gap-1">
-                {course.isNew && (
+                {course.isFree && (
                   <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                    Nuevo
-                  </span>
-                )}
-                {course.isBestseller && (
-                  <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                    Bestseller
+                    Gratis
                   </span>
                 )}
               </div>
@@ -97,24 +92,24 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                     {course.description}
                   </CardDescription>
                   <p className="text-sm text-slate-500 mb-3">
-                    Por {course.instructor}
+                    Por {course.professor?.user?.name || 'Profesor'}
                   </p>
 
                   <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-sm text-slate-600">
                     <div className="flex items-center space-x-1">
                       <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-medium">{course.rating}</span>
+                      <span className="font-medium">5.0</span>
                       <span className="hidden sm:inline">
-                        ({course.students} estudiantes)
+                        ({course.students?.length || 0} estudiantes)
                       </span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Clock className="w-4 h-4" />
-                      <span>{course.duration}</span>
+                      <span>{course.units?.length || 0} unidades</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Users className="w-4 h-4" />
-                      <span>{course.lessons} lecciones</span>
+                      <span>{course.units?.length || 0} lecciones</span>
                     </div>
                   </div>
                 </div>
@@ -122,18 +117,8 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                 <div className="text-left lg:text-right w-full lg:w-auto lg:ml-4 flex-shrink-0">
                   <div className="flex items-center lg:justify-end space-x-2 mb-3">
                     <span className="text-2xl font-bold text-slate-800">
-                      {
-                        course.price > 0 ?
-                        <>$ {course.price}</>
-                        : 
-                        <>GRATIS</>
-                      }
+                      {course.isFree ? <>GRATIS</> : <>$ {course.price}</>}
                     </span>
-                    {course.originalPrice > course.price && (
-                      <span className="text-lg text-slate-500 line-through">
-                        ${course.originalPrice}
-                      </span>
-                    )}
                   </div>
                   <Button
                     variant="primary"
