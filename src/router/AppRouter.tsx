@@ -24,6 +24,7 @@ import ScrollToTop from '../components/layouts/ScrollToTop';
 import ProfessorCourseCreation from '../pages/Professor/ProfessorCourseCreation.tsx';
 import ProfessorCourseEdition from '../pages/Professor/ProfessorCourseEdition.tsx';
 import ProfilePage from '../pages/User/ProfilePage.tsx';
+import CourseDetails from '../pages/Course/CourseDetails.tsx';
 
 const AppRouter = () => {
   return (
@@ -42,6 +43,7 @@ const AppRouter = () => {
         <Route path="/" element={<LandingPage />} />
 
         <Route path="/courses" element={<CourseListPage />} />
+        <Route path="/courses/:courseId" element={<CourseDetails />} />
 
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
 
