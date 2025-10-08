@@ -89,7 +89,6 @@ export default function ProfessorCourseCreation() {
 
     createCourse(dataToSend, {
       onSuccess: (createdCourse) => {
-        alert('¡Curso creado con éxito! Ahora puedes empezar a añadir contenido.');
         navigate(`/professor/dashboard/courses/${createdCourse.id}/edit`);
       },
       onError: (err: AxiosError) => {

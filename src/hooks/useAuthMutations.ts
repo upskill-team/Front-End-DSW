@@ -21,7 +21,6 @@ export const useRegister = () => {
   return useMutation({
     mutationFn: authService.register,
     onSuccess: () => {
-      alert("¡Registro exitoso! Por favor, inicia sesión.")
       navigate('/login')
     },
   })
@@ -39,7 +38,6 @@ export const useResetPassword = () => {
     mutationFn: ({ token, password }: { token: string; password: string }) =>
       authService.resetPassword(token, password),
     onSuccess: () => {
-      alert("¡Contraseña actualizada con éxito!");
       navigate('/login');
     },
   })
