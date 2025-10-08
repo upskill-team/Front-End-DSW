@@ -1,4 +1,4 @@
-import { Award, BookOpen, CheckCircle, Clock, Download, Globe, Play, ShoppingCart, Smartphone, Star, Users } from "lucide-react";
+import { Award, BookOpen, Download, Globe, Play, Smartphone, Star, Users } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -58,39 +58,6 @@ function CourseDetails() {
     descargable: true,
   }
 
-  // Contenido del curso
-  const contenidoCurso = [
-    {
-      seccion: "Fundamentos de Desarrollo Web",
-      lecciones: 24,
-      duracion: "6h 15m",
-    },
-    {
-      seccion: "JavaScript Moderno y ES6+",
-      lecciones: 32,
-      duracion: "8h 30m",
-    },
-    {
-      seccion: "React desde Cero",
-      lecciones: 45,
-      duracion: "12h 45m",
-    },
-    {
-      seccion: "Backend con Node.js y Express",
-      lecciones: 28,
-      duracion: "7h 20m",
-    },
-    {
-      seccion: "Bases de Datos con MongoDB",
-      lecciones: 18,
-      duracion: "5h 10m",
-    },
-    {
-      seccion: "Proyecto Final Completo",
-      lecciones: 9,
-      duracion: "2h 30m",
-    },
-  ]
   return (
 
     <div>
@@ -139,7 +106,7 @@ function CourseDetails() {
                 {/* Instructor */}
                 <div className="flex items-center space-x-4 p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-slate-200">
                   <img
-                    src={curso.instructor.avatar || "/img/noImage.jpg"}
+                    src={course?.professor.user.profile_picture || "/img/noImage.jpg"}
                     alt={course?.professor.user.name}
                     className="w-14 h-14 rounded-full object-cover"
                   />
@@ -168,7 +135,15 @@ function CourseDetails() {
                         <div>
                           <p className="font-medium text-slate-800">{seccion.name}</p>
                           <p className="text-sm text-slate-600">
-                            {seccion.materials.length} Recursos • {seccion.questions.length} Preguntas
+                            {seccion.materials.length > 0 && (
+                              <span>{seccion.materials.length} Recursos</span>
+                            )}
+                            {seccion.materials.length > 0 && seccion.questions.length > 0 && (
+                              <span className="mx-2">·</span> /* separador visible solo si hay ambos */
+                            )}
+                            {seccion.questions.length > 0 && (
+                              <span>{seccion.questions.length} Preguntas</span>
+                            )}
                           </p>
                         </div>
                       </div>
