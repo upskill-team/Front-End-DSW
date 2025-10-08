@@ -625,6 +625,7 @@ export default function ProfessorCourseEditorPage() {
   return (
     <div className="container mx-auto max-w-7xl">
       <CourseHeader
+        courseId={courseId}
         courseName={courseConfig.name}
         onSave={handleGlobalSave}
         onToggleEdit={() => setEditable(!editable)}
