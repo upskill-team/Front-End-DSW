@@ -3,7 +3,7 @@ import { useAllCourseQuestions, useCreateGeneralQuestion } from '../../../hooks/
 import Button from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import QuestionForm from '../../common/QuestionForm';
-import { HelpCircle, Plus, X } from 'lucide-react';
+import { HelpCircle, Plus, X, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import type { Question } from '../../../types/entities';
 
 interface GeneralQuestionsManagerProps {
@@ -18,10 +18,11 @@ export default function GeneralQuestionsManager({
   onClose,
 }: GeneralQuestionsManagerProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const { data: allQuestions, isLoading } = useAllCourseQuestions(courseId);
+  const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(null);
   const createGeneralQuestionMutation = useCreateGeneralQuestion();
 
-  const generalQuestions = allQuestions?.filter((q) => q.unitNumber === null) || [];
+  const { data: allQuestions, isLoading } = useAllCourseQuestions(courseId);
+  const generalQuestions = allQuestions?.filter((q) => q.unitNumber === null || q.unitNumber === undefined) || [];
 
   const handleSave = async (question: Question) => {
     try {
@@ -105,22 +106,80 @@ export default function GeneralQuestionsManager({
           )}
 
           {!isLoading && generalQuestions.length > 0 && (
-            <div className="space-y-4">
+            <div className="space-y-3">
               <h3 className="text-lg font-semibold mb-4">
                 Preguntas Existentes ({generalQuestions.length})
               </h3>
-              {generalQuestions.map((question) => (
-                <Card key={question.id} className="p-4 border-l-4 border-l-blue-500">
-                  <p className="font-medium text-gray-900 mb-2">
-                    {question.questionText}
-                  </p>
-                  <div className="text-sm text-gray-500">
-                    <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                      Pregunta General
-                    </span>
+              {generalQuestions.map((question) => {
+                const isExpanded = expandedQuestionId === question.id;
+                return (
+                  <div
+                    key={question.id}
+                    className="border border-gray-200 rounded-lg hover:border-blue-300 transition-all"
+                  >
+                    <div className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs px-2 py-0.5 bg-purple-100 text-purple-700 rounded">
+                              Pregunta General
+                            </span>
+                            <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded">
+                              {question.questionType}
+                            </span>
+                          </div>
+                          <p className="text-gray-900 font-medium">
+                            {question.questionText}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => setExpandedQuestionId(isExpanded ? null : question.id!)}
+                          className="flex-shrink-0 p-1 hover:bg-gray-200 rounded"
+                        >
+                          {isExpanded ? (
+                            <ChevronUp className="w-5 h-5" />
+                          ) : (
+                            <ChevronDown className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {isExpanded && question.questionType === 'MultipleChoiceOption' && (
+                      <div className="px-4 pb-4 border-t pt-3">
+                        <p className="text-sm font-medium text-gray-700 mb-2">
+                          Opciones de respuesta:
+                        </p>
+                        <div className="space-y-2">
+                          {question.payload.options.map((option: string, idx: number) => {
+                            const isCorrect = question.payload.correctAnswer === idx;
+                            return (
+                              <div
+                                key={idx}
+                                className={`p-2 rounded text-sm ${
+                                  isCorrect
+                                    ? 'bg-green-100 border border-green-300'
+                                    : 'bg-gray-50 border border-gray-200'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium text-gray-600">
+                                    {String.fromCharCode(65 + idx)})
+                                  </span>
+                                  <span>{option}</span>
+                                  {isCorrect && (
+                                    <Check className="w-4 h-4 text-green-600 ml-auto" />
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </Card>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

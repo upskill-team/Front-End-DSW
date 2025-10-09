@@ -180,8 +180,14 @@ export default function QuestionSelector({
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded">
-                              Unidad {question.unitNumber}
+                            <span className={`text-xs px-2 py-0.5 rounded ${
+                              question.unitNumber === null || question.unitNumber === undefined
+                                ? 'bg-purple-100 text-purple-700'
+                                : 'bg-gray-100 text-gray-600'
+                            }`}>
+                              {question.unitNumber === null || question.unitNumber === undefined
+                                ? 'Generales'
+                                : `Unidad ${question.unitNumber}`}
                             </span>
                             <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded">
                               {question.questionType}
