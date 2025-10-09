@@ -21,6 +21,7 @@ export interface Professor {
   state: string;
   courses: Course[];
   institution?: Institution;
+  managedInstitution?: Institution;
 }
 
 export interface Student {
@@ -56,6 +57,9 @@ export interface Institution {
   id: string;
   name: string;
   description: string;
+  normalizedName: string;
+  aliases?: string[];
+  manager: Professor;
   professors: Professor[];
 }
 
@@ -67,6 +71,14 @@ export interface Appeal {
   state: 'pending' | 'accepted' | 'rejected';
   user: User;
   date: Date;
+}
+
+export interface JoinRequest {
+  id: string;
+  professor: Professor;
+  institution: Institution | string;
+  requestDate: string;
+  status: 'pending' | 'accepted' | 'rejected';
 }
 
 export interface QuestionPayload {

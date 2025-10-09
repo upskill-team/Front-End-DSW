@@ -7,7 +7,6 @@ export const useCreateAppeal = () => {
   return useMutation({
     mutationFn: (formData: FormData) => appealService.createAppeal(formData),
     onSuccess: () => {
-      alert("¡Solicitud enviada con éxito! Te contactaremos pronto.");
       navigate('/');
     },
   });
