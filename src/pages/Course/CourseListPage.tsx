@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import CardList from "../../components/ui/CardList.tsx";
 import CoursePreviewCard from "../../components/ui/CoursePreviewCard.tsx";
 import type { SearchCoursesParams } from "../../types/shared.ts";
@@ -14,40 +14,39 @@ import { useDebounce } from "../../hooks/useDebounce.ts";
 
 const CourseListPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [isGridView, setIsGridView] = useState(false);
+  const [isGridView, setIsGridView] = useState(true); 
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  const debouncedSearchTerm = useDebounce(searchTerm, 500); // 500ms de retraso
-
-  const [filters, setFilters] = useState<Omit<SearchCoursesParams, 'q'>>({
+  const [filters, setFilters] = useState<Omit<SearchCoursesParams, 'q' | 'offset'>>({
     courseTypeId: '',
     isFree: undefined,
     sortBy: 'createdAt',
     sortOrder: 'DESC',
-    limit: 10,
-    offset: 0,
+    limit: 9,
   });
 
-  useEffect(() => {
-    setFilters(prev => ({ ...prev, q: debouncedSearchTerm, offset: 0 }));
-  }, [debouncedSearchTerm]);
-
-  const { data, isLoading, isError, error, isFetching } = useSearchCourses({
+  const { 
+    data, 
+    isLoading, 
+    isError, 
+    error, 
+    fetchNextPage, 
+    hasNextPage, 
+    isFetchingNextPage 
+  } = useSearchCourses({
     ...filters,
-    q: debouncedSearchTerm, 
+    q: debouncedSearchTerm,
     status: "publicado",
   });
+  
   const { data: courseTypes, isLoading: isLoadingTypes } = useCourseTypes();
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-  
-  const handleFilterChange = (key: keyof Omit<SearchCoursesParams, 'q'>, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value, offset: 0 }));
-  };
+  const courses = data?.pages.flatMap(page => page.courses) || [];
+  const totalCourses = data?.pages[0]?.total || 0;
 
-  const courses = data?.courses || [];
-  const total = data?.total || 0;
+  const handleFilterChange = (key: keyof typeof filters, value: string | boolean | undefined) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
 
   return (
     <div className="container mx-auto max-w-7xl">
@@ -56,7 +55,7 @@ const CourseListPage = () => {
           Explorar Cursos
         </h1>
         <p className="text-lg text-slate-600">
-          Encuentra el curso perfecto para ti entre {total} opciones.
+          Encuentra el curso perfecto para ti entre {totalCourses} opciones.
         </p>
       </div>
 
@@ -67,6 +66,7 @@ const CourseListPage = () => {
             size="sm"
             onClick={() => setIsGridView(false)}
             className="rounded-lg"
+            aria-label="Vista de lista"
           >
             <List className="h-4 w-4" />
           </Button>
@@ -75,6 +75,7 @@ const CourseListPage = () => {
             size="sm"
             onClick={() => setIsGridView(true)}
             className="rounded-lg"
+            aria-label="Vista de grilla"
           >
             <LayoutGrid className="h-4 w-4" />
           </Button>
@@ -88,9 +89,8 @@ const CourseListPage = () => {
           icon={<Search size={16} />}
           placeholder="Ej: React, Marketing..."
           value={searchTerm}
-          onChange={handleSearchChange}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
-        
         <Select
           id="course-type-filter"
           label="Categoría"
@@ -101,14 +101,13 @@ const CourseListPage = () => {
           <option value="">Todas</option>
           {courseTypes?.map(ct => <option key={ct.id} value={ct.id}>{ct.name}</option>)}
         </Select>
-
         <Select
           id="sort-by-filter"
           label="Ordenar por"
           value={`${filters.sortBy}-${filters.sortOrder}`}
           onChange={(e) => {
             const [sortBy, sortOrder] = e.target.value.split('-');
-            setFilters(prev => ({ ...prev, sortBy, sortOrder: sortOrder as 'ASC' | 'DESC', offset: 0 }));
+            setFilters(prev => ({ ...prev, sortBy, sortOrder: sortOrder as 'ASC' | 'DESC' }));
           }}
         >
           <option value="createdAt-DESC">Más nuevos</option>
@@ -116,7 +115,6 @@ const CourseListPage = () => {
           <option value="price-ASC">Precio (Menor a mayor)</option>
           <option value="price-DESC">Precio (Mayor a menor)</option>
         </Select>
-
         <div className="flex items-center justify-center h-full pb-2">
           <div className="flex items-center gap-3">
             <Switch
@@ -129,31 +127,42 @@ const CourseListPage = () => {
         </div>
       </div>
 
-      {isFetching && <p className="text-center text-slate-500 mb-4">Actualizando resultados...</p>}
-
-      {isLoading && !isFetching ? (
-        <p className="text-center text-slate-600">Cargando cursos...</p>
+      {isLoading ? (
+        <p className="text-center text-slate-600 py-10">Cargando cursos...</p>
       ) : isError ? (
-        <p className="text-center text-red-600">Error: {error?.message}</p>
+        <p className="text-center text-red-600 py-10">Error: {error?.message}</p>
       ) : (
-        <div className={isGridView ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
-          {courses.length > 0 ? (
-            courses.map((course) => (
-              isGridView ? (
-                <CoursePreviewCard
-                  key={course.id}
-                  course={course}
-                />
-              ) : (
-                <CardList key={course.id} course={course} />
-              )
-            ))
-          ) : (
-            <p className="text-center text-slate-600 text-lg py-10">
-              No se encontraron cursos con los filtros aplicados.
-            </p>
-          )}
-        </div>
+        <>
+          <div className={isGridView ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
+            {courses.length > 0 ? (
+              courses.map((course) => (
+                isGridView ? (
+                  <CoursePreviewCard key={course.id} course={course} />
+                ) : (
+                  <CardList key={course.id} course={course} />
+                )
+              ))
+            ) : (
+              <div className="col-span-full text-center text-slate-600 text-lg py-10">
+                <p>No se encontraron cursos con los filtros aplicados.</p>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-8 text-center">
+            {hasNextPage && (
+              <Button
+                onClick={() => fetchNextPage()}
+                isLoading={isFetchingNextPage}
+                disabled={!hasNextPage || isFetchingNextPage}
+                variant="outline"
+                size="lg"
+              >
+                {isFetchingNextPage ? 'Cargando más...' : 'Cargar más cursos'}
+              </Button>
+            )}
+          </div>
+        </>
       )}
     </div>
   );

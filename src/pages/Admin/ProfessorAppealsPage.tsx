@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '../../components/ui/Button';
 import {
   Card,
@@ -26,31 +26,35 @@ import type { SearchAppealsParams } from '../../types/shared.ts';
 
 type StatusFilter = 'all' | 'pending' | 'accepted' | 'rejected';
 
+const APPEALS_PER_PAGE = 5;
+
 export default function ProfessorRequestsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState('newest');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRequest, setSelectedRequest] = useState<Appeal | null>(null);
+  const [documentUrlToShow, setDocumentUrlToShow] = useState<string | null>(null);
 
-  // Objeto de filtros que se pasará al hook.
-  // Se reconstruye en cada render, lo que activará una nueva petición si sus valores cambian.
   const filters: SearchAppealsParams = {
-    q: searchTerm || undefined, // Envía 'q' solo si no está vacío
+    q: searchTerm || undefined,
     sortBy: 'date',
     sortOrder: sortOrder === 'newest' ? 'DESC' : 'ASC',
-    status: statusFilter === 'all' ? undefined : statusFilter, // Envía 'status' solo si no es 'all'
-    // Aquí puedes añadir `limit` y `offset` para la paginación en el futuro
-    // limit: 10,
-    // offset: (currentPage - 1) * 10,
+    status: statusFilter === 'all' ? undefined : statusFilter,
+    limit: APPEALS_PER_PAGE,
+    offset: (currentPage - 1) * APPEALS_PER_PAGE,
   };
 
-  // El hook ahora recibe los filtros.
   const { data, isLoading, error } = useAppeals(filters);
   const { mutate: updateAppeal, isPending: isUpdating } = useUpdateAppealState();
 
-  const [selectedRequest, setSelectedRequest] = useState<Appeal | null>(null);
-  const [documentUrlToShow, setDocumentUrlToShow] = useState<string | null>(
-    null
-  );
+  const requests = data?.appeals || [];
+  const totalRequests = data?.total || 0;
+  const totalPages = Math.ceil(totalRequests / APPEALS_PER_PAGE);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, sortOrder, statusFilter]);
 
   const handleStatusChange = (
     requestId: string,
@@ -59,11 +63,7 @@ export default function ProfessorRequestsPage() {
     updateAppeal({ appealId: requestId, payload: { state: newStatus } });
   };
 
-  // Se extraen los datos de la respuesta paginada, con valores por defecto seguros.
-  const requests = data?.appeals || [];
-  const totalRequests = data?.total || 0;
-
-  if (isLoading)
+  if (isLoading && requests.length === 0)
     return <div className="text-center p-8">Cargando solicitudes...</div>;
   if (error)
     return <div className="text-center p-8 text-red-600">{error.message}</div>;
@@ -184,15 +184,10 @@ export default function ProfessorRequestsPage() {
                               handleStatusChange(request.id, 'accepted')
                             }
                             disabled={isUpdating}
+                            isLoading={isUpdating}
                           >
-                            {isUpdating ? (
-                              'Procesando...'
-                            ) : (
-                              <>
-                                <Check className="w-4 h-4 mr-2" />
-                                Aprobar
-                              </>
-                            )}
+                            <Check className="w-4 h-4 mr-2" />
+                            Aprobar
                           </Button>
                           <Button
                             variant="destructive"
@@ -202,15 +197,10 @@ export default function ProfessorRequestsPage() {
                               handleStatusChange(request.id, 'rejected')
                             }
                             disabled={isUpdating}
+                            isLoading={isUpdating}
                           >
-                            {isUpdating ? (
-                              'Procesando...'
-                            ) : (
-                              <>
-                                <X className="w-4 h-4 mr-2" />
-                                Rechazar
-                              </>
-                            )}
+                            <X className="w-4 h-4 mr-2" />
+                            Rechazar
                           </Button>
                         </div>
                       )}
@@ -220,10 +210,35 @@ export default function ProfessorRequestsPage() {
               );
             })}
           </div>
+          
           {requests.length === 0 && !isLoading && (
             <p className="text-center text-slate-500 py-8">
               No se encontraron solicitudes con los filtros aplicados.
             </p>
+          )}
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-6 pt-4 border-t">
+              <Button
+                variant="outline"
+                size="md"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1 || isLoading}
+              >
+                Anterior
+              </Button>
+              <span className="text-sm text-slate-600">
+                Página {currentPage} de {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="md"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages || isLoading}
+              >
+                Siguiente
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>
