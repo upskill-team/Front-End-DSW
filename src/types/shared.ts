@@ -8,6 +8,7 @@ export interface SearchCoursesParams {
   q?: string; // Para búsqueda de texto
   sortBy?: string;
   sortOrder?: 'ASC' | 'DESC';
+  courseTypeId?: string;
 }
 
 export interface PaginatedCoursesResponse {
