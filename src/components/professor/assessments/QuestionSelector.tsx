@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useProfessorCourses } from '../../../hooks/useCourses';
 import { questionService } from '../../../api/services/question.service';
-import { useCreateQuestion } from '../../../hooks/useQuestions';
+import { useCreateQuestion, useCreateGeneralQuestion } from '../../../hooks/useQuestions';
 import Button from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import Input from '../../ui/Input';
@@ -35,24 +35,11 @@ export default function QuestionSelector({
 
   useEffect(() => {
     const loadQuestions = async () => {
-      if (!courseId || !courses) return;
-
-      const course = courses.find((c) => c.id === courseId);
-      if (!course || !course.units) {
-        setIsLoading(false);
-        return;
-      }
+      if (!courseId) return;
 
       try {
-        const questionsPromises = course.units.map((unit) =>
-          questionService
-            .getByUnit(courseId, unit.unitNumber)
-            .catch(() => [] as Question[])
-        );
-
-        const questionsArrays = await Promise.all(questionsPromises);
-        const flattenedQuestions = questionsArrays.flat();
-        setAllQuestions(flattenedQuestions);
+        const allCourseQuestions = await questionService.getAllByCourse(courseId);
+        setAllQuestions(allCourseQuestions);
       } catch (error) {
         console.error('Error loading questions:', error);
       } finally {
@@ -61,7 +48,7 @@ export default function QuestionSelector({
     };
 
     loadQuestions();
-  }, [courseId, courses]);
+  }, [courseId]);
 
   const filteredQuestions = allQuestions.filter((q) =>
     q.questionText.toLowerCase().includes(searchQuery.toLowerCase())
@@ -297,19 +284,33 @@ function CreateQuestionForm({
   onCancel,
 }: CreateQuestionFormProps) {
   const createQuestionMutation = useCreateQuestion();
+  const createGeneralQuestionMutation = useCreateGeneralQuestion();
   const course = courses?.find((c) => c.id === courseId);
 
   const handleSave = async (question: Question) => {
     try {
-      const newQuestion = await createQuestionMutation.mutateAsync({
-        courseId,
-        unitNumber: question.unitNumber || 1, // Si no hay unitNumber, asignar a unidad 1
-        data: {
-          questionText: question.questionText,
-          questionType: question.questionType,
-          payload: question.payload,
-        },
-      });
+      let newQuestion: Question;
+      
+      if (question.unitNumber === null || question.unitNumber === undefined) {
+        newQuestion = await createGeneralQuestionMutation.mutateAsync({
+          courseId,
+          data: {
+            questionText: question.questionText,
+            questionType: question.questionType,
+            payload: question.payload,
+          },
+        });
+      } else {
+        newQuestion = await createQuestionMutation.mutateAsync({
+          courseId,
+          unitNumber: question.unitNumber,
+          data: {
+            questionText: question.questionText,
+            questionType: question.questionType,
+            payload: question.payload,
+          },
+        });
+      }
 
       onQuestionCreated(newQuestion);
       alert('Pregunta creada exitosamente');
