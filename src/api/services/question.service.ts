@@ -100,7 +100,29 @@ const update = async (
   }
 };
 
-// Eliminar una pregunta
+const createGeneral = async (
+  courseId: string,
+  data: Omit<Question, 'id' | 'unitNumber'>
+): Promise<Question> => {
+  const response = await apiClient.post<ApiResponse<Question>>(
+    `/courses/${courseId}/questions`,
+    data,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  return response.data.data;
+};
+
+const getAllByCourse = async (courseId: string): Promise<Question[]> => {
+  const response = await apiClient.get<ApiResponse<Question[]>>(
+    `/courses/${courseId}/questions`
+  );
+  return response.data.data;
+};
+
 const remove = async (
   courseId: string,
   unitNumber: number,
@@ -113,6 +135,8 @@ const remove = async (
 
 export const questionService = {
   create,
+  createGeneral,
+  getAllByCourse,
   getByUnit,
   update,
   delete: remove,

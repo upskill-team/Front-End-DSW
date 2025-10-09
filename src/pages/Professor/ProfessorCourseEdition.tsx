@@ -22,6 +22,7 @@ import CourseConfigModal from '../../components/professor/courseEditor/modals/Co
 import UnitModal from '../../components/professor/courseEditor/modals/UnitModal';
 import QuestionEditor from '../../components/professor/courseEditor/QuestionEditor';
 import UnitModalUpload from '../../components/landing/professorCourseEdition/UnitModalUpload';
+import GeneralQuestionsManager from '../../components/professor/courseEditor/GeneralQuestionsManager';
 import type { Block } from '@blocknote/core';
 import type { Unit, UnitEditorData, Question } from '../../types/entities';
 import { QuestionType } from '../../types/entities';
@@ -71,6 +72,7 @@ export default function ProfessorCourseEditorPage() {
   const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
   const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
+  const [isGeneralQuestionsOpen, setIsGeneralQuestionsOpen] = useState(false);
   const [newQuestion, setNewQuestion] = useState<Question>({
     questionText: '',
     questionType: QuestionType.MultipleChoiceOption,
@@ -625,6 +627,7 @@ export default function ProfessorCourseEditorPage() {
   return (
     <div className="container mx-auto max-w-7xl">
       <CourseHeader
+        courseId={courseId}
         courseName={courseConfig.name}
         onSave={handleGlobalSave}
         onToggleEdit={() => setEditable(!editable)}
@@ -633,6 +636,7 @@ export default function ProfessorCourseEditorPage() {
         saveError={saveError}
         isEditMode={editable}
         lastSavedAt={lastSavedAt || undefined}
+        onOpenGeneralQuestions={() => setIsGeneralQuestionsOpen(true)}
       />
 
       <div className="grid lg:grid-cols-4 gap-6">
@@ -727,6 +731,14 @@ export default function ProfessorCourseEditorPage() {
         }}
         handleAddMaterials={handleUploadMaterial}
       />
+
+      {courseId && (
+        <GeneralQuestionsManager
+          courseId={courseId}
+          isOpen={isGeneralQuestionsOpen}
+          onClose={() => setIsGeneralQuestionsOpen(false)}
+        />
+      )}
     </div>
   );
 }
