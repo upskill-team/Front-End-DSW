@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../ui/Button';
 import SaveStatus from './SaveStatus';
 import Switch from '../../ui/Switch';
-import { ArrowLeft, Edit, Eye, FileText } from 'lucide-react';
+import { ArrowLeft, Edit, Eye, FileText, HelpCircle } from 'lucide-react';
 
 interface CourseHeaderProps {
   courseId?: string;
@@ -14,6 +14,7 @@ interface CourseHeaderProps {
   saveError?: string | null;
   lastSavedAt?: Date;
   isEditMode?: boolean;
+  onOpenGeneralQuestions?: () => void;
 }
 
 export default function CourseHeader({
@@ -26,6 +27,7 @@ export default function CourseHeader({
   saveError = null,
   lastSavedAt,
   isEditMode = false,
+  onOpenGeneralQuestions,
 }: CourseHeaderProps) {
   const navigate = useNavigate();
 
@@ -42,14 +44,26 @@ export default function CourseHeader({
           </Button>
         </Link>
         {courseId && (
-          <Button
-            variant="outline"
-            onClick={() => navigate(`/professor/dashboard/assessments?courseId=${courseId}`)}
-            className="flex items-center gap-2"
-          >
-            <FileText className="w-4 h-4" />
-            Ver Evaluaciones del Curso
-          </Button>
+          <>
+            <Button
+              variant="outline"
+              onClick={() => navigate(`/professor/dashboard/assessments?courseId=${courseId}`)}
+              className="flex items-center gap-2"
+            >
+              <FileText className="w-4 h-4" />
+              Ver Evaluaciones del Curso
+            </Button>
+            {onOpenGeneralQuestions && (
+              <Button
+                variant="outline"
+                onClick={onOpenGeneralQuestions}
+                className="flex items-center gap-2"
+              >
+                <HelpCircle className="w-4 h-4" />
+                Preguntas Generales
+              </Button>
+            )}
+          </>
         )}
       </div>
 
