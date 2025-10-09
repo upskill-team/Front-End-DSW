@@ -79,11 +79,6 @@ export default function QuestionForm({
       return;
     }
 
-    if (showUnitSelector && formData.unitNumber === null) {
-      alert('Por favor selecciona una unidad o elige "Sin unidad"');
-      return;
-    }
-
     setIsSaving(true);
     try {
       const questionData: Question = {
