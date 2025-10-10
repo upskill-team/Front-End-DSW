@@ -1,10 +1,10 @@
-import { useCreateBlockNote } from "@blocknote/react";
-import { BlockNoteView } from "@blocknote/mantine";
-import "@blocknote/mantine/style.css";
-import "@blocknote/core/fonts/inter.css";
-import type { Block, PartialBlock } from "@blocknote/core";
-import { useUploadUnitFile } from "../../hooks/useUnits.ts";
-import { useEffect } from "react";
+import { useCreateBlockNote } from '@blocknote/react';
+import { BlockNoteView } from '@blocknote/mantine';
+import '@blocknote/mantine/style.css';
+import '@blocknote/core/fonts/inter.css';
+import type { Block, PartialBlock } from '@blocknote/core';
+import { useUploadUnitFile } from '../../hooks/useUnits.ts';
+import { useEffect } from 'react';
 
 interface UnitEditorProps {
   editable?: boolean;
@@ -38,10 +38,13 @@ export default function UnitEditor({
             blocksToLoad = parsed;
           }
         } catch (e) {
-          console.error("El contenido inicial de la unidad no es un JSON válido.", e);
+          console.error(
+            'El contenido inicial de la unidad no es un JSON válido.',
+            e
+          );
         }
       }
-      
+
       const currentEditorContent = JSON.stringify(editor.document);
       if (currentEditorContent !== JSON.stringify(blocksToLoad)) {
         editor.replaceBlocks(editor.document, blocksToLoad);
@@ -50,13 +53,15 @@ export default function UnitEditor({
   }, [editor, initialContent]);
 
   return (
-    <BlockNoteView
-      theme="light"
-      editable={editable}
-      editor={editor}
-      onChange={() => {
-        onChange(editor.document);
-      }}
-    />
+    <div className="blocknote-editor-wrapper relative">
+      <BlockNoteView
+        theme="light"
+        editable={editable}
+        editor={editor}
+        onChange={() => {
+          onChange(editor.document);
+        }}
+      />
+    </div>
   );
 }

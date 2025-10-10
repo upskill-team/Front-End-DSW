@@ -1,0 +1,143 @@
+import apiClient from '../apiClient';
+import type { Question } from '../../types/entities';
+
+interface ApiResponse<T> {
+  status: number;
+  message: string;
+  data: T;
+}
+
+// Crear una nueva pregunta para una unidad
+const create = async (
+  courseId: string,
+  unitNumber: number,
+  data: Omit<Question, 'id' | 'unitNumber'>
+): Promise<Question> => {
+  try {
+    // Ensure unitNumber is included in the payload
+    const questionData = {
+      ...data,
+      unitNumber: unitNumber,
+    };
+
+    console.log('Creating question:', {
+      courseId,
+      unitNumber,
+      data: questionData,
+    });
+    const response = await apiClient.post<ApiResponse<Question>>(
+      `/courses/${courseId}/units/${unitNumber}/questions`,
+      questionData,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log('Question created:', response.data);
+    return response.data.data;
+  } catch (error) {
+    console.error('Error creating question:', error);
+    throw error;
+  }
+};
+
+// Obtener preguntas de una unidad
+const getByUnit = async (
+  courseId: string,
+  unitNumber: number
+): Promise<Question[]> => {
+  try {
+    console.log('Fetching questions for:', { courseId, unitNumber });
+    const response = await apiClient.get<ApiResponse<Question[]>>(
+      `/courses/${courseId}/units/${unitNumber}/questions`
+    );
+    console.log('Questions response:', response.data);
+    return response.data.data;
+  } catch (error) {
+    console.error('Error fetching questions:', error);
+    throw error;
+  }
+};
+
+// Actualizar una pregunta
+const update = async (
+  courseId: string,
+  unitNumber: number,
+  questionId: string,
+  data: Partial<Question>
+): Promise<Question> => {
+  try {
+    // El backend acepta los datos directamente (sin wrapper)
+    // Solo enviamos los campos que queremos modificar (PATCH)
+    const payload = {
+      questionText: data.questionText,
+      questionType: data.questionType,
+      payload: data.payload,
+    };
+
+    console.log('Updating question:', {
+      courseId,
+      unitNumber,
+      questionId,
+      data,
+      payload,
+    });
+    const response = await apiClient.patch<ApiResponse<Question>>(
+      `/courses/${courseId}/units/${unitNumber}/questions/${questionId}`,
+      payload,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log('Question updated:', response.data);
+    return response.data.data;
+  } catch (error) {
+    console.error('Error updating question:', error);
+    throw error;
+  }
+};
+
+const createGeneral = async (
+  courseId: string,
+  data: Omit<Question, 'id' | 'unitNumber'>
+): Promise<Question> => {
+  const response = await apiClient.post<ApiResponse<Question>>(
+    `/courses/${courseId}/questions`,
+    data,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  return response.data.data;
+};
+
+const getAllByCourse = async (courseId: string): Promise<Question[]> => {
+  const response = await apiClient.get<ApiResponse<Question[]>>(
+    `/courses/${courseId}/questions`
+  );
+  return response.data.data;
+};
+
+const remove = async (
+  courseId: string,
+  unitNumber: number,
+  questionId: string
+): Promise<void> => {
+  await apiClient.delete(
+    `/courses/${courseId}/units/${unitNumber}/questions/${questionId}`
+  );
+};
+
+export const questionService = {
+  create,
+  createGeneral,
+  getAllByCourse,
+  getByUnit,
+  update,
+  delete: remove,
+};

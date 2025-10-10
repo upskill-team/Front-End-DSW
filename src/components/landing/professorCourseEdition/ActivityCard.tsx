@@ -1,6 +1,5 @@
-import { Check, Trash2, X } from "lucide-react";
-import Button from "../../ui/Button.tsx";
-
+import { Check, Trash2, X } from 'lucide-react';
+import Button from '../../ui/Button.tsx';
 type Activity = {
   id: number | string;
   type: string;
@@ -29,8 +28,8 @@ export default function ActivityCard({ activity }: { activity: Activity }) {
                 <span
                   className={
                     activity.correctAnswer === index
-                      ? "text-green-600 font-medium"
-                      : "text-slate-600"
+                      ? 'text-green-600 font-medium'
+                      : 'text-slate-600'
                   }
                 >
                   {option}

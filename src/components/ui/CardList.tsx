@@ -4,14 +4,36 @@ import { cn } from '../../lib/utils';
 import Button from './Button';
 import Badge from './Badge';
 import { Card, CardContent, CardTitle, CardDescription } from './Card';
-import type { Course } from '../../types/entities'; 
+
+import { Link } from 'react-router-dom';
+
+interface Course {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+  price: number;
+  originalPrice: number;
+  views: number;
+  rating: number;
+  students: number;
+  duration: string;
+  level: string;
+  category: string;
+  instructor: string;
+  lessons: number;
+  isNew: boolean;
+  isBestseller: boolean;
+}
+import type { Course } from '../../types/entities';
 
 /**
  * @interface CourseCardListProps
  * @extends React.HTMLAttributes<HTMLDivElement>
  * @property {Course} course - The course data object to display.
  */
-export interface CourseCardListProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface CourseCardListProps
+  extends React.HTMLAttributes<HTMLDivElement> {
   course: Course;
 }
 
@@ -48,10 +70,17 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
           <div className="flex flex-col md:flex-row gap-4 md:gap-6">
             <div className="relative flex-shrink-0 overflow-hidden rounded-lg">
               <img
-                src={course.imageUrl || '/img/noImage.jpg'}
+                src={course.imageUrl || 'public/img/noImage.jpg'}
                 alt={course.name}
-                className="w-full h-40 md:w-48 md:h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+                className="w-full h-40 md:w-48 md:h-32 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
               />
+              <div className="absolute top-2 left-2 flex flex-col gap-1">
+                {course.isFree && (
+                  <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                    Gratis
+                  </span>
+                )}
+              </div>
             </div>
 
             <div className="flex-1 min-w-0">
@@ -62,8 +91,10 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                       {course.courseType?.name || 'Sin Categoría'}
                     </Badge>
                   </div>
-                  <CardTitle className="mb-2 group-hover:text-blue-600 transition-colors text-lg md:text-xl line-clamp-2">
-                    {course.name}
+                  <CardTitle className="mb-2 group-hover:text-blue-600 transition-colors text-lg md:text-xl">
+                    <Link to={`/courses/${course.id}`}>
+                      {course.name}
+                    </Link>
                   </CardTitle>
                   <CardDescription className="mb-2 line-clamp-2 text-sm">
                     {course.description}

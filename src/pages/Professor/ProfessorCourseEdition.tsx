@@ -1,415 +1,164 @@
-import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
+import { useProfessorCourses } from '../../hooks/useCourses';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../../components/ui/Card";
-import Button from "../../components/ui/Button";
-import Input from "../../components/ui/Input";
-import Label from "../../components/ui/Label";
-import Textarea from "../../components/ui/TextArea";
-import Select from "../../components/ui/Select";
-import Switch from "../../components/ui/Switch";
-import { Dialog, DialogHeader, DialogTitle } from "../../components/ui/Dialog";
+  useCreateUnit,
+  useUpdateUnit,
+  useDeleteUnit,
+  useReorderUnits,
+} from '../../hooks/useUnits';
+import { useUploadMaterial, useDeleteMaterial } from '../../hooks/useMaterials';
+import { useQuickSave } from '../../hooks/useQuickSave';
 import {
-  BookOpen,
-  Plus,
-  Edit,
-  Settings,
-  ArrowLeft,
-  GripVertical,
-  Trash2,
-  Upload,
-  FileText,
-} from "lucide-react";
-import UnitEditor from "../../components/landing/UnitEditor.tsx";
-import {
-  useProfessorCourses,
-  useUpdateCourse,
-} from "../../hooks/useCourses.ts";
-import type { Block } from "@blocknote/core";
-import ProfessorCourseActivityEdition from "./ProfessorCourseActivityEdition.tsx";
-import ActivityCard from "../../components/landing/professorCourseEdition/ActivityCard.tsx";
-import UnitModalUpload from "../../components/landing/professorCourseEdition/UnitModalUpload.tsx";
-import type { Question } from "../../types/entities.ts";
-
-type Unit = {
-  unitNumber: number;
-  name: string;
-  description: string; // Este campo parece no estar en el backend, lo mantendremos localmente.
-  detail: string;
-  activities: Activity[];
-  materials: Material[];
-}
-
-type Material = {
-  id: number | string;
-  name: string;
-  file?: File;
-  url?: string; // URL only for uploaded files
-}
-
-type Activity = {
-  id: number | string;
-  type: string;
-  question: string;
-  options: string[];
-  correctAnswer: number;
-  createdAt: string;
-};
-
-// Uploads a file to tmpfiles.org and returns the URL to the uploaded file.
+  useQuestions,
+  useCreateQuestion,
+  useUpdateQuestion,
+  useDeleteQuestion,
+} from '../../hooks/useQuestions';
+import CourseHeader from '../../components/professor/courseEditor/CourseHeader';
+import CourseSidebar from '../../components/professor/courseEditor/CourseSidebar';
+import UnitContent from '../../components/professor/courseEditor/UnitContent';
+import CourseConfigModal from '../../components/professor/courseEditor/modals/CourseConfigModal';
+import UnitModal from '../../components/professor/courseEditor/modals/UnitModal';
+import QuestionEditor from '../../components/professor/courseEditor/QuestionEditor';
+import UnitModalUpload from '../../components/landing/professorCourseEdition/UnitModalUpload';
+import GeneralQuestionsManager from '../../components/professor/courseEditor/GeneralQuestionsManager';
+import type { Block } from '@blocknote/core';
+import type { Unit, UnitEditorData, Question } from '../../types/entities';
+import { QuestionType } from '../../types/entities';
 
 export default function ProfessorCourseEditorPage() {
-  const { courseId } = useParams();
+  const { courseId } = useParams<{ courseId: string }>();
 
+  // Hooks para datos del backend
   const { data: courses, isLoading: isLoadingCourses } = useProfessorCourses();
-  const { mutate: updateCourse, isPending: isUpdatingCourse } =
-    useUpdateCourse();
+  const createUnitMutation = useCreateUnit();
+  const updateUnitMutation = useUpdateUnit();
+  const deleteUnitMutation = useDeleteUnit();
+  const reorderUnitsMutation = useReorderUnits();
+  const uploadMaterialMutation = useUploadMaterial();
+  const deleteMaterialMutation = useDeleteMaterial();
+  const quickSaveMutation = useQuickSave();
+  const createQuestionMutation = useCreateQuestion();
+  const updateQuestionMutation = useUpdateQuestion();
+  const deleteQuestionMutation = useDeleteQuestion();
 
-  // Estado del curso (debería venir de tu API)
+  // Estados principales
   const [courseConfig, setCourseConfig] = useState({
-    name: "",
-    description: "",
-    status: "en-desarrollo",
+    name: '',
+    description: '',
+    status: 'en-desarrollo',
     isFree: false,
     price: 0,
   });
-  const [, setImagePreview] = useState<string | null>(null)
-  const [tempConfig, setTempConfig] = useState(courseConfig)
-  const [newImageFile, setNewImageFile] = useState<File | null>(null)
+  const [units, setUnits] = useState<UnitEditorData[]>([]);
+  const [selectedUnitId, setSelectedUnitId] = useState<number | null>(null);
+  const [editable, setEditable] = useState(false);
 
-  // Estado de la nueva actividad
-  const [newActivity, setNewActivity] = useState({
-    question: "",
-    options: ["", "", "", ""],
-    correctAnswer: 0,
-  });
+  // Hook para preguntas de la unidad seleccionada
+  const { data: questions = [] } = useQuestions(courseId || '', selectedUnitId);
 
-  // Estado de las unidades (debería venir de tu API)
-  const [units, setUnits] = useState<Unit[]>([]);
+  // Estados para feedback de guardado
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
 
-  // Estado de si el editor es editable o solo lectura
-  const [editable, setEditable] = useState(true);
+  // Refs para el debouncing mejorado
+  const saveTimeoutRef = useRef<number | null>(null);
+  const lastChangeRef = useRef<Date>(new Date());
+  const previousUnitRef = useRef<number | null>(null);
 
-  const [draggedUnit, setDraggedUnit] = useState<Unit | null>(null);
-
-  // Estados de los modales
+  // Estados para modales
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
   const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
   const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
-  const [stagedMaterials, setStagedMaterials] = useState<Material[]>([]);
-  const [editingUnit, setEditingUnit] = useState<Unit | null>(null);
-  const [selectedUnitId, setSelectedUnitId] = useState<number | null>(1);
-  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
+  const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
+  const [isGeneralQuestionsOpen, setIsGeneralQuestionsOpen] = useState(false);
+  const [newQuestion, setNewQuestion] = useState<Question>({
+    questionText: '',
+    questionType: QuestionType.MultipleChoiceOption,
+    payload: {
+      options: ['', '', '', ''],
+      correctAnswer: 0,
+    },
+  });
 
-  // Estados de los formularios
-  const [newUnitName, setNewUnitName] = useState("");
-  const [newUnitDescription, setNewUnitDescription] = useState("");
+  // Estados para formularios
+  const [tempConfig, setTempConfig] = useState(courseConfig);
+  const [, setNewImageFile] = useState<File | null>(null);
+  const [editingUnit, setEditingUnit] = useState<Unit | null>(null);
+  const [newUnitName, setNewUnitName] = useState('');
+  const [newUnitDescription, setNewUnitDescription] = useState('');
+  const [stagedMaterials, setStagedMaterials] = useState<
+    { id: number | string; name: string; file?: File; url?: string }[]
+  >([]);
+
+  // Estados para drag & drop
+  const [draggedUnit, setDraggedUnit] = useState<UnitEditorData | null>(null);
 
   const selectedUnit = units.find((u) => u.unitNumber === selectedUnitId);
 
-  // Manejadores -------------------------------------------
+  // Función para realizar el guardado
+  const performSave = useCallback(
+    (unitId: number, detailJson: string) => {
+      if (!courseId) return;
 
-  const handleDragStart = (e: React.DragEvent, unit: Unit) => {
-    setDraggedUnit(unit);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e: React.DragEvent, targetUnit: Unit) => {
-    e.preventDefault();
-    if (draggedUnit && draggedUnit.unitNumber !== targetUnit.unitNumber) {
-      const draggedIndex = units.findIndex(
-        (u) => u.unitNumber === draggedUnit.unitNumber
-      );
-      const targetIndex = units.findIndex(
-        (u) => u.unitNumber === targetUnit.unitNumber
-      );
-      const newUnits = [...units];
-      const [removed] = newUnits.splice(draggedIndex, 1);
-      newUnits.splice(targetIndex, 0, removed);
-      setUnits(newUnits);
-    }
-    setDraggedUnit(null);
-  };
-
-  const handleCloseUnitModal = () => {
-    setIsUnitModalOpen(false);
-    setEditingUnit(null);
-    setNewUnitName("");
-    setNewUnitDescription("");
-  };
-
-  const handleOpenCreateUnitModal = () => {
-    setEditingUnit(null);
-    setNewUnitName("");
-    setNewUnitDescription("");
-    setIsUnitModalOpen(true);
-  };
-
-  const handleAddOrUpdateUnit = () => {
-    if (editingUnit) {
-      setUnits(
-        units.map((u) =>
-          u.unitNumber === editingUnit.unitNumber
-            ? { ...u, name: newUnitName, description: newUnitDescription }
-            : u
-        )
-      );
-    } else {
-      const newUnit = {
-        unitNumber: units.length + 1,
-        name: newUnitName,
-        description: newUnitDescription,
-        detail: JSON.stringify([
-          { type: "heading", content: newUnitName },
-          { type: "paragraph", content: "" },
-        ]),
-        activities: [],
-        materials: [],
-      };
-      setUnits([...units, newUnit]);
-    }
-    handleCloseUnitModal();
-  };
-
-  const handleEditUnitClick = (unit: Unit) => {
-    setEditingUnit(unit);
-    setNewUnitName(unit.name);
-    setNewUnitDescription(unit.description);
-    setIsUnitModalOpen(true);
-  };
-
-  const handleDeleteUnit = (unitNumberToDelete: number) => {
-    const isConfirmed = window.confirm(
-      "¿Estás seguro de que quieres eliminar esta unidad? Esta acción no se puede deshacer."
-    );
-
-    if (isConfirmed) {
-      const updatedUnits = units.filter(
-        (unit) => unit.unitNumber !== unitNumberToDelete
-      );
-      setUnits(updatedUnits);
-
-      if (selectedUnitId === unitNumberToDelete) {
-        setSelectedUnitId(
-          updatedUnits.length > 0 ? updatedUnits[0].unitNumber : null
-        );
-      }
-    }
-  };
-
-  const handleUnitDetailChange = (newBlocks: Block[]) => {
-    if (!selectedUnitId) return;
-
-    const newDetailJson = JSON.stringify(newBlocks);
-
-    setUnits((currentUnits) =>
-      currentUnits.map((unit) =>
-        unit.unitNumber === selectedUnitId
-          ? { ...unit, detail: newDetailJson }
-          : unit
-      )
-    );
-  };
-
-  const handleOpenConfigModal = () => {
-    setTempConfig({ ...courseConfig });
-    setIsConfigModalOpen(true);
-  };
-
-  const handleApplyConfigChanges = () => {
-    setCourseConfig(tempConfig);
-    setIsConfigModalOpen(false);
-  };
-
-  const handleGlobalSave = () => {
-  if (!courseId) {
-    alert("No se pudo encontrar el ID del curso.");
-    return;
-  }
-
-  const formData = new FormData();
-
-  const courseDataForBackend = {
-    name: courseConfig.name,
-    description: courseConfig.description,
-    status: courseConfig.status,
-    price: courseConfig.isFree ? 0 : courseConfig.price,
-    isFree: courseConfig.isFree,
-
-    units: units.map(unit => ({
-      unitNumber: unit.unitNumber,
-      name: unit.name,
-      detail: unit.detail,
-      materials: unit.materials.map(material => ({
-        title: material.name,
-        url: material.url || (material.file ? material.file.name : 'error-no-url'),
-        })),
-      questions: unit.activities.map(activity => ({
-        questionText: activity.question,
-        questionType: 'MultipleChoiceOption',
-        payload: {
-          options: activity.options,
-          correctAnswer: activity.correctAnswer,
+      quickSaveMutation.mutate(
+        {
+          courseId,
+          data: {
+            type: 'unit-content',
+            data: {
+              unitNumber: unitId,
+              detail: detailJson,
+            },
+          },
         },
-        })),
-      })),
-    };
-
-    if (newImageFile) {
-      formData.append('image', newImageFile);
-    }
-
-    units.forEach(unit => {
-      unit.materials.forEach(material => {
-        if (material.file) {
-          formData.append('materials', material.file, material.file.name);
+        {
+          onSuccess: () => {
+            setUnits((currentUnits) =>
+              currentUnits.map((unit) =>
+                unit.unitNumber === unitId
+                  ? { ...unit, hasUnsavedChanges: false }
+                  : unit
+              )
+            );
+            setSaveError(null);
+            setLastSavedAt(new Date());
+          },
+          onError: (error) => {
+            setUnits((currentUnits) =>
+              currentUnits.map((unit) =>
+                unit.unitNumber === unitId
+                  ? { ...unit, hasUnsavedChanges: true }
+                  : unit
+              )
+            );
+            setSaveError(error.message || 'Error desconocido');
+          },
         }
-      });
-    });
-
-    formData.append('courseData', JSON.stringify(courseDataForBackend));
-
-    updateCourse({ courseId, data: formData }, {
-      onSuccess: () => {
-        alert("¡Curso guardado con éxito!");
-      },
-      onError: (error) => {
-        console.error("Error al guardar el curso:", error);
-        alert("Hubo un error al guardar el curso. Revisa la consola para más detalles.");
-      }
-    });
-  }
-
-  // Add file handlers for materials
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      const allowedTypes = [
-        "application/pdf",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      ];
-      const validFiles = Array.from(files).filter((file) =>
-        allowedTypes.includes(file.type)
       );
+    },
+    [courseId, quickSaveMutation]
+  );
 
-      if (validFiles.length !== files.length) {
-        alert(
-          "Algunos archivos fueron descartados por tener un formato no permitido (solo PDF, DOCX, XLSX)."
-        );
-      }
-
-      const newMaterials: Material[] = validFiles.map((file) => ({
-        id: Date.now() + Math.random(),
-        file: file,
-        name: file.name.replace(/\.[^/.]+$/, ""),
-      }));
-
-      setStagedMaterials((prev) => [...prev, ...newMaterials]);
+  // Función para guardado manual
+  const handleManualSave = useCallback(() => {
+    if (!selectedUnitId || !courseId) {
+      setSaveError('No hay unidad seleccionada para guardar');
+      return;
     }
-  }; 
 
-  const handleTitleChange = (id: number | string, newTitle: string) => { // <-- CAMBIO AQUÍ
-    setStagedMaterials((prev) =>
-      prev.map((material) =>
-        material.id === id ? { ...material, name: newTitle } : material
-      )
-    );
-  }
-
-  const handleRemoveStagedFile = (idToRemove: number | string) => {
-    setStagedMaterials((prev) =>
-      prev.filter((material) => material.id !== idToRemove)
-    );
-  }
-
-  /*
-  * Adds the staged materials to the selected unit and clears the staged list.
-  */
-  const handleAddMaterials = () => {
-    if (!selectedUnitId || stagedMaterials.length === 0) return;
-
-    const newMaterials: Material[] = stagedMaterials.map((material) => ({
-      id: material.id,
-      name: material.name,
-      file: material.file,
-    }));
-
-    setUnits((currentUnits) =>
-      currentUnits.map((unit) =>
-        unit.unitNumber === selectedUnitId
-          ? { ...unit, materials: [...unit.materials, ...newMaterials] }
-          : unit
-      )
-    );
-
-    setStagedMaterials([]);
-    setIsMaterialModalOpen(false);
-  };
-
-  const handleDeleteMaterial = (materialIdToDelete: number | string) => {
-    if (!selectedUnitId) return;
-
-    const isConfirmed = window.confirm(
-      "¿Estás seguro de que quieres eliminar este material?"
-    );
-    if (isConfirmed) {
-      setUnits((currentUnits) =>
-        currentUnits.map((unit) =>
-          unit.unitNumber === selectedUnitId
-            ? {
-                ...unit,
-                materials: unit.materials.filter(
-                  (m) => m.id !== materialIdToDelete
-                ),
-              }
-            : unit
-        )
-      );
+    const currentUnit = units.find((u) => u.unitNumber === selectedUnitId);
+    if (currentUnit && currentUnit.hasUnsavedChanges) {
+      performSave(selectedUnitId, currentUnit.detail);
+    } else {
+      // Si no hay cambios pendientes, actualiza el timestamp para mostrar feedback positivo
+      setLastSavedAt(new Date());
+      setSaveError(null);
     }
-  };
+  }, [selectedUnitId, courseId, units, performSave]);
 
-  const handleAddActivity = () => {
-    if (
-      newActivity.question.trim() &&
-      newActivity.options.every((opt) => opt.trim())
-    ) {
-      const activity = {
-        id: Date.now() + Math.random(), 
-        type: "multiple-choice",
-        question: newActivity.question,
-        options: newActivity.options,
-        correctAnswer: newActivity.correctAnswer,
-        createdAt: new Date().toISOString(),
-      };
-
-      setUnits(
-        units.map((unit) =>
-          unit.unitNumber === selectedUnitId
-            ? { ...unit, activities: [...unit.activities, activity] }
-            : unit
-        )
-      );
-
-      setNewActivity({
-        question: "",
-        options: ["", "", "", ""],
-        correctAnswer: 0,
-      });
-      setIsActivityModalOpen(!isActivityModalOpen);
-
-      console.log(units);
-    }
-  };
-
+  // Cargar datos del curso desde el backend
   useEffect(() => {
     if (courses && courseId) {
       const currentCourse = courses.find((course) => course.id === courseId);
@@ -417,39 +166,21 @@ export default function ProfessorCourseEditorPage() {
         setCourseConfig({
           name: currentCourse.name,
           description: currentCourse.description,
-          status: "en-desarrollo", // El estado es local del frontend por ahora
+          status: currentCourse.status || 'en-desarrollo',
           isFree: currentCourse.isFree,
           price: currentCourse.price,
         });
 
-        if (currentCourse.imageUrl) {
-          setImagePreview(currentCourse.imageUrl);
-        }
-
-        const unitsFromBackend: Unit[] = (currentCourse.units || []).map(unitBackend => ({
+        // Convertir unidades del backend a formato del editor
+        const unitsFromBackend: UnitEditorData[] = (
+          currentCourse.units || []
+        ).map((unitBackend) => ({
           unitNumber: unitBackend.unitNumber,
           name: unitBackend.name,
-          description: "Descripción de la unidad",
           detail: unitBackend.detail,
-          materials: (unitBackend.materials || []).map(materialBackend => ({
-            id: materialBackend.url,
-            name: materialBackend.title,
-            url: materialBackend.url,
-            file: undefined
-          })),
-          activities: (unitBackend.questions || []).map((questionBackend: Question) => {
-            
-            const isObject = typeof questionBackend === 'object' && questionBackend !== null;
-            const payload = isObject && questionBackend.payload ? questionBackend.payload : { options: [], correctAnswer: 0 };
-            return {
-              id: isObject ? questionBackend.id : Date.now() + Math.random(), 
-              type: "multiple-choice",
-              question: isObject ? questionBackend.questionText : 'Error: Pregunta no cargada',
-              options: payload.options || [],
-              correctAnswer: payload.correctAnswer as number,
-              createdAt: new Date().toISOString()
-            };
-          })
+          questions: unitBackend.questions,
+          materials: unitBackend.materials,
+          // Las preguntas ahora se manejan directamente desde questions[]
         }));
 
         setUnits(unitsFromBackend);
@@ -459,12 +190,429 @@ export default function ProfessorCourseEditorPage() {
         }
       }
     }
-  }, [courses, courseId])
+  }, [courses, courseId]);
 
+  // Efecto para auto-guardar cuando cambias de unidad
+  useEffect(() => {
+    const currentUnitId = selectedUnitId;
+    const previousUnitId = previousUnitRef.current;
+
+    // Si cambió de unidad y hay una unidad anterior con cambios no guardados
+    if (previousUnitId && previousUnitId !== currentUnitId && courseId) {
+      const previousUnit = units.find((u) => u.unitNumber === previousUnitId);
+
+      if (previousUnit && previousUnit.hasUnsavedChanges) {
+        performSave(previousUnitId, previousUnit.detail);
+      }
+    }
+
+    // Actualizar referencia de unidad anterior
+    previousUnitRef.current = currentUnitId;
+  }, [selectedUnitId, courseId, units, performSave]);
+
+  // Efecto para auto-guardar antes de salir de la página
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      const hasUnsavedChanges = units.some((unit) => unit.hasUnsavedChanges);
+
+      if (hasUnsavedChanges) {
+        // Intentar guardar rápidamente
+        const unitWithChanges = units.find((unit) => unit.hasUnsavedChanges);
+        if (unitWithChanges && courseId) {
+          performSave(unitWithChanges.unitNumber, unitWithChanges.detail);
+        }
+
+        // Mostrar advertencia al usuario
+        event.preventDefault();
+        event.returnValue =
+          '¿Estás seguro de que quieres salir? Hay cambios sin guardar.';
+        return event.returnValue;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [units, courseId, performSave]);
+
+  // Handlers para unidades
+  const handleCreateUnit = () => {
+    if (!courseId || !courses) return;
+
+    const currentCourse = courses.find((course) => course.id === courseId);
+    if (!currentCourse) return;
+
+    // Calcular el siguiente unitNumber
+    const maxUnitNumber = Math.max(
+      0,
+      ...(currentCourse.units || []).map((u) => u.unitNumber)
+    );
+    const nextUnitNumber = maxUnitNumber + 1;
+
+    const data = {
+      name: newUnitName,
+      detail: `<h1>${newUnitName}</h1><p></p>`,
+      unitNumber: nextUnitNumber,
+    };
+
+    createUnitMutation.mutate(
+      { courseId, data },
+      {
+        onSuccess: () => {
+          handleCloseUnitModal();
+        },
+      }
+    );
+  };
+
+  // Handler para preguntas (crear o editar)
+  const handleSaveQuestion = () => {
+    if (!courseId || !selectedUnitId) return;
+
+    const questionData = {
+      questionText: newQuestion.questionText,
+      questionType: newQuestion.questionType,
+      payload: newQuestion.payload,
+    };
+
+    const isEditing = !!newQuestion.id;
+
+    if (isEditing) {
+      // Actualizar pregunta existente
+      updateQuestionMutation.mutate(
+        {
+          courseId,
+          unitNumber: selectedUnitId,
+          questionId: newQuestion.id!,
+          data: questionData,
+        },
+        {
+          onSuccess: () => {
+            setIsQuestionModalOpen(false);
+            resetQuestionForm();
+          },
+          onError: (error) => {
+            alert(`Error al actualizar pregunta: ${error.message}`);
+          },
+        }
+      );
+    } else {
+      // Crear nueva pregunta
+      createQuestionMutation.mutate(
+        {
+          courseId,
+          unitNumber: selectedUnitId,
+          data: questionData,
+        },
+        {
+          onSuccess: () => {
+            setIsQuestionModalOpen(false);
+            resetQuestionForm();
+          },
+          onError: (error) => {
+            alert(`Error al crear pregunta: ${error.message}`);
+          },
+        }
+      );
+    }
+  };
+
+  const resetQuestionForm = () => {
+    setNewQuestion({
+      questionText: '',
+      questionType: QuestionType.MultipleChoiceOption,
+      payload: {
+        options: ['', '', '', ''],
+        correctAnswer: 0,
+      },
+    });
+  };
+
+  // Handler para editar pregunta
+  const handleEditQuestion = (question: Question) => {
+    setNewQuestion({ ...question });
+    setIsQuestionModalOpen(true);
+  };
+
+  // Handler para cerrar el modal de pregunta
+  const handleCloseQuestionModal = () => {
+    setIsQuestionModalOpen(false);
+    resetQuestionForm();
+  };
+
+  // Handler para borrar pregunta
+  const handleDeleteQuestion = (questionId: string) => {
+    if (!courseId || !selectedUnitId) return;
+
+    if (confirm('¿Estás seguro de que quieres eliminar esta pregunta?')) {
+      deleteQuestionMutation.mutate(
+        {
+          courseId,
+          unitNumber: selectedUnitId,
+          questionId,
+        },
+        {
+          onSuccess: () => {
+            console.log('Pregunta eliminada exitosamente');
+          },
+          onError: (error) => {
+            alert(`Error al eliminar pregunta: ${error.message}`);
+          },
+        }
+      );
+    }
+  };
+
+  const handleUpdateUnit = () => {
+    if (!courseId || !editingUnit) return;
+
+    const data = {
+      name: newUnitName,
+      detail: editingUnit.detail, // Mantener el detalle actual
+    };
+
+    updateUnitMutation.mutate(
+      { courseId, unitNumber: editingUnit.unitNumber, data },
+      {
+        onSuccess: () => {
+          handleCloseUnitModal();
+        },
+      }
+    );
+  };
+
+  const handleDeleteUnit = (unitNumber: number) => {
+    if (!courseId) return;
+
+    const isConfirmed = window.confirm(
+      '¿Estás seguro de que quieres eliminar esta unidad? Esta acción no se puede deshacer.'
+    );
+
+    if (isConfirmed) {
+      deleteUnitMutation.mutate({ courseId, unitNumber });
+
+      if (selectedUnitId === unitNumber) {
+        const remainingUnits = units.filter((u) => u.unitNumber !== unitNumber);
+        setSelectedUnitId(
+          remainingUnits.length > 0 ? remainingUnits[0].unitNumber : null
+        );
+      }
+    }
+  };
+
+  const handleUnitDetailChange = (newBlocks: Block[]) => {
+    if (!selectedUnitId || !courseId) return;
+
+    const newDetailJson = JSON.stringify(newBlocks);
+    lastChangeRef.current = new Date();
+
+    // Actualizar estado local inmediatamente (optimistic update)
+    setUnits((currentUnits) =>
+      currentUnits.map((unit) =>
+        unit.unitNumber === selectedUnitId
+          ? {
+              ...unit,
+              detail: newDetailJson,
+              hasUnsavedChanges: true,
+              isLoading: false,
+            }
+          : unit
+      )
+    );
+
+    // Limpiar timeout anterior
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Debounce mejorado: guardar después de 5 segundos de inactividad
+    saveTimeoutRef.current = setTimeout(() => {
+      performSave(selectedUnitId, newDetailJson);
+    }, 5000);
+  };
+
+  // Handlers para materiales
+  const handleUploadMaterial = () => {
+    if (!courseId || !selectedUnitId || stagedMaterials.length === 0) return;
+
+    stagedMaterials.forEach((material) => {
+      if (material.file) {
+        uploadMaterialMutation.mutate({
+          courseId,
+          unitNumber: selectedUnitId,
+          file: material.file,
+          title: material.name,
+        });
+      }
+    });
+
+    setStagedMaterials([]);
+    setIsMaterialModalOpen(false);
+  };
+
+  const handleDeleteMaterial = (materialId: string | number) => {
+    if (!courseId || !selectedUnitId) return;
+
+    const isConfirmed = window.confirm(
+      '¿Estás seguro de que quieres eliminar este material?'
+    );
+
+    if (isConfirmed) {
+      // Convertir ID a índice si es necesario
+      const materialIndex =
+        typeof materialId === 'number'
+          ? materialId
+          : parseInt(materialId as string, 10);
+
+      deleteMaterialMutation.mutate({
+        courseId,
+        unitNumber: selectedUnitId,
+        materialIndex,
+      });
+    }
+  };
+
+  // Handlers para drag & drop
+  const handleDragStart = (_e: React.DragEvent, unit: UnitEditorData) => {
+    setDraggedUnit(unit);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, targetUnit: UnitEditorData) => {
+    e.preventDefault();
+    if (
+      !draggedUnit ||
+      !courseId ||
+      draggedUnit.unitNumber === targetUnit.unitNumber
+    ) {
+      setDraggedUnit(null);
+      return;
+    }
+
+    const draggedIndex = units.findIndex(
+      (u) => u.unitNumber === draggedUnit.unitNumber
+    );
+    const targetIndex = units.findIndex(
+      (u) => u.unitNumber === targetUnit.unitNumber
+    );
+
+    // Crear nuevo array reordenado
+    const newUnits = [...units];
+    const [removed] = newUnits.splice(draggedIndex, 1);
+    newUnits.splice(targetIndex, 0, removed);
+
+    // Reasignar unitNumbers basados en la posición (1, 2, 3, etc.)
+    const unitsWithNewNumbers = newUnits.map((unit, index) => ({
+      ...unit,
+      unitNumber: index + 1,
+    }));
+
+    // Actualizar estado local inmediatamente
+    setUnits(unitsWithNewNumbers);
+
+    // Crear array de reordenamiento para el backend
+    const reorderData = {
+      units: unitsWithNewNumbers.map((unit, index) => ({
+        unitNumber:
+          units.find((u) => u.name === unit.name)?.unitNumber ||
+          unit.unitNumber,
+        newOrder: index + 1,
+      })),
+    };
+
+    // Llamar al backend para persistir el reordenamiento
+    reorderUnitsMutation.mutate(
+      { courseId, data: reorderData },
+      {
+        onError: () => {
+          // Si falla, revertir cambios
+          setUnits(units);
+        },
+      }
+    );
+
+    setDraggedUnit(null);
+  };
+
+  // Handlers para modales
+  const handleOpenConfigModal = () => {
+    setTempConfig({ ...courseConfig });
+    setIsConfigModalOpen(true);
+  };
+
+  const handleSaveConfig = () => {
+    if (!courseId) return;
+
+    console.log('Saving course config:', tempConfig);
+
+    quickSaveMutation.mutate(
+      {
+        courseId,
+        data: {
+          type: 'course-config',
+          data: tempConfig,
+        },
+      },
+      {
+        onSuccess: () => {
+          setCourseConfig(tempConfig);
+          setIsConfigModalOpen(false);
+          setSaveError(null);
+          setLastSavedAt(new Date());
+        },
+        onError: (error) => {
+          setSaveError(error.message || 'Error al guardar configuración');
+          alert('Error al guardar la configuración del curso');
+        },
+      }
+    );
+  };
+
+  const handleOpenCreateUnitModal = () => {
+    setEditingUnit(null);
+    setNewUnitName('');
+    setNewUnitDescription('');
+    setIsUnitModalOpen(true);
+  };
+
+  const handleEditUnit = (unit: Unit) => {
+    setEditingUnit(unit);
+    setNewUnitName(unit.name);
+    setNewUnitDescription(''); // Backend no tiene description
+    setIsUnitModalOpen(true);
+  };
+
+  const handleCloseUnitModal = () => {
+    setIsUnitModalOpen(false);
+    setEditingUnit(null);
+    setNewUnitName('');
+    setNewUnitDescription('');
+  };
+
+  const handleSaveUnit = () => {
+    if (editingUnit) {
+      handleUpdateUnit();
+    } else {
+      handleCreateUnit();
+    }
+  };
+
+  // Handlers para archivo de imagen
+  const handleImageChange = (file: File | null) => {
+    setNewImageFile(file);
+  };
+
+  // Handler para guardado global (legacy - mantener por compatibilidad)
+  const handleGlobalSave = handleManualSave;
+
+  // Loading state
   if (isLoadingCourses) {
     return <p>Cargando información del curso...</p>;
   }
 
+  // Error state
   if (!isLoadingCourses && !courses?.find((c) => c.id === courseId)) {
     return (
       <div>
@@ -472,412 +620,88 @@ export default function ProfessorCourseEditorPage() {
         <p>
           El curso que intentas editar no existe o no tienes permiso para verlo.
         </p>
-        <Link to="/professor/dashboard/courses">
-          <Button variant="outline" className="mt-4">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver a Mis Cursos
-          </Button>
-        </Link>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto max-w-7xl">
-      <div className="mb-8">
-        <Link to="/professor/dashboard/courses">
-          <Button
-            variant="ghost"
-            className="mb-4 text-slate-600 hover:text-slate-800"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver a Mis Cursos
-          </Button>
-        </Link>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-2">
-              {courseConfig.name}
-            </h1>
-            <p className="text-lg text-slate-600">
-              Edita el contenido, las actividades y la configuración de tu
-              curso.
-            </p>
-          </div>
-
-          <div className="flex items-center space-x-3">
-            <Button
-              onClick={handleGlobalSave}
-              isLoading={isUpdatingCourse}
-              disabled={isUpdatingCourse}
-              className="bg-green-500 hover:bg-green-600"
-            >
-              Guardar Cambios
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setEditable(!editable)}
-              className="flex items-center gap-2"
-            >
-              Editar Contenido
-              <Edit className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      </div>
+      <CourseHeader
+        courseId={courseId}
+        courseName={courseConfig.name}
+        onSave={handleGlobalSave}
+        onToggleEdit={() => setEditable(!editable)}
+        isSaving={quickSaveMutation.isPending}
+        hasUnsavedChanges={units.some((unit) => unit.hasUnsavedChanges)}
+        saveError={saveError}
+        isEditMode={editable}
+        lastSavedAt={lastSavedAt || undefined}
+        onOpenGeneralQuestions={() => setIsGeneralQuestionsOpen(true)}
+      />
 
       <div className="grid lg:grid-cols-4 gap-6">
         {/* Sidebar - Unidades */}
         <div className="lg:col-span-1">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Contenido del Curso</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-medium text-slate-800">Unidades</h3>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setIsUnitModalOpen(true)}
-                >
-                  <Plus className="w-4 h-4" />
-                </Button>
-              </div>
-
-              <div className="space-y-2">
-                {units.map((unit) => (
-                  <div
-                    key={unit.unitNumber}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, unit)}
-                    onDragOver={handleDragOver}
-                    onDrop={(e) => handleDrop(e, unit)}
-                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                      selectedUnitId === unit.unitNumber
-                        ? "bg-blue-50 border-blue-200"
-                        : "bg-slate-50 border-slate-200 hover:bg-slate-100"
-                    }`}
-                    onClick={() => setSelectedUnitId(unit.unitNumber)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2 flex-1 min-w-0">
-                        <GripVertical className="w-4 h-4 text-slate-400 cursor-grab flex-shrink-0" />
-                        <div className="flex-1 truncate">
-                          <h4 className="font-medium text-sm text-slate-800 truncate">
-                            {unit.name}
-                          </h4>
-                        </div>
-                      </div>
-                      <div className="flex items-center flex-shrink-0">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteUnit(unit.unitNumber);
-                          }}
-                          className="h-6 w-6 p-0 text-slate-500 hover:bg-red-100 hover:text-red-600"
-                          aria-label="Eliminar unidad"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditUnitClick(unit);
-                          }}
-                          className="h-6 w-6 p-1 text-slate-500 hover:bg-blue-100 hover:text-blue-600"
-                          aria-label="Editar unidad"
-                        >
-                          <Edit className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <hr className="my-4" />
-
-              <Button
-                variant="outline"
-                className="w-full bg-transparent"
-                size="sm"
-                onClick={handleOpenConfigModal}
-              >
-                <Settings className="w-4 h-4 mr-2" />
-                Configuración del curso
-              </Button>
-            </CardContent>
-          </Card>
+          <CourseSidebar
+            units={units}
+            selectedUnitId={selectedUnitId}
+            onUnitSelect={setSelectedUnitId}
+            onCreateUnit={handleOpenCreateUnitModal}
+            onEditUnit={handleEditUnit}
+            onDeleteUnit={handleDeleteUnit}
+            onOpenConfig={handleOpenConfigModal}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+          />
         </div>
 
-        {/* Contenido Principal - Editor de Unidad */}
+        {/* Contenido Principal */}
         <div className="lg:col-span-3">
-          {selectedUnit ? (
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <BookOpen className="w-5 h-5 text-blue-600" />
-                    <span>{selectedUnit.name}</span>
-                  </CardTitle>
-                  <CardDescription>{selectedUnit.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <UnitEditor
-                    editable={editable}
-                    initialContent={selectedUnit.detail}
-                    onChange={handleUnitDetailChange}
-                  />
-
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-end pt-4 gap-2">
-                      <Button
-                        size="md"
-                        variant="outline"
-                        onClick={() =>
-                          setIsActivityModalOpen(!isActivityModalOpen)
-                        }
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Crear Actividad
-                      </Button>
-                      <Button
-                        size="md"
-                        variant="outline"
-                        onClick={() => setIsMaterialModalOpen(true)}
-                      >
-                        <Upload className="w-4 h-4 mr-2" />
-                        Subir Material
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">
-                      Actividades de la Unidad
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {selectedUnit.activities.length === 0 ? (
-                      <p className="text-sm text-slate-500 text-center py-8">
-                        No hay actividades.
-                      </p>
-                    ) : (
-                      <div className="space-y-3">
-                        {selectedUnit.activities.map((activity) => (
-                          <ActivityCard 
-                            key={activity.id} 
-                            activity={activity} 
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">
-                      Material de la Unidad
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {selectedUnit.materials.length === 0 ? (
-                      <p className="text-sm text-slate-500 text-center py-8">
-                        No hay materiales subidos.
-                      </p>
-                    ) : (
-                      <div className="space-y-2">
-                        {selectedUnit.materials.map((material) => (
-                          <div
-                            key={material.id}
-                            className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border"
-                          >
-                            <div className="flex items-center space-x-2 min-w-0">
-                              <FileText className="w-4 h-4 text-slate-500 flex-shrink-0" />
-                              <span className="text-sm text-slate-700 truncate">
-                                {material.name}
-                              </span>
-                            </div>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-6 w-6 p-0 text-slate-500 hover:text-red-600"
-                              onClick={() => handleDeleteMaterial(material.id)}
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center p-12 bg-slate-50 border rounded-lg h-full flex flex-col justify-center items-center">
-              <BookOpen className="w-12 h-12 text-slate-400 mb-4" />
-              <h3 className="text-slate-800 font-semibold text-xl">
-                No hay unidades
-              </h3>
-              <p className="text-slate-600 mt-2">
-                Crea tu primera unidad para empezar a añadir contenido.
-              </p>
-              <Button
-                size="md"
-                className="mt-4"
-                onClick={handleOpenCreateUnitModal}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Crear Unidad
-              </Button>
-            </div>
-          )}
+          <UnitContent
+            selectedUnit={selectedUnit || null}
+            questions={questions}
+            materials={selectedUnit?.materials || []}
+            editable={editable}
+            onUnitDetailChange={handleUnitDetailChange}
+            onCreateQuestion={() => setIsQuestionModalOpen(true)}
+            onEditQuestion={handleEditQuestion}
+            onDeleteQuestion={handleDeleteQuestion}
+            onUploadMaterial={() => setIsMaterialModalOpen(true)}
+            onDeleteMaterial={handleDeleteMaterial}
+            onCreateUnit={handleOpenCreateUnitModal}
+          />
         </div>
       </div>
 
-      {/* --- Modals / Dialogs --- */}
+      {/* Modales */}
+      <CourseConfigModal
+        isOpen={isConfigModalOpen}
+        onClose={() => setIsConfigModalOpen(false)}
+        config={tempConfig}
+        onConfigChange={setTempConfig}
+        onSave={handleSaveConfig}
+        onImageChange={handleImageChange}
+      />
 
-      <Dialog open={isConfigModalOpen} onOpenChange={setIsConfigModalOpen}>
-        <DialogHeader>
-          <DialogTitle>Configuración del Curso</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <Input
-            id="course-name-config"
-            label="Nombre del curso"
-            value={tempConfig.name}
-            onChange={(e) =>
-              setTempConfig({ ...tempConfig, name: e.target.value })
-            }
-          />
-          <Textarea
-            id="course-description-config"
-            label="Descripción del curso"
-            value={tempConfig.description}
-            onChange={(e) =>
-              setTempConfig({ ...tempConfig, description: e.target.value })
-            }
-          />
-          <Select
-            id="course-status"
-            label="Estado del curso"
-            value={tempConfig.status}
-            onChange={(e) =>
-              setTempConfig({ ...tempConfig, status: e.target.value })
-            }
-          >
-            <option value="en-desarrollo">En desarrollo</option>
-            <option value="revision">En revisión</option>
-            <option value="publicado">Publicado</option>
-            <option value="pausado">Pausado</option>
-          </Select>
+      <UnitModal
+        isOpen={isUnitModalOpen}
+        onClose={handleCloseUnitModal}
+        editingUnit={editingUnit}
+        unitName={newUnitName}
+        unitDescription={newUnitDescription}
+        onNameChange={setNewUnitName}
+        onDescriptionChange={setNewUnitDescription}
+        onSave={handleSaveUnit}
+      />
 
-          <div>
-            <Label htmlFor="course-image">Cambiar imagen del curso (opcional)</Label>
-            <Input
-              id="course-image"
-              type="file"
-              accept="image/png, image/jpeg, image/webp"
-              onChange={(e) => {
-                if (e.target.files && e.target.files[0]) {
-                  setNewImageFile(e.target.files[0]);
-                }
-              }}
-            />
-          </div>
-
-          <div className="space-y-4 pt-4">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="is-free">Curso gratuito</Label>
-              <Switch
-                id="is-free"
-                checked={tempConfig.isFree}
-                onChange={(e) =>
-                  setTempConfig((prev) => ({
-                    ...prev,
-                    isFree: e.target.checked,
-                  }))
-                }
-              />
-            </div>
-
-            {!tempConfig.isFree && (
-              <div className="space-y-2">
-                <Input
-                  id="course-price"
-                  label="Precio del curso (ARS)"
-                  type="number"
-                  value={tempConfig.price}
-                  onChange={(e) =>
-                    setTempConfig((prev) => ({
-                      ...prev,
-                      price: Number(e.target.value),
-                    }))
-                  }
-                  placeholder="99"
-                />
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={() => setIsConfigModalOpen(false)}>
-            Cancelar
-          </Button>
-          <Button onClick={handleApplyConfigChanges}>Guardar cambios</Button>
-        </div>
-      </Dialog>
-
-      <Dialog
-        open={isUnitModalOpen}
-        onOpenChange={(isOpen) => !isOpen && handleCloseUnitModal()}
-      >
-        <DialogHeader>
-          <DialogTitle>
-            {editingUnit ? "Editar Unidad" : "Nueva Unidad"}
-          </DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <Input
-            id="unit-name"
-            label="Nombre de la unidad"
-            value={newUnitName}
-            onChange={(e) => setNewUnitName(e.target.value)}
-          />
-          <Textarea
-            id="unit-description"
-            label="Descripción"
-            value={newUnitDescription}
-            onChange={(e) => setNewUnitDescription(e.target.value)}
-          />
-        </div>
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={handleCloseUnitModal}>
-            Cancelar
-          </Button>
-          <Button onClick={handleAddOrUpdateUnit}>
-            {editingUnit ? "Actualizar" : "Crear"}
-          </Button>
-        </div>
-      </Dialog>
-
-      <ProfessorCourseActivityEdition
-        isActivityModalOpen={isActivityModalOpen}
-        setIsActivityModalOpen={setIsActivityModalOpen}
-        newActivity={newActivity}
-        setNewActivity={setNewActivity}
-        handleAddActivity={handleAddActivity}
+      <QuestionEditor
+        isOpen={isQuestionModalOpen}
+        onClose={handleCloseQuestionModal}
+        question={newQuestion}
+        onChange={setNewQuestion}
+        onSave={handleSaveQuestion}
+        readonly={!editable}
       />
 
       <UnitModalUpload
@@ -885,11 +709,36 @@ export default function ProfessorCourseEditorPage() {
         setIsMaterialModalOpen={setIsMaterialModalOpen}
         stagedMaterials={stagedMaterials}
         setStagedMaterials={setStagedMaterials}
-        handleFileSelect={handleFileSelect}
-        handleRemoveStagedFile={handleRemoveStagedFile}
-        handleTitleChange={handleTitleChange}
-        handleAddMaterials={handleAddMaterials}
+        handleFileSelect={(e) => {
+          const files = e.target.files;
+          if (files) {
+            const newMaterials = Array.from(files).map((file) => ({
+              id: Date.now() + Math.random(),
+              name: file.name.replace(/\.[^/.]+$/, ''),
+              url: '', // Se llenará después de subir
+              file: file,
+            }));
+            setStagedMaterials((prev) => [...prev, ...newMaterials]);
+          }
+        }}
+        handleRemoveStagedFile={(id) => {
+          setStagedMaterials((prev) => prev.filter((m) => m.id !== id));
+        }}
+        handleTitleChange={(id, newTitle) => {
+          setStagedMaterials((prev) =>
+            prev.map((m) => (m.id === id ? { ...m, name: newTitle } : m))
+          );
+        }}
+        handleAddMaterials={handleUploadMaterial}
       />
+
+      {courseId && (
+        <GeneralQuestionsManager
+          courseId={courseId}
+          isOpen={isGeneralQuestionsOpen}
+          onClose={() => setIsGeneralQuestionsOpen(false)}
+        />
+      )}
     </div>
   );
 }

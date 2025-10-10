@@ -23,7 +23,11 @@ import ProfessorStudentsPage from '../pages/Professor/ProfessorStudentsPage.tsx'
 import ScrollToTop from '../components/layouts/ScrollToTop';
 import ProfessorCourseCreation from '../pages/Professor/ProfessorCourseCreation.tsx';
 import ProfessorCourseEdition from '../pages/Professor/ProfessorCourseEdition.tsx';
+import ProfessorAssessmentsPage from '../pages/Professor/ProfessorAssessmentsPage.tsx';
+import ProfessorAssessmentEditor from '../pages/Professor/ProfessorAssessmentEditor.tsx';
+import ProfessorAssessmentAttempts from '../pages/Professor/ProfessorAssessmentAttempts.tsx';
 import ProfilePage from '../pages/User/ProfilePage.tsx';
+import CourseDetails from '../pages/Course/CourseDetails.tsx';
 
 const AppRouter = () => {
   return (
@@ -42,6 +46,7 @@ const AppRouter = () => {
         <Route path="/" element={<LandingPage />} />
 
         <Route path="/courses" element={<CourseListPage />} />
+        <Route path="/courses/:courseId" element={<CourseDetails />} />
 
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
 
@@ -50,6 +55,10 @@ const AppRouter = () => {
             <Route path="courses" element={<ProfessorCoursesPage />} />
             <Route path='courses/new' element={<ProfessorCourseCreation />} />
             <Route path="courses/:courseId/edit" element={<ProfessorCourseEdition/>}/>
+            <Route path="assessments" element={<ProfessorAssessmentsPage />} />
+            <Route path="assessments/new" element={<ProfessorAssessmentEditor />} />
+            <Route path="assessments/:assessmentId/edit" element={<ProfessorAssessmentEditor />} />
+            <Route path="assessments/:assessmentId/attempts" element={<ProfessorAssessmentAttempts />} />
             <Route path="analytics" element={<ProfessorAnalyticsPage />} />
             <Route path="students" element={<ProfessorStudentsPage />} />
         </Route>

@@ -16,7 +16,11 @@ const DialogTitle = ({ children }: { children: React.ReactNode }) => (
   <h2 className="text-lg font-semibold text-slate-900">{children}</h2>
 );
 
-const DialogFooter = ({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+const DialogFooter = ({
+  className,
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     data-slot="dialog-footer"
     className={`flex flex-col-reverse gap-2 sm:flex-row sm:justify-end ${className}`}
@@ -49,7 +53,7 @@ const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
 
   return ReactDOM.createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fadeIn"
       onClick={() => onOpenChange(false)}
     >
       <div
@@ -109,4 +113,4 @@ const DialogContent = ({
   </>
 );
 
-export { Dialog, DialogHeader, DialogTitle,DialogFooter,DialogContent };
+export { Dialog, DialogHeader, DialogTitle, DialogFooter, DialogContent };

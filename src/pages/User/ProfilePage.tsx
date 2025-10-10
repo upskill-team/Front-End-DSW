@@ -7,12 +7,13 @@ import Button from '../../components/ui/Button';
 import ProfileField from '../../components/ui/ProfileField';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/Tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/Avatar';
-import { User, Mail, Phone, MapPin, Calendar, Save, Edit3, Shield, Key, Camera } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, Save, Edit3, Shield, Key, Camera, GraduationCap } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useUpdateProfile } from '../../hooks/useUserMutations';
 import { useForgotPassword } from '../../hooks/useAuthMutations';
 import { isAxiosError } from 'axios';
 import RoleBadge from '../../components/ui/RoleBadge';
+import ProfessorProfileTab from './ProfessorProfileTab'; 
 
 const ProfileSchema = v.object({
   name: v.pipe(v.string(), v.minLength(1, 'El nombre es requerido.')),
@@ -70,7 +71,6 @@ export default function ProfilePage() {
   };
 
   const onSubmit = (data: ProfileFormData) => {
-    // Filtramos para no enviar campos que estén vacíos
     const payloadData = Object.fromEntries(
         Object.entries(data).filter(([, value]) => value !== '' && value !== undefined)
     );
@@ -79,7 +79,6 @@ export default function ProfilePage() {
       onSuccess: () => {
         setIsEditing(false);
         setImageFile(null);
-        alert('Perfil actualizado correctamente');
       },
     });
   };
@@ -93,6 +92,8 @@ export default function ProfilePage() {
   if (isUserLoading) return <p>Cargando perfil...</p>;
   if (!user) return <p>No se pudo cargar la información del usuario.</p>;
 
+  const isProfessor = user.role === 'professor';
+
   return (
     <div className="container mx-auto max-w-4xl">
       <div className="mb-8">
@@ -101,9 +102,21 @@ export default function ProfilePage() {
       </div>
       
       <Tabs defaultValue="personal" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 bg-white/80 backdrop-blur-sm">
-          <TabsTrigger value="personal"><User className="w-4 h-4 mr-2" />Información Personal</TabsTrigger>
-          <TabsTrigger value="security"><Shield className="w-4 h-4 mr-2" />Seguridad</TabsTrigger>
+        <TabsList className={`grid w-full ${isProfessor ? 'grid-cols-3' : 'grid-cols-2'} bg-white/80 backdrop-blur-sm`}>
+          <TabsTrigger value="personal">
+            <User className="w-4 h-4" />
+            <span className="hidden sm:inline-block sm:ml-2">Información Personal</span>
+          </TabsTrigger>
+          {isProfessor && (
+             <TabsTrigger value="instructor">
+                <GraduationCap className="w-4 h-4" />
+                <span className="hidden sm:inline-block sm:ml-2">Perfil de Instructor</span>
+              </TabsTrigger>
+          )}
+          <TabsTrigger value="security">
+            <Shield className="w-4 h-4" />
+            <span className="hidden sm:inline-block sm:ml-2">Seguridad</span>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="personal">
@@ -119,9 +132,10 @@ export default function ProfilePage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                 <div className="flex items-center space-x-6">
-                    <div className="relative">
-                       <Avatar className={`h-24 w-24 ${isEditing ? 'cursor-pointer' : ''}`} onClick={handleAvatarClick}>
+                 {/* --- SECCIÓN CORREGIDA PARA MOBILE --- */}
+                 <div className="flex items-center space-x-4 sm:space-x-6">
+                    <div className="relative flex-shrink-0">
+                       <Avatar className={`h-20 w-20 sm:h-24 sm:w-24 ${isEditing ? 'cursor-pointer' : ''}`} onClick={handleAvatarClick}>
                           <AvatarImage src={imagePreview || undefined} alt={user.name} />
                           <AvatarFallback className="bg-gradient-to-br from-blue-400 to-green-400 text-white text-3xl font-bold">
                             {user.name.charAt(0)}{user.surname.charAt(0)}
@@ -134,9 +148,10 @@ export default function ProfilePage() {
                        )}
                        <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-slate-800">{user.name} {user.surname}</h3>
-                      <p className="text-slate-600 mb-2">{user.mail}</p>
+                    {/* Añadido min-w-0 para que truncate funcione correctamente en flexbox */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-xl font-semibold text-slate-800 truncate">{user.name} {user.surname}</h3>
+                      <p className="text-slate-600 mb-2 truncate">{user.mail}</p>
                       <RoleBadge role={user.role} />
                     </div>
                 </div>
@@ -162,7 +177,11 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+        {isProfessor && (
+            <TabsContent value="instructor">
+                <ProfessorProfileTab />
+            </TabsContent>
+        )}
         <TabsContent value="security">
           <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
             <CardHeader>

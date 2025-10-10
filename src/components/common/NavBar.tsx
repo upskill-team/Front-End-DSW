@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   BookOpen,
   LogIn,
@@ -10,7 +10,7 @@ import {
   X,
   LogOut,
   User as UserIcon,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,12 +18,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/DropdownMenu';
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/Avatar.tsx";
-import RoleBadge from "../ui/RoleBadge.tsx";
-import { useAuth } from "../../hooks/useAuth";
-import Button from "../ui/Button"; 
-import { AdminControls } from "./navBar/AdminControls.tsx";
-import { ProfessorControls } from "./navBar/ProfessorControls.tsx";
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/Avatar.tsx';
+import RoleBadge from '../ui/RoleBadge.tsx';
+import { useAuth } from '../../hooks/useAuth';
+import Button from '../ui/Button';
+import { AdminControls } from './navBar/AdminControls.tsx';
+import { ProfessorControls } from './navBar/ProfessorControls.tsx';
 
 export function NavBar() {
   const { isAuthenticated, user, logout, isLoading } = useAuth();
@@ -32,22 +32,33 @@ export function NavBar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const activeLinkClasses =
-    "bg-gradient-to-r from-blue-500 to-green-500 text-white";
+    'bg-gradient-to-r from-blue-500 to-green-500 text-white';
   const inactiveLinkClasses =
-    "text-slate-700 hover:bg-blue-50 hover:text-blue-600";
+    'text-slate-700 hover:bg-blue-50 hover:text-blue-600';
 
   const handleLogout = () => {
-    logout();
-    setIsMobileMenuOpen(false);
-    navigate("/login");
+    try {
+      logout();
+      setIsMobileMenuOpen(false);
+
+      // Force a small delay to ensure logout completes
+      setTimeout(() => {
+        navigate('/login');
+      }, 100);
+    } catch (error) {
+      console.error('Error durante el logout:', error);
+      // Force cleanup even if logout fails
+      localStorage.clear();
+      navigate('/login');
+    }
   };
 
   const handleApplyClick = () => {
     if (!isAuthenticated) {
-      alert("Debes iniciar sesión para poder aplicar.");
-      navigate("/login");
+      alert('Debes iniciar sesión para poder aplicar.');
+      navigate('/login');
     } else {
-      navigate("/professor/apply");
+      navigate('/professor/apply');
     }
     setIsMobileMenuOpen(false);
   };
@@ -57,22 +68,22 @@ export function NavBar() {
     if (location.pathname === path) {
       window.scrollTo({
         top: 0,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     }
   };
 
   const isProfessorDashboard = location.pathname.startsWith(
-    "/professor/dashboard"
+    '/professor/dashboard'
   );
-  const isAdminDashboard = location.pathname.startsWith("/admin");
+  const isAdminDashboard = location.pathname.startsWith('/admin');
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-blue-100 shadow-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link
           to="/"
-          onClick={() => handleLinkClick("/")}
+          onClick={() => handleLinkClick('/')}
           className="flex items-center space-x-2"
         >
           <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-green-400 rounded-lg flex items-center justify-center">
@@ -87,12 +98,12 @@ export function NavBar() {
           <Link
             to="/courses"
             className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${
-              location.pathname === "/courses"
+              location.pathname === '/courses'
                 ? activeLinkClasses
                 : inactiveLinkClasses
             }`}
           >
-            <BookOpen className="w-4 h-4" />{" "}
+            <BookOpen className="w-4 h-4" />{' '}
             <span className="xl:inline ml-2">Cursos</span>
           </Link>
 
@@ -103,7 +114,7 @@ export function NavBar() {
             </div>
           ) : isAuthenticated ? (
             <>
-              {user?.role === "admin" && (
+              {user?.role === 'admin' && (
                 <AdminControls
                   handleLinkClick={handleLinkClick}
                   activeLinkClasses={activeLinkClasses}
@@ -111,7 +122,7 @@ export function NavBar() {
                   location={location}
                 />
               )}
-              {user?.role === "student" && (
+              {user?.role === 'student' && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -122,8 +133,8 @@ export function NavBar() {
                   <span>Quiero ser profesor</span>
                 </Button>
               )}
-              {user?.role === "professor" && (
-                 <ProfessorControls
+              {user?.role === 'professor' && (
+                <ProfessorControls
                   handleLinkClick={handleLinkClick}
                   activeLinkClasses={activeLinkClasses}
                   inactiveLinkClasses={inactiveLinkClasses}
@@ -140,9 +151,15 @@ export function NavBar() {
               <div className="ml-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger>
-                    <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+                    <Button
+                      variant="ghost"
+                      className="relative h-10 w-10 rounded-full p-0"
+                    >
                       <Avatar className="h-10 w-10">
-                        <AvatarImage src={user?.profile_picture} alt={user?.name} />
+                        <AvatarImage
+                          src={user?.profile_picture}
+                          alt={user?.name}
+                        />
                         <AvatarFallback className="bg-gradient-to-br from-blue-400 to-green-400 text-white font-bold">
                           {user?.name.charAt(0).toUpperCase()}
                           {user?.surname.charAt(0).toUpperCase()}
@@ -152,8 +169,12 @@ export function NavBar() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56">
                     <div className="p-2">
-                      <p className="text-sm font-medium">{user?.name} {user?.surname}</p>
-                      <p className="text-xs text-slate-500 mb-2">{user?.mail}</p>
+                      <p className="text-sm font-medium">
+                        {user?.name} {user?.surname}
+                      </p>
+                      <p className="text-xs text-slate-500 mb-2">
+                        {user?.mail}
+                      </p>
                       {user && <RoleBadge role={user.role} />}
                     </div>
                     <DropdownMenuSeparator />
@@ -162,7 +183,10 @@ export function NavBar() {
                       <span>Mi Perfil</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      className="text-red-600 focus:text-red-600"
+                    >
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Cerrar sesión</span>
                     </DropdownMenuItem>
@@ -183,7 +207,7 @@ export function NavBar() {
               </Button>
               <Link
                 to="/login"
-                onClick={() => handleLinkClick("/login")}
+                onClick={() => handleLinkClick('/login')}
                 className="flex items-center text-slate-700 hover:text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium text-sm"
               >
                 <LogIn className="w-4 h-4 mr-2" />
@@ -191,7 +215,7 @@ export function NavBar() {
               </Link>
               <Link
                 to="/register"
-                onClick={() => handleLinkClick("/register")}
+                onClick={() => handleLinkClick('/register')}
                 className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm"
               >
                 <UserPlus className="w-4 h-4 mr-2" />
@@ -221,7 +245,7 @@ export function NavBar() {
         <div className="md:hidden bg-white border-t border-blue-100 px-4 pt-2 pb-4 space-y-2">
           {isAuthenticated ? (
             <>
-              {user?.role === "student" && (
+              {user?.role === 'student' && (
                 <Button
                   variant="outline"
                   size="sm"
