@@ -25,6 +25,7 @@ import ProfessorCourseCreation from '../pages/Professor/ProfessorCourseCreation.
 import ProfessorCourseEdition from '../pages/Professor/ProfessorCourseEdition.tsx';
 import ProfilePage from '../pages/User/ProfilePage.tsx';
 import CourseDetails from '../pages/Course/CourseDetails.tsx';
+import CourseLearn from '../pages/Course/CourseLearn.tsx';
 
 const AppRouter = () => {
   return (
@@ -44,6 +45,7 @@ const AppRouter = () => {
 
         <Route path="/courses" element={<CourseListPage />} />
         <Route path="/courses/:courseId" element={<CourseDetails />} />
+        <Route path="/courses/learn/:courseId" element={<CourseLearn />} />
 
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
 
