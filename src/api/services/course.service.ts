@@ -47,22 +47,20 @@ const update = async (courseId: string, data: FormData): Promise<Course> => {
 };
 
 const remove = async (courseId: string): Promise<void> => {
-  await apiClient.delete(`/courses/${courseId}`);
-};
+  await apiClient.delete(`/courses/${courseId}`)
+}
+
 /**
  * Busca cursos con filtros, paginación y ordenación.
  * @param params - Un objeto con los parámetros de búsqueda.
  * @returns Una promesa con los cursos y el conteo total.
  */
-const search = async (
-  params: SearchCoursesParams
-): Promise<PaginatedCoursesResponse> => {
-  // Se encarga automáticamente de la codificación de caracteres especiales.
+const search = async (params: SearchCoursesParams = {}): Promise<PaginatedCoursesResponse> => {
+
   const queryParams = new URLSearchParams();
 
-  // Añadimos solo los parámetros que están definidos
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null) {
+    if (value !== undefined && value !== null && value !== '') {
       queryParams.append(key, String(value));
     }
   });

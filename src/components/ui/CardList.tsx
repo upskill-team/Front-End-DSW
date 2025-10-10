@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { Clock, Star, Users } from 'lucide-react';
+import { Users, BookOpen } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import Button from './Button';
+import Badge from './Badge';
 import { Card, CardContent, CardTitle, CardDescription } from './Card';
+
 import { Link } from 'react-router-dom';
 
 interface Course {
@@ -45,18 +47,28 @@ export interface CourseCardListProps
  */
 const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
   ({ course, className, ...props }, ref) => {
+
+    // Helper to get instructor name safely
+    const instructorName = course.professor?.user 
+      ? `${course.professor.user.name} ${course.professor.user.surname}`
+      : 'Instructor no disponible';
+      
+    // Helper to calculate total lessons (materials + questions)
+    const totalLessons = course.units.reduce((acc, unit) => 
+        acc + (unit.materials?.length || 0) + (unit.questions?.length || 0), 0);
+
     return (
       <Card
         ref={ref}
         className={cn(
-          'group hover:shadow-lg transition-all duration-300 border-0 cursor-pointer',
+          'group hover:shadow-lg transition-all duration-300 border-0 cursor-pointer bg-white/80 backdrop-blur-sm',
           className
         )}
         {...props}
       >
         <CardContent className="p-4 md:p-6">
           <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-            <div className="relative flex-shrink-0">
+            <div className="relative flex-shrink-0 overflow-hidden rounded-lg">
               <img
                 src={course.imageUrl || 'public/img/noImage.jpg'}
                 alt={course.name}
@@ -75,57 +87,50 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
               <div className="flex flex-col lg:flex-row items-start justify-between">
                 <div className="flex-1 mb-4 lg:mb-0">
                   <div className="flex items-center flex-wrap gap-2 mb-2">
-                    <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                      {course.courseType.name}
-                    </span>
-                    <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium">
-                      {course.name}
-                    </span>
+                    <Badge className="bg-blue-500 text-white border-blue-600">
+                      {course.courseType?.name || 'Sin Categoría'}
+                    </Badge>
                   </div>
                   <CardTitle className="mb-2 group-hover:text-blue-600 transition-colors text-lg md:text-xl">
                     <Link to={`/courses/${course.id}`}>
                       {course.name}
                     </Link>
-                    
                   </CardTitle>
                   <CardDescription className="mb-2 line-clamp-2 text-sm">
                     {course.description}
                   </CardDescription>
                   <p className="text-sm text-slate-500 mb-3">
-                    Por {course.professor?.user?.name || 'Profesor'}
+                    Por {instructorName}
                   </p>
 
                   <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-sm text-slate-600">
                     <div className="flex items-center space-x-1">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-medium">5.0</span>
-                      <span className="hidden sm:inline">
-                        ({course.students?.length || 0} estudiantes)
-                      </span>
+                      <Users className="w-3 h-3" />
+                      <span>{course.students?.length || 0} estudiantes</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <Clock className="w-4 h-4" />
-                      <span>{course.units?.length || 0} unidades</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Users className="w-4 h-4" />
-                      <span>{course.units?.length || 0} lecciones</span>
+                      <BookOpen className="w-3 h-3" />
+                      <span>{totalLessons} {totalLessons === 1 ? 'Unidad' : 'Unidades'}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="text-left lg:text-right w-full lg:w-auto lg:ml-4 flex-shrink-0">
-                  <div className="flex items-center lg:justify-end space-x-2 mb-3">
-                    <span className="text-2xl font-bold text-slate-800">
-                      {course.isFree ? <>GRATIS</> : <>$ {course.price}</>}
+                  <div className="mb-3">
+                    <span className="text-lg font-bold text-slate-800">
+                      {course.isFree ? (
+                        <span className="text-green-600">Gratis</span>
+                      ) : (
+                        <span>${course.price}</span>
+                      )}
                     </span>
                   </div>
                   <Button
                     variant="primary"
-                    size="md"
+                    size="sm"
                     className="w-full lg:w-auto"
                   >
-                    Agregar al carrito
+                    Ver más
                   </Button>
                 </div>
               </div>

@@ -1,8 +1,7 @@
 import { Check, Trash2, X } from 'lucide-react';
 import Button from '../../ui/Button.tsx';
-
 type Activity = {
-  id: number;
+  id: number | string;
   type: string;
   question: string;
   options: string[];
