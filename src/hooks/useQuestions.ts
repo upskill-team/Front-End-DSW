@@ -24,7 +24,6 @@ export const useCreateQuestion = () => {
       data: Omit<Question, 'id' | 'unitNumber'>;
     }) => questionService.create(courseId, unitNumber, data),
     onSuccess: (_, variables) => {
-      // Invalidar las queries relacionadas
       queryClient.invalidateQueries({
         queryKey: ['questions', variables.courseId, variables.unitNumber],
       });
@@ -32,6 +31,36 @@ export const useCreateQuestion = () => {
         queryKey: ['courses', variables.courseId],
       });
     },
+  });
+};
+
+export const useCreateGeneralQuestion = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      courseId,
+      data,
+    }: {
+      courseId: string;
+      data: Omit<Question, 'id' | 'unitNumber'>;
+    }) => questionService.createGeneral(courseId, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['questions', variables.courseId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['courses', variables.courseId],
+      });
+    },
+  });
+};
+
+export const useAllCourseQuestions = (courseId: string) => {
+  return useQuery({
+    queryKey: ['questions', courseId],
+    queryFn: () => questionService.getAllByCourse(courseId),
+    enabled: !!courseId,
   });
 };
 

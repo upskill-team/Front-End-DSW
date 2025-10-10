@@ -21,6 +21,7 @@ export interface Professor {
   state: string;
   courses: Course[];
   institution?: Institution;
+  managedInstitution?: Institution;
 }
 
 export interface Student {
@@ -56,6 +57,9 @@ export interface Institution {
   id: string;
   name: string;
   description: string;
+  normalizedName: string;
+  aliases?: string[];
+  manager: Professor;
   professors: Professor[];
 }
 
@@ -67,6 +71,14 @@ export interface Appeal {
   state: 'pending' | 'accepted' | 'rejected';
   user: User;
   date: Date;
+}
+
+export interface JoinRequest {
+  id: string;
+  professor: Professor;
+  institution: Institution | string;
+  requestDate: string;
+  status: 'pending' | 'accepted' | 'rejected';
 }
 
 export interface QuestionPayload {
@@ -172,4 +184,102 @@ export interface MaterialEditorData extends Material {
   id?: string | number; // ID temporal para el editor
   file?: File; // Archivo pendiente de subida
   isUploading?: boolean;
+}
+
+// Tipos para Assessments (Evaluaciones Formales)
+export interface Assessment {
+  id: string;
+  title: string;
+  description?: string;
+  course: {
+    id: string;
+    name: string;
+  };
+  questions: Question[];
+  durationMinutes?: number | null;
+  passingScore: number;
+  maxAttempts?: number | null;
+  isActive: boolean;
+  availableFrom?: string;
+  availableUntil?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateAssessmentRequest {
+  title: string;
+  description?: string;
+  courseId: string;
+  questionIds: string[];
+  durationMinutes?: number | null;
+  passingScore?: number;
+  maxAttempts?: number | null;
+  isActive?: boolean;
+  availableFrom?: string;
+  availableUntil?: string;
+}
+
+export interface UpdateAssessmentRequest {
+  title?: string;
+  description?: string;
+  questionIds?: string[];
+  durationMinutes?: number | null;
+  passingScore?: number;
+  maxAttempts?: number | null;
+  isActive?: boolean;
+  availableFrom?: string;
+  availableUntil?: string;
+}
+
+export type AssessmentAttemptStatus = 'in_progress' | 'submitted';
+
+export interface AssessmentAttempt {
+  id: string;
+  student: {
+    id: string;
+    name: string;
+    surname?: string;
+  };
+  assessment: {
+    id: string;
+    title: string;
+    course?: {
+      id: string;
+      name: string;
+    };
+  };
+  status: AssessmentAttemptStatus;
+  startedAt: string;
+  submittedAt?: string;
+  score?: number;
+  passed?: boolean;
+  attemptNumber: number;
+  answers?: AttemptAnswer[];
+}
+
+export interface AttemptAnswer {
+  id: string;
+  question: Question;
+  answer: number | string;
+  isCorrect: boolean;
+  answeredAt: string;
+}
+
+export interface StartAttemptRequest {
+  assessmentId: string;
+  studentId: string;
+}
+
+export interface AnswerQuestionRequest {
+  attemptId: string;
+  questionId: string;
+  answer: number | string;
+}
+
+export interface SubmitAttemptRequest {
+  attemptId: string;
+  answers: {
+    questionId: string;
+    answer: number | string;
+  }[];
 }

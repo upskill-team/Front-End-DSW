@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, Users} from "lucide-react";
+import { BarChart3, BookOpen, Users, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { Location } from "react-router-dom";
 
@@ -29,6 +29,19 @@ export function ProfessorControls({
       >
         <BookOpen className="w-4 h-4" />{" "}
         <span className="hidden xl:inline ml-2">Mis Cursos</span>
+      </Link>
+      <Link
+        to="/professor/dashboard/assessments"
+        title="Evaluaciones"
+        onClick={() => handleLinkClick("/professor/dashboard/assessments")}
+        className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${
+          location?.pathname.startsWith("/professor/dashboard/assessments")
+            ? activeLinkClasses
+            : inactiveLinkClasses
+        }`}
+      >
+        <FileText className="w-4 h-4" />{" "}
+        <span className="hidden xl:inline ml-2">Evaluaciones</span>
       </Link>
       <Link
         to="/professor/dashboard/analytics"

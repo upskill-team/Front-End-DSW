@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import type { User } from '../types/entities.ts';
 import { userService } from '../api/services/user.service.ts';
 import { AuthContext } from './AuthContext';
@@ -18,6 +19,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // State for the authenticated user and to know if we're loading data.
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   // Function to get the user's profile and update the global state.
   const fetchProfileAndSetUser = useCallback(async () => {
@@ -57,6 +59,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Logout function: removes the token and header, and clears the user.
   const logout = useCallback(() => {
     try {
+      // Clear all React Query caches to avoid stale data
+      queryClient.clear();
+
       // Remove JWT token from localStorage using the correct key
       localStorage.removeItem(TOKEN_STORAGE_KEY);
 
@@ -89,7 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(null);
       setIsLoading(false);
     }
-  }, []);
+  }, [queryClient]);
 
   // We keep these values ready so the app doesn't reload too much.
   const value = useMemo(

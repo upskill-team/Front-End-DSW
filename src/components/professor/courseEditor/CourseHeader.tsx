@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../ui/Button';
 import SaveStatus from './SaveStatus';
 import Switch from '../../ui/Switch';
-import { ArrowLeft, Edit, Eye } from 'lucide-react';
+import { ArrowLeft, Edit, Eye, FileText, HelpCircle } from 'lucide-react';
 
 interface CourseHeaderProps {
+  courseId?: string;
   courseName: string;
   onSave: () => void;
   onToggleEdit: () => void;
@@ -13,9 +14,11 @@ interface CourseHeaderProps {
   saveError?: string | null;
   lastSavedAt?: Date;
   isEditMode?: boolean;
+  onOpenGeneralQuestions?: () => void;
 }
 
 export default function CourseHeader({
+  courseId,
   courseName,
   onSave,
   onToggleEdit,
@@ -24,18 +27,45 @@ export default function CourseHeader({
   saveError = null,
   lastSavedAt,
   isEditMode = false,
+  onOpenGeneralQuestions,
 }: CourseHeaderProps) {
+  const navigate = useNavigate();
+
   return (
     <div className="mb-8">
-      <Link to="/professor/dashboard/courses">
-        <Button
-          variant="ghost"
-          className="mb-4 text-slate-600 hover:text-slate-800"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Volver a Mis Cursos
-        </Button>
-      </Link>
+      <div className="flex items-center gap-2 mb-4">
+        <Link to="/professor/dashboard/courses">
+          <Button
+            variant="ghost"
+            className="text-slate-600 hover:text-slate-800"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Volver a Mis Cursos
+          </Button>
+        </Link>
+        {courseId && (
+          <>
+            <Button
+              variant="outline"
+              onClick={() => navigate(`/professor/dashboard/assessments?courseId=${courseId}`)}
+              className="flex items-center gap-2"
+            >
+              <FileText className="w-4 h-4" />
+              Ver Evaluaciones del Curso
+            </Button>
+            {onOpenGeneralQuestions && (
+              <Button
+                variant="outline"
+                onClick={onOpenGeneralQuestions}
+                className="flex items-center gap-2"
+              >
+                <HelpCircle className="w-4 h-4" />
+                Preguntas Generales
+              </Button>
+            )}
+          </>
+        )}
+      </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
