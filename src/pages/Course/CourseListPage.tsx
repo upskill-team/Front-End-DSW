@@ -1,109 +1,171 @@
 import { useState } from "react";
 import CardList from "../../components/ui/CardList.tsx";
+import CoursePreviewCard from "../../components/ui/CoursePreviewCard.tsx";
 import type { SearchCoursesParams } from "../../types/shared.ts";
 import { useSearchCourses } from "../../hooks/useCourses.ts";
+import { useCourseTypes } from "../../hooks/useCourseTypes.ts";
+import Input from "../../components/ui/Input.tsx";
+import Select from "../../components/ui/Select.tsx";
+import Switch from "../../components/ui/Switch.tsx";
+import Label from "../../components/ui/Label.tsx";
+import Button from "../../components/ui/Button.tsx";
+import { Search, LayoutGrid, List } from "lucide-react";
+import { useDebounce } from "../../hooks/useDebounce.ts";
 
 const CourseListPage = () => {
-  //State para el futuro paginado
-  const [filters] = useState<SearchCoursesParams>({
-    limit: 5,
-    offset: 0,
-    status: "publicado",
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isGridView, setIsGridView] = useState(true); 
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+  const [filters, setFilters] = useState<Omit<SearchCoursesParams, 'q' | 'offset'>>({
+    courseTypeId: '',
+    isFree: undefined,
+    sortBy: 'createdAt',
+    sortOrder: 'DESC',
+    limit: 9,
   });
 
-  const { data, isLoading, isError, error } = useSearchCourses(filters);
+  const { 
+    data, 
+    isLoading, 
+    isError, 
+    error, 
+    fetchNextPage, 
+    hasNextPage, 
+    isFetchingNextPage 
+  } = useSearchCourses({
+    ...filters,
+    q: debouncedSearchTerm,
+    status: "publicado",
+  });
+  
+  const { data: courseTypes, isLoading: isLoadingTypes } = useCourseTypes();
 
-  console.log(data)
+  const courses = data?.pages.flatMap(page => page.courses) || [];
+  const totalCourses = data?.pages[0]?.total || 0;
 
-  //Funciones para paginado
- /* const handleNextPage = () => {
-    // Aseguramos que 'data.total' exista antes de paginar
-    if (data && filters.offset! + filters.limit! < data.total) {
-      setFilters((prev) => ({ ...prev, offset: prev.offset! + prev.limit! }));
-    }
+  const handleFilterChange = (key: keyof typeof filters, value: string | boolean | undefined) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
   };
-
-  const handlePrevPage = () => {
-    setFilters((prev) => ({
-      ...prev,
-      offset: Math.max(0, prev.offset! - prev.limit!),
-    }));
-  };*/
-
-  // Manejo de estado y carga de error basico -- Borrar en futuras iteraciones
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto max-w-7xl text-center py-10">
-        <h1 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-2">
-          Todos los Cursos
-        </h1>
-        <p className="text-lg text-slate-600">Cargando cursos...</p>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="container mx-auto max-w-7xl text-center py-10">
-        <h1 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-2">
-          Todos los Cursos
-        </h1>
-        <p className="text-lg text-red-600">
-          Error al cargar los cursos: {error?.message}
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto max-w-7xl">
       <div className="mb-8 text-center sm:text-left">
         <h1 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-2">
-          Todos los Cursos
+          Explorar Cursos
         </h1>
         <p className="text-lg text-slate-600">
-          Descubre más de {data?.total || 0} cursos para impulsar tu carrera
+          Encuentra el curso perfecto para ti entre {totalCourses} opciones.
         </p>
       </div>
 
-      <div className="space-y-4">
-        {/* 4. Mapeamos sobre `data.data` en lugar de `allCourses` */}
-        {/* Usamos `data?.data` para evitar errores si `data` es undefined */}
-        {data?.courses && data.courses.length > 0 ? (
-          data.courses.map((course) => (
-            <CardList key={course.id} course={course} />
-          ))
-        ) : (
-          <p className="text-center text-slate-600 text-lg">
-            No hay cursos disponibles en este momento.
-          </p>
-        )}
-      </div>
-    </div>
-  );
-// Version con persistencia antigua
-  /*
-    return (
-    <div className="container mx-auto max-w-7xl">
-      <div className="mb-8 text-center sm:text-left">
-        <h1 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-2">
-          Todos los Cursos
-        </h1>
-        <p className="text-lg text-slate-600">
-          Descubre más de {allCourses.length} cursos para impulsar tu carrera
-        </p>
+      <div className="flex justify-end mb-4">
+        <div className="hidden md:inline-flex bg-white/80 backdrop-blur-sm rounded-lg shadow-md p-1">
+          <Button
+            variant={!isGridView ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setIsGridView(false)}
+            className="rounded-lg"
+            aria-label="Vista de lista"
+          >
+            <List className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={isGridView ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setIsGridView(true)}
+            className="rounded-lg"
+            aria-label="Vista de grilla"
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
-      <div className="space-y-4">
-        {allCourses.map((course) => (
-          <CardList key={course.id} course={course} />
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-md items-end">
+        <Input
+          id="search-q"
+          label="Buscar por nombre"
+          icon={<Search size={16} />}
+          placeholder="Ej: React, Marketing..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <Select
+          id="course-type-filter"
+          label="Categoría"
+          value={filters.courseTypeId}
+          onChange={(e) => handleFilterChange('courseTypeId', e.target.value)}
+          disabled={isLoadingTypes}
+        >
+          <option value="">Todas</option>
+          {courseTypes?.map(ct => <option key={ct.id} value={ct.id}>{ct.name}</option>)}
+        </Select>
+        <Select
+          id="sort-by-filter"
+          label="Ordenar por"
+          value={`${filters.sortBy}-${filters.sortOrder}`}
+          onChange={(e) => {
+            const [sortBy, sortOrder] = e.target.value.split('-');
+            setFilters(prev => ({ ...prev, sortBy, sortOrder: sortOrder as 'ASC' | 'DESC' }));
+          }}
+        >
+          <option value="createdAt-DESC">Más nuevos</option>
+          <option value="name-ASC">Nombre (A-Z)</option>
+          <option value="price-ASC">Precio (Menor a mayor)</option>
+          <option value="price-DESC">Precio (Mayor a menor)</option>
+        </Select>
+        <div className="flex items-center justify-center h-full pb-2">
+          <div className="flex items-center gap-3">
+            <Switch
+              id="is-free-filter"
+              checked={filters.isFree === true}
+              onChange={(e) => handleFilterChange('isFree', e.target.checked ? true : undefined)}
+            />
+            <Label htmlFor="is-free-filter">Mostrar solo gratuitos</Label>
+          </div>
+        </div>
       </div>
+
+      {isLoading ? (
+        <p className="text-center text-slate-600 py-10">Cargando cursos...</p>
+      ) : isError ? (
+        <p className="text-center text-red-600 py-10">Error: {error?.message}</p>
+      ) : (
+        <>
+          <div className={isGridView ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
+            {courses.length > 0 ? (
+              courses.map((course) => (
+                isGridView ? (
+                  <CoursePreviewCard key={course.id} course={course} />
+                ) : (
+                  <CardList key={course.id} course={course} />
+                )
+              ))
+            ) : (
+              <div className="col-span-full text-center text-slate-600 text-lg py-10">
+                <p>No se encontraron cursos con los filtros aplicados.</p>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-8 text-center">
+            {hasNextPage && (
+              <Button
+                onClick={() => fetchNextPage()}
+                isLoading={isFetchingNextPage}
+                disabled={!hasNextPage || isFetchingNextPage}
+                variant="outline"
+                size="lg"
+              >
+                {isFetchingNextPage ? 'Cargando más...' : 'Cargar más cursos'}
+              </Button>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
-   */
-
 };
 
 export default CourseListPage;
