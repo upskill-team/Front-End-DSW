@@ -16,3 +16,9 @@ export interface PaginatedCoursesResponse {
   courses: Course[];
   total: number;
 }
+
+export interface ApiResponse<T> {
+  status: number;
+  message: string;
+  data: T;
+}

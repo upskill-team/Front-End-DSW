@@ -3,27 +3,89 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useCourseById } from "../../hooks/useCourses.ts";
 import Badge from "../../components/ui/Badge.tsx";
 import Button from "../../components/ui/Button.tsx";
+import { useEnrollInCourse, useExistingEnrollment} from "../../hooks/useEnrollment.ts";
+import { useAuth } from "../../hooks/useAuth.ts";
 
 function CourseDetails() {
-  // Obtenemos el parámetro `id` de la URL, ej: /courses/123
-  const { courseId } = useParams<{ courseId: string }>();
-  const navigate = useNavigate();
 
-  // Usamos nuestro nuevo hook con el ID de la URL.
-  // Renombramos `data` a `course` para mayor claridad.
+  const { courseId } = useParams<{ courseId: string }>();
+  const navigate = useNavigate(); 
+  const { user } = useAuth();
+
   const { data: course, isLoading, isError, error } = useCourseById(courseId);
 
+  const {
+    data: existingEnrollment,
+    isLoading: isLoadingEnrollmentCheck
+  } = useExistingEnrollment(user?.studentProfile?.id, courseId);
 
-  const handleEnroll = (e)=>{
+  const { enroll, isPending:isEnrolling } = useEnrollInCourse();
+
+  const handleEnroll = ()=>{
+    
+    if(!user){
+      alert("Debes iniciar sesión para inscribirte en un curso.");
+      navigate('/login');
+      return;
+    }
+
 
     if(course?.price>0){
       alert("Funcionalidad de pago no implementada aún.");
       return;
     }
 
-    
-    navigate(`/courses/learn/${course?.id}`);
+  enroll(
+
+    {
+      studentId: user.studentProfile?.id,
+      courseId: course.id
+    },
+    // 2. Segundo argumento (opcional): un objeto con callbacks
+    {
+      onSuccess: (data) => {
+        // Esta función se ejecutará SOLO CUANDO la API responda con éxito.
+        console.log('Inscripción exitosa, navegando...', data);
+        navigate(`/courses/learn/${course?.id}`);
+      },
+      onError: (error) => {
+        // Esta se ejecutará si la API devuelve un error.
+        console.error('Fallo al inscribir:', error);
+        // Aquí podrías mostrar una notificación de error al usuario.
+        alert(`Error al inscribir: ${error.message}`);
+      }
+    }
+  );
   }
+
+const renderEnrollmentButton = () => {
+    // Mientras se verifica, mostramos un estado de carga
+    if (isLoadingEnrollmentCheck) {
+      return <button disabled>Verificando inscripción...</button>;
+    }
+
+    // Si ya existe una inscripción
+    if (existingEnrollment) {
+      return (
+
+      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-lg font-semibold"
+        onClick={() => navigate(`/courses/learn/${course?.id}`)}
+      >
+        Ir al Curso
+      </Button>
+      );
+    }
+
+    // Si no existe, mostramos el botón para inscribirse
+    return (
+    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-lg font-semibold"
+      onClick={handleEnroll}
+      disabled={isEnrolling}
+    >
+      Inscribirse ahora
+    </Button>
+    );
+  };
 
   if (isLoading) {
     return <div>Cargando detalles del curso...</div>;
@@ -186,11 +248,7 @@ function CourseDetails() {
 
                   {/* Botones de acción */}
                   <div className="space-y-3 mb-6">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-lg font-semibold"
-                      onClick={handleEnroll}
-                    >
-                      Inscribirse ahora
-                    </Button>
+                    {renderEnrollmentButton()}
                   </div>
 
                   {/* Incluye */}
