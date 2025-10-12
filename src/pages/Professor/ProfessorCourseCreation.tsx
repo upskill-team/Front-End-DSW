@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, BookOpen, Upload, Users } from "lucide-react";
+import { ArrowLeft, Upload } from "lucide-react";
 import Button from "../../components/ui/Button.tsx";
 import {
   Card,
@@ -11,7 +11,7 @@ import {
 } from "../../components/ui/Card.tsx";
 import Input from "../../components/ui/Input.tsx";
 import Textarea from "../../components/ui/TextArea.tsx";
-import Badge from "../../components/ui/Badge.tsx";
+import CoursePreviewCard from "../../components/ui/CoursePreviewCard.tsx";
 import Switch from "../../components/ui/Switch.tsx";
 import Label from "../../components/ui/Label.tsx";
 import Select from "../../components/ui/Select.tsx";
@@ -216,49 +216,15 @@ export default function ProfessorCourseCreation() {
           <h2 className="text-xl font-semibold text-slate-800">
             Previsualización
           </h2>
-          <Card className="group transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm">
-            <div className="relative overflow-hidden rounded-t-lg">
-              <img
-                src={imagePreview || "/img/noImage.jpg"}
-                alt={watchedValues.name || "Vista previa del curso"}
-                className="w-full h-48 object-cover transition-transform duration-300"
-              />
-            </div>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-semibold text-slate-800 line-clamp-2">
-                {watchedValues.name || "Nombre del curso"}
-              </CardTitle>
-              <p className="text-sm text-slate-600 min-h-[40px]">
-                {watchedValues.description || "La descripción del curso aparecerá aquí..."}
-              </p>
-            </CardHeader>
-            <CardContent className="pt-2">
-              <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-4 text-sm text-slate-600">
-                  <div className="flex items-center space-x-1">
-                    <Users className="w-3 h-3" />
-                    <span>0 estudiantes</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <BookOpen className="w-3 h-3" />
-                    <span>0 lecciones</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between pt-2 border-t">
-                  <div className="text-lg font-bold text-slate-800">
-                    {watchedValues.isFree ? (
-                      <span className="text-green-600">Gratis</span>
-                    ) : (
-                      <span>${watchedValues.price || "0"}</span>
-                    )}
-                  </div>
-                  <Badge className="bg-blue-100 text-blue-700 border-blue-200">
-                    {courseTypes.find(ct => ct.id === watchedValues.courseTypeId)?.name || 'Categoría'}
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <CoursePreviewCard
+            name={watchedValues.name}
+            description={watchedValues.description}
+            imageUrl={imagePreview || ""}
+            isFree={watchedValues.isFree}
+            price={watchedValues.price || 0}
+            courseType={courseTypes.find(ct => ct.id === watchedValues.courseTypeId)}
+            hideButton
+          />
           <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
             <p className="text-sm text-blue-700">
               <strong>Nota:</strong> Esta es una vista previa de cómo se verá tu

@@ -1,12 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import { appealService } from '../api/services/appeal.service';
+import type { SearchAppealsParams, PaginatedAppealsResponse } from '../types/shared.ts';
+import type { AxiosError } from 'axios';
 
-export const useAppeals = () => {
-  return useQuery({
-    queryKey: ['appeals'],
-    queryFn: appealService.findAllAppeals,
+export const useAppeals = (params: SearchAppealsParams = {}) => {
+  return useQuery<PaginatedAppealsResponse, AxiosError>({
+    queryKey: ['appeals', params],
+    queryFn: () => appealService.findAllAppeals(params),
   });
-};
+}
 
 export const useUpdateAppealState = () => {
   const queryClient = useQueryClient();

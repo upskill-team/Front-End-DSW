@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '../../components/ui/Button';
 import {
   Card,
@@ -22,38 +22,39 @@ import {
 } from 'lucide-react';
 import type { Appeal } from '../../types/entities';
 import { useAppeals, useUpdateAppealState } from '../../hooks/useAppeals.ts';
+import type { SearchAppealsParams } from '../../types/shared.ts';
 
 type StatusFilter = 'all' | 'pending' | 'accepted' | 'rejected';
 
-export default function ProfessorRequestsPage() {
-  const { data: requests = [], isLoading, error } = useAppeals();
-  const { mutate: updateAppeal, isPending: isUpdating } =
-    useUpdateAppealState();
+const APPEALS_PER_PAGE = 5;
 
-  const [selectedRequest, setSelectedRequest] = useState<Appeal | null>(null);
-  const [documentUrlToShow, setDocumentUrlToShow] = useState<string | null>(
-    null
-  );
+export default function ProfessorRequestsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState('newest');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRequest, setSelectedRequest] = useState<Appeal | null>(null);
+  const [documentUrlToShow, setDocumentUrlToShow] = useState<string | null>(null);
 
-  const filteredAndSortedRequests = useMemo(() => {
-    return requests
-      .filter((req) => {
-        const matchesSearch = `${req.user.name} ${req.user.surname}`
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
-        const matchesStatus =
-          statusFilter === 'all' || req.state === statusFilter;
-        return matchesSearch && matchesStatus;
-      })
-      .sort((a, b) => {
-        const dateA = new Date(a.date).getTime();
-        const dateB = new Date(b.date).getTime();
-        return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
-      });
-  }, [requests, searchTerm, sortOrder, statusFilter]);
+  const filters: SearchAppealsParams = {
+    q: searchTerm || undefined,
+    sortBy: 'date',
+    sortOrder: sortOrder === 'newest' ? 'DESC' : 'ASC',
+    status: statusFilter === 'all' ? undefined : statusFilter,
+    limit: APPEALS_PER_PAGE,
+    offset: (currentPage - 1) * APPEALS_PER_PAGE,
+  };
+
+  const { data, isLoading, error } = useAppeals(filters);
+  const { mutate: updateAppeal, isPending: isUpdating } = useUpdateAppealState();
+
+  const requests = data?.appeals || [];
+  const totalRequests = data?.total || 0;
+  const totalPages = Math.ceil(totalRequests / APPEALS_PER_PAGE);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, sortOrder, statusFilter]);
 
   const handleStatusChange = (
     requestId: string,
@@ -62,7 +63,7 @@ export default function ProfessorRequestsPage() {
     updateAppeal({ appealId: requestId, payload: { state: newStatus } });
   };
 
-  if (isLoading)
+  if (isLoading && requests.length === 0)
     return <div className="text-center p-8">Cargando solicitudes...</div>;
   if (error)
     return <div className="text-center p-8 text-red-600">{error.message}</div>;
@@ -83,7 +84,7 @@ export default function ProfessorRequestsPage() {
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div>
               <CardTitle>
-                Solicitudes ({filteredAndSortedRequests.length})
+                Solicitudes ({totalRequests})
               </CardTitle>
               <CardDescription>
                 Lista de todas las solicitudes de profesores
@@ -127,7 +128,7 @@ export default function ProfessorRequestsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {filteredAndSortedRequests.map((request) => {
+            {requests.map((request) => {
               const date = new Date(request.date);
               const formattedDate = !isNaN(date.getTime())
                 ? date.toLocaleDateString('es-ES', {
@@ -183,15 +184,10 @@ export default function ProfessorRequestsPage() {
                               handleStatusChange(request.id, 'accepted')
                             }
                             disabled={isUpdating}
+                            isLoading={isUpdating}
                           >
-                            {isUpdating ? (
-                              'Procesando...'
-                            ) : (
-                              <>
-                                <Check className="w-4 h-4 mr-2" />
-                                Aprobar
-                              </>
-                            )}
+                            <Check className="w-4 h-4 mr-2" />
+                            Aprobar
                           </Button>
                           <Button
                             variant="destructive"
@@ -201,15 +197,10 @@ export default function ProfessorRequestsPage() {
                               handleStatusChange(request.id, 'rejected')
                             }
                             disabled={isUpdating}
+                            isLoading={isUpdating}
                           >
-                            {isUpdating ? (
-                              'Procesando...'
-                            ) : (
-                              <>
-                                <X className="w-4 h-4 mr-2" />
-                                Rechazar
-                              </>
-                            )}
+                            <X className="w-4 h-4 mr-2" />
+                            Rechazar
                           </Button>
                         </div>
                       )}
@@ -219,10 +210,35 @@ export default function ProfessorRequestsPage() {
               );
             })}
           </div>
-          {filteredAndSortedRequests.length === 0 && (
+          
+          {requests.length === 0 && !isLoading && (
             <p className="text-center text-slate-500 py-8">
-              No se encontraron solicitudes.
+              No se encontraron solicitudes con los filtros aplicados.
             </p>
+          )}
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-6 pt-4 border-t">
+              <Button
+                variant="outline"
+                size="md"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1 || isLoading}
+              >
+                Anterior
+              </Button>
+              <span className="text-sm text-slate-600">
+                Página {currentPage} de {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="md"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages || isLoading}
+              >
+                Siguiente
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>
