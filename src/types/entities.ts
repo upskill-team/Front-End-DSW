@@ -63,6 +63,18 @@ export interface Institution {
   professors: Professor[];
 }
 
+export type EnrollmentState = 'enrolled' | 'completed' | 'dropped';
+
+export interface Enrollment {
+  id: string;
+  student: Student;
+  course: Course;
+  enrolledAt: string; // ISO date string
+  state: EnrollmentState;
+  grade?: number;
+  progress?: number; // Percentage (0-100)
+}
+
 export interface Appeal {
   id: string;
   expertise: string;

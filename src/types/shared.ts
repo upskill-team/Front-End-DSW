@@ -1,4 +1,4 @@
-import type { Appeal, Course } from "./entities.ts";
+import type { Appeal, Course } from './entities.ts';
 
 export interface SearchCoursesParams {
   limit?: number;
@@ -14,6 +14,12 @@ export interface SearchCoursesParams {
 export interface PaginatedCoursesResponse {
   courses: Course[];
   total: number;
+}
+
+export interface ApiResponse<T> {
+  status: number;
+  message: string;
+  data: T;
 }
 
 export interface SearchAppealsParams {
