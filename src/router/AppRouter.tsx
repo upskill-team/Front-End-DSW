@@ -30,8 +30,6 @@ import ProfilePage from '../pages/User/ProfilePage.tsx';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
 import ProtectedRoute from './ProtectedRoute';
 import ScrollToTop from '../components/layouts/ScrollToTop';
-import CourseDetails from '../pages/Course/CourseDetails.tsx';
-import CourseLearn from '../pages/Course/CourseLearn.tsx';
 import CourseAssessmentsPage from '../pages/Course/CourseAssessmentsPage.tsx';
 import TakeAssessmentPage from '../pages/Course/TakeAssessmentPage.tsx';
 import AssessmentResultsPage from '../pages/Course/AssessmentResultsPage.tsx';

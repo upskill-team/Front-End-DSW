@@ -145,8 +145,7 @@ function CourseDetails() {
                 </div>
               </div>
             </div>
-          </div>
-
+            
             <div className="bg-white/80 backdrop-blur-sm rounded-lg border border-slate-200 p-6">
               <h2 className="text-2xl font-bold text-slate-800 mb-4">Contenido del curso</h2>
               <div className="space-y-3">
