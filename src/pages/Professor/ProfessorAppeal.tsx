@@ -162,7 +162,7 @@ export default function ProfessorApplication() {
 
               {(apiError) && (
                 <div className="text-center text-sm text-red-600 mt-4">
-                  <p>{isAxiosError(apiError) ? apiError.response?.data?.message : 'Ocurrió un error.'}</p>
+                  <p>{isAxiosError(apiError) ? apiError.response?.data?.errors : 'Ocurrió un error.'}</p>
                 </div>
               )}
 
