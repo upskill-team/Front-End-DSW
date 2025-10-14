@@ -1,11 +1,15 @@
 import { Link } from 'react-router-dom';
-import { Search, Users, Star } from 'lucide-react';
+import { Search, Users } from 'lucide-react';
 import RobotModel from './RobotModel';
 import Button from '../ui/Button';
+import { useStudentCount } from '../../hooks/useStudent.ts'
 
 export default function HeroSection() {
+
+  const { data: studentCount, isLoading } = useStudentCount()
+
   return (
-    <section className="py-16 px-4 pt-28 md:pt-32">
+    <section className="pb-8 px-4 pt-28 md:pt-32">
       <div className="container mx-auto max-w-6xl">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div className="space-y-6 text-center lg:text-left">
@@ -42,11 +46,11 @@ export default function HeroSection() {
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-y-3 sm:gap-x-6 text-sm text-slate-600 pt-4">
               <div className="flex items-center space-x-2">
                 <Users className="w-4 h-4 text-blue-500" />
-                <span>+50,000 estudiantes</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                <span>4.8/5 valoración</span>
+                {isLoading ? (
+                  <span className="w-24 h-4 bg-slate-200 rounded animate-pulse"></span>
+                ) : (
+                  <span>{studentCount?.toLocaleString('es-ES')} estudiantes</span>
+                )}
               </div>
             </div>
           </div>
