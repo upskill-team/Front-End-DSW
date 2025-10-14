@@ -46,9 +46,6 @@ export default function PaymentSuccess() {
   }, [isSuccess, enrollment, courseId, navigate]);
 
   return (
-    // --- ¡EL ÚNICO CAMBIO ESTÁ EN ESTA LÍNEA! ---
-    // Cambiamos 'items-start' a 'items-center' para volver a centrar verticalmente.
-    // Cambiamos 'pt-24' (padding-top) a 'py-24' (padding-vertical) para añadir el mismo espacio abajo.
     <div className="flex items-center justify-center py-24 bg-gradient-to-br from-slate-50 to-slate-100 p-4">
       <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center">
         {!isSuccess && (
