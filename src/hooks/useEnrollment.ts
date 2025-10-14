@@ -34,13 +34,20 @@ export const useEnrollments = () => {
  * @param studentId - El ID del estudiante.
  * @param courseId - El ID del curso.
  */
-export const useExistingEnrollment = (studentId: string | undefined, courseId: string | undefined) => {
+export const useExistingEnrollment = (
+  studentId: string | undefined,
+  courseId: string | undefined
+) => {
   return useQuery<Enrollment | null, AxiosError>({
     // La clave de query es compuesta para ser única para esta combinación
     queryKey: ['enrollment', 'student', studentId, 'course', courseId],
-    
+
     // La función que se ejecutará
-    queryFn: () => enrollService.findByStudentAndCourse({ studentId: studentId!, courseId: courseId! }),
+    queryFn: () =>
+      enrollService.findByStudentAndCourse({
+        studentId: studentId!,
+        courseId: courseId!,
+      }),
 
     // MUY IMPORTANTE: La query solo se ejecutará si AMBOS IDs están presentes.
     enabled: !!studentId && !!courseId,
@@ -55,7 +62,6 @@ export const useExistingEnrollment = (studentId: string | undefined, courseId: s
     },
   });
 };
-
 
 /**
  * Hook para obtener una inscripción específica por su ID.
@@ -89,37 +95,41 @@ export const useStudentEnrollments = (studentId: string | undefined) => {
 export const useEnrollInCourse = () => {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<
-    Enrollment,
-    AxiosError,
-    EnrollInCoursePayload
-  >({
+  const mutation = useMutation<Enrollment, AxiosError, EnrollInCoursePayload>({
     mutationFn: enrollService.enrollInCourse,
-    
+
     // --- MODIFICACIÓN CLAVE AQUÍ ---
-    onSuccess: (variables) => {
-      // `data` es la respuesta de la mutación (la nueva inscripción).
+    onSuccess: (_data, variables) => {
+      // `_data` es la respuesta de la mutación (la nueva inscripción).
       // `variables` es el payload que se envió a la mutación (lo que necesitamos).
 
       // 1. Invalidamos la query que verifica la existencia de la inscripción.
       //    La queryKey DEBE COINCIDIR EXACTAMENTE con la del hook `useExistingEnrollment`.
-      queryClient.invalidateQueries({ 
-        queryKey: ['enrollment', 'student', variables.studentId, 'course', variables.courseId] 
+      queryClient.invalidateQueries({
+        queryKey: [
+          'enrollment',
+          'student',
+          variables.studentId,
+          'course',
+          variables.courseId,
+        ],
       });
 
       // 2. También invalidamos la lista de inscripciones del estudiante (esto ya lo tenías, es correcto).
-      queryClient.invalidateQueries({ queryKey: ['enrollments', 'student', variables.studentId] });
-      
+      queryClient.invalidateQueries({
+        queryKey: ['enrollments', 'student', variables.studentId],
+      });
+
       // 3. Opcional: invalidar la lista general si es necesario.
       queryClient.invalidateQueries({ queryKey: ['enrollments'] });
 
       console.log('Enrollment successful. Relevant queries invalidated.');
     },
     onError: (error) => {
-      console.error("Error al intentar inscribir:", error);
-    }
+      console.error('Error al intentar inscribir:', error);
+    },
   });
-  
+
   return {
     enroll: mutation.mutate,
     enrollAsync: mutation.mutateAsync,
@@ -134,16 +144,15 @@ export const useEnrollInCourse = () => {
 export const useUpdateEnrollment = () => {
   /*const queryClient = useQueryClient();*/
 
-  const mutation = useMutation<
-    Enrollment,
-    AxiosError,
-    UpdateEnrollmentPayload
-  >({
-    mutationFn: ({ enrollmentId, data }) => enrollService.update(enrollmentId, data),
-    onSuccess: () => {
-      // ... invalidaciones
-    },
-  });
+  const mutation = useMutation<Enrollment, AxiosError, UpdateEnrollmentPayload>(
+    {
+      mutationFn: ({ enrollmentId, data }) =>
+        enrollService.update(enrollmentId, data),
+      onSuccess: () => {
+        // ... invalidaciones
+      },
+    }
+  );
 
   return {
     updateEnrollment: mutation.mutate, // Renombramos para ser más descriptivo
@@ -159,11 +168,7 @@ export const useUpdateEnrollment = () => {
 export const useDeleteEnrollment = () => {
   /*const queryClient = useQueryClient();*/
 
-  const mutation = useMutation<
-    void,
-    AxiosError,
-    string
-  >({
+  const mutation = useMutation<void, AxiosError, string>({
     mutationFn: (enrollmentId: string) => enrollService.remove(enrollmentId),
     onSuccess: () => {
       // ... invalidaciones
@@ -175,5 +180,105 @@ export const useDeleteEnrollment = () => {
     deleteEnrollmentAsync: mutation.mutateAsync,
     isPending: mutation.isPending,
     // ...etc
+  };
+};
+
+/**
+ * Hook para marcar una unidad como completada.
+ */
+export const useCompleteUnit = () => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<
+    Enrollment,
+    AxiosError,
+    { enrollmentId: string; unitNumber: number }
+  >({
+    mutationFn: ({ enrollmentId, unitNumber }) =>
+      enrollService.completeUnit(enrollmentId, unitNumber),
+    onSuccess: (data) => {
+      // Invalidar queries relacionadas
+      // El backend puede devolver solo IDs o objetos completos, manejamos ambos casos
+      const studentId =
+        typeof data.student === 'string' ? data.student : data.student?.id;
+      const courseId =
+        typeof data.course === 'string' ? data.course : data.course?.id;
+
+      if (studentId && courseId) {
+        queryClient.invalidateQueries({
+          queryKey: ['enrollment', 'student', studentId, 'course', courseId],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: ['enrollments', 'student', studentId],
+        });
+      }
+
+      // Invalidar todas las queries de enrollments como fallback
+      queryClient.invalidateQueries({
+        queryKey: ['enrollment'],
+      });
+    },
+    onError: (error) => {
+      console.error('Error al marcar unidad como completada:', error);
+    },
+  });
+
+  return {
+    completeUnit: mutation.mutate,
+    completeUnitAsync: mutation.mutateAsync,
+    isPending: mutation.isPending,
+    isError: mutation.isError,
+    error: mutation.error,
+  };
+};
+
+/**
+ * Hook para desmarcar una unidad como completada.
+ */
+export const useUncompleteUnit = () => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<
+    Enrollment,
+    AxiosError,
+    { enrollmentId: string; unitNumber: number }
+  >({
+    mutationFn: ({ enrollmentId, unitNumber }) =>
+      enrollService.uncompleteUnit(enrollmentId, unitNumber),
+    onSuccess: (data) => {
+      // Invalidar queries relacionadas
+      // El backend puede devolver solo IDs o objetos completos, manejamos ambos casos
+      const studentId =
+        typeof data.student === 'string' ? data.student : data.student?.id;
+      const courseId =
+        typeof data.course === 'string' ? data.course : data.course?.id;
+
+      if (studentId && courseId) {
+        queryClient.invalidateQueries({
+          queryKey: ['enrollment', 'student', studentId, 'course', courseId],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: ['enrollments', 'student', studentId],
+        });
+      }
+
+      // Invalidar todas las queries de enrollments como fallback
+      queryClient.invalidateQueries({
+        queryKey: ['enrollment'],
+      });
+    },
+    onError: (error) => {
+      console.error('Error al desmarcar unidad:', error);
+    },
+  });
+
+  return {
+    uncompleteUnit: mutation.mutate,
+    uncompleteUnitAsync: mutation.mutateAsync,
+    isPending: mutation.isPending,
+    isError: mutation.isError,
+    error: mutation.error,
   };
 };
