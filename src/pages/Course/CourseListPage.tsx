@@ -139,7 +139,7 @@ const CourseListPage = () => {
                 isGridView ? (
                   <CoursePreviewCard key={course.id} course={course} />
                 ) : (
-                  <CardList key={course.id} course={course} />
+                  <CardList key={course.id} course={course as any} />
                 )
               ))
             ) : (
