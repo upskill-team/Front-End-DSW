@@ -55,11 +55,7 @@ export const useStudentEnrollments = (studentId: string | undefined) => {
 export const useEnrollInCourse = () => {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<
-    Enrollment,
-    AxiosError,
-    EnrollInCoursePayload
-  >({
+  const mutation = useMutation<Enrollment, AxiosError, EnrollInCoursePayload>({
     mutationFn: enrollService.enrollInCourse,
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
@@ -105,5 +101,105 @@ export const useDeleteEnrollment = () => {
     deleteEnrollment: mutation.mutate,
     deleteEnrollmentAsync: mutation.mutateAsync,
     isPending: mutation.isPending,
+  };
+};
+
+/**
+ * Hook para marcar una unidad como completada.
+ */
+export const useCompleteUnit = () => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<
+    Enrollment,
+    AxiosError,
+    { enrollmentId: string; unitNumber: number }
+  >({
+    mutationFn: ({ enrollmentId, unitNumber }) =>
+      enrollService.completeUnit(enrollmentId, unitNumber),
+    onSuccess: (data) => {
+      // Invalidar queries relacionadas
+      // El backend puede devolver solo IDs o objetos completos, manejamos ambos casos
+      const studentId =
+        typeof data.student === 'string' ? data.student : data.student?.id;
+      const courseId =
+        typeof data.course === 'string' ? data.course : data.course?.id;
+
+      if (studentId && courseId) {
+        queryClient.invalidateQueries({
+          queryKey: ['enrollment', 'student', studentId, 'course', courseId],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: ['enrollments', 'student', studentId],
+        });
+      }
+
+      // Invalidar todas las queries de enrollments como fallback
+      queryClient.invalidateQueries({
+        queryKey: ['enrollment'],
+      });
+    },
+    onError: (error) => {
+      console.error('Error al marcar unidad como completada:', error);
+    },
+  });
+
+  return {
+    completeUnit: mutation.mutate,
+    completeUnitAsync: mutation.mutateAsync,
+    isPending: mutation.isPending,
+    isError: mutation.isError,
+    error: mutation.error,
+  };
+};
+
+/**
+ * Hook para desmarcar una unidad como completada.
+ */
+export const useUncompleteUnit = () => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<
+    Enrollment,
+    AxiosError,
+    { enrollmentId: string; unitNumber: number }
+  >({
+    mutationFn: ({ enrollmentId, unitNumber }) =>
+      enrollService.uncompleteUnit(enrollmentId, unitNumber),
+    onSuccess: (data) => {
+      // Invalidar queries relacionadas
+      // El backend puede devolver solo IDs o objetos completos, manejamos ambos casos
+      const studentId =
+        typeof data.student === 'string' ? data.student : data.student?.id;
+      const courseId =
+        typeof data.course === 'string' ? data.course : data.course?.id;
+
+      if (studentId && courseId) {
+        queryClient.invalidateQueries({
+          queryKey: ['enrollment', 'student', studentId, 'course', courseId],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: ['enrollments', 'student', studentId],
+        });
+      }
+
+      // Invalidar todas las queries de enrollments como fallback
+      queryClient.invalidateQueries({
+        queryKey: ['enrollment'],
+      });
+    },
+    onError: (error) => {
+      console.error('Error al desmarcar unidad:', error);
+    },
+  });
+
+  return {
+    uncompleteUnit: mutation.mutate,
+    uncompleteUnitAsync: mutation.mutateAsync,
+    isPending: mutation.isPending,
+    isError: mutation.isError,
+    error: mutation.error,
   };
 };

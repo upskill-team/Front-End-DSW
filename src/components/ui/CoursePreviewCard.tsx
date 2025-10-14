@@ -1,13 +1,20 @@
 import * as React from 'react';
-import { Users, BookOpen } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./Card";
-import Badge from "./Badge";
+import { Users, BookOpen } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from './Card';
+import Badge from './Badge';
 import Button from './Button';
 import type { Course, CourseType } from '../../types/entities';
 import { cn } from '../../lib/utils';
 import { Link } from 'react-router-dom';
 interface BasePreviewCardProps extends React.HTMLAttributes<HTMLDivElement> {
   hideButton?: boolean;
+  onViewMore?: () => void;
 }
 
 interface CourseObjectProps extends BasePreviewCardProps {

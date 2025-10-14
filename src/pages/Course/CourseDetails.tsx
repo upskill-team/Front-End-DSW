@@ -1,5 +1,3 @@
-// src/pages/Course/CourseDetails.tsx
-
 import { Award, BookOpen, Download, Globe, Play, Smartphone, Star, Users } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useCourseById } from "../../hooks/useCourses.ts";
@@ -85,7 +83,6 @@ function CourseDetails() {
     );
   };
 
-  // --- SOLUCIÓN PRINCIPAL AQUÍ ---
   if (isLoading) {
     return <div className="text-center py-20">Cargando detalles del curso...</div>;
   }
@@ -94,12 +91,9 @@ function CourseDetails() {
     return <div className="text-center py-20 text-red-600">Error al cargar el curso: {error.message}</div>;
   }
 
-  // Si no está cargando y no hay error, pero el curso no existe, mostramos un mensaje claro.
   if (!course) {
     return <div className="text-center py-20">Curso no encontrado.</div>;
   }
-
-  // A partir de aquí, podemos asumir que `course` existe y tiene datos.
 
   return (
     <div>
@@ -109,7 +103,6 @@ function CourseDetails() {
             Cursos
           </Link>
           <span>/</span>
-          {/* Usamos ?. para acceso seguro */}
           <Link to="/courses" className="hover:text-blue-600">
             {course.courseType?.name} 
           </Link>
@@ -132,12 +125,10 @@ function CourseDetails() {
                 </div>
                 <div className="flex items-center space-x-1">
                   <Users className="w-4 h-4" />
-                  {/* Usamos ?. para acceso seguro */}
                   <span>{course.students?.length || 0} estudiantes</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <BookOpen className="w-4 h-4" />
-                   {/* Usamos ?. para acceso seguro y corregimos la lógica */}
                   <span>{course.units?.length || 0} {course.units?.length === 1 ? 'lección' : 'lecciones'}</span>
                 </div>
               </div>
@@ -154,11 +145,11 @@ function CourseDetails() {
                 </div>
               </div>
             </div>
+          </div>
 
             <div className="bg-white/80 backdrop-blur-sm rounded-lg border border-slate-200 p-6">
               <h2 className="text-2xl font-bold text-slate-800 mb-4">Contenido del curso</h2>
               <div className="space-y-3">
-                {/* Usamos ?. para acceso seguro */}
                 {course.units?.map((seccion, index) => (
                   <div
                     key={index}

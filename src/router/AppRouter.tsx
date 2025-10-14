@@ -30,6 +30,13 @@ import ProfilePage from '../pages/User/ProfilePage.tsx';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
 import ProtectedRoute from './ProtectedRoute';
 import ScrollToTop from '../components/layouts/ScrollToTop';
+import CourseDetails from '../pages/Course/CourseDetails.tsx';
+import CourseLearn from '../pages/Course/CourseLearn.tsx';
+import CourseAssessmentsPage from '../pages/Course/CourseAssessmentsPage.tsx';
+import TakeAssessmentPage from '../pages/Course/TakeAssessmentPage.tsx';
+import AssessmentResultsPage from '../pages/Course/AssessmentResultsPage.tsx';
+import AssessmentAttemptsPage from '../pages/Course/AssessmentAttemptsPage.tsx';
+import MyLearningPage from '../pages/User/MyLearningPage.tsx';
 
 const AppRouter = () => {
   return (
@@ -46,17 +53,40 @@ const AppRouter = () => {
 
         {/* ============= MAIN LAYOUT ============= */}
         <Route element={<MainLayout />}>
-          {/* --- Públicas --- */}
           <Route path="/" element={<LandingPage />} />
+
           <Route path="/courses" element={<CourseListPage />} />
           <Route path="/courses/:courseId" element={<CourseDetails />} />
-
-          {/* --- Protegidas: Cursos --- */}
+          <Route path="/courses/learn/:courseId" element={<CourseLearn />} />
           <Route
-            path="/courses/learn/:courseId"
+            path="/courses/:courseId/assessments"
             element={
-              <ProtectedRoute>
-                <CourseLearn />
+              <ProtectedRoute allowedRoles={['student', 'professor']}>
+                <CourseAssessmentsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/courses/:courseId/assessments/:assessmentId/take"
+            element={
+              <ProtectedRoute allowedRoles={['student', 'professor']}>
+                <TakeAssessmentPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/courses/:courseId/assessments/:assessmentId/results/:attemptId"
+            element={
+              <ProtectedRoute allowedRoles={['student', 'professor']}>
+                <AssessmentResultsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/courses/:courseId/assessments/:assessmentId/attempts"
+            element={
+              <ProtectedRoute allowedRoles={['student', 'professor']}>
+                <AssessmentAttemptsPage />
               </ProtectedRoute>
             }
           />
@@ -72,6 +102,15 @@ const AppRouter = () => {
             element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/my-learning"
+            element={
+              <ProtectedRoute allowedRoles={['student', 'professor']}>
+                <MyLearningPage />
               </ProtectedRoute>
             }
           />

@@ -122,16 +122,31 @@ export function NavBar() {
                   location={location}
                 />
               )}
-              {user?.role === 'student' && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-green-200 text-green-700 hover:bg-green-50"
-                  onClick={handleApplyClick}
+              {(user?.role === 'student' || user?.role === 'professor') && (
+                <Link
+                  to="/my-learning"
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${
+                    location.pathname === '/my-learning'
+                      ? activeLinkClasses
+                      : inactiveLinkClasses
+                  }`}
                 >
-                  <GraduationCap className="w-4 h-4 mr-2" />
-                  <span>Quiero ser profesor</span>
-                </Button>
+                  <GraduationCap className="w-4 h-4" />
+                  <span className="xl:inline ml-2">Mis Aprendizajes</span>
+                </Link>
+              )}
+              {user?.role === 'student' && (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-green-200 text-green-700 hover:bg-green-50"
+                    onClick={handleApplyClick}
+                  >
+                    <GraduationCap className="w-4 h-4 mr-2" />
+                    <span>Quiero ser profesor</span>
+                  </Button>
+                </>
               )}
               {user?.role === 'professor' && (
                 <ProfessorControls
@@ -245,6 +260,22 @@ export function NavBar() {
         <div className="md:hidden bg-white border-t border-blue-100 px-4 pt-2 pb-4 space-y-2">
           {isAuthenticated ? (
             <>
+              {(user?.role === 'student' || user?.role === 'professor') && (
+                <Link
+                  to="/my-learning"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    fullWidth
+                    className="justify-start text-blue-700 hover:bg-blue-50"
+                  >
+                    <GraduationCap className="w-4 h-4 mr-2" />
+                    <span>Mis Aprendizajes</span>
+                  </Button>
+                </Link>
+              )}
               {user?.role === 'student' && (
                 <Button
                   variant="outline"

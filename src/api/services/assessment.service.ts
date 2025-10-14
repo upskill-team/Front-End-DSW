@@ -1,13 +1,16 @@
 import apiClient from '../apiClient';
 import type {
   Assessment,
+  AssessmentSummary,
+  AssessmentWithMetadata,
+  AssessmentAttempt,
+  PendingAssessment,
+  StartAttemptResponse,
+  SaveAnswersRequest,
+  SaveAnswersResponse,
+  SubmitAttemptRequest,
   CreateAssessmentRequest,
   UpdateAssessmentRequest,
-  AssessmentAttempt,
-  StartAttemptRequest,
-  AnswerQuestionRequest,
-  SubmitAttemptRequest,
-  AttemptAnswer,
 } from '../../types/entities';
 
 interface ApiResponse<T> {
@@ -16,46 +19,94 @@ interface ApiResponse<T> {
   data: T;
 }
 
-const create = async (
-  data: CreateAssessmentRequest
-): Promise<Assessment> => {
-  const response = await apiClient.post<ApiResponse<Assessment>>(
-    '/assessments',
-    data
+/**
+ * Endpoint #1: Obtener evaluaciones de un curso
+ * GET /api/courses/:courseId/assessments
+ */
+const getAssessmentsByCourse = async (
+  courseId: string
+): Promise<AssessmentSummary[]> => {
+  const response = await apiClient.get<ApiResponse<AssessmentSummary[]>>(
+    `/courses/${courseId}/assessments`
   );
   return response.data.data;
 };
 
-const getAll = async (courseId?: string): Promise<Assessment[]> => {
-  const url = courseId
-    ? `/assessments?courseId=${courseId}`
-    : '/assessments';
-  const response = await apiClient.get<ApiResponse<Assessment[]>>(url);
-  return response.data.data;
-};
-
-const getById = async (id: string): Promise<Assessment> => {
-  const response = await apiClient.get<ApiResponse<Assessment>>(
-    `/assessments/${id}`
+/**
+ * Endpoint #2: Obtener detalle de una evaluación
+ * GET /api/assessments/:assessmentId
+ */
+const getById = async (
+  assessmentId: string
+): Promise<AssessmentWithMetadata> => {
+  const response = await apiClient.get<ApiResponse<AssessmentWithMetadata>>(
+    `/assessments/${assessmentId}`
   );
   return response.data.data;
 };
 
-const update = async (
-  id: string,
-  data: UpdateAssessmentRequest
-): Promise<Assessment> => {
-  const response = await apiClient.put<ApiResponse<Assessment>>(
-    `/assessments/${id}`,
-    data
+/**
+ * Endpoint #3: Iniciar un intento de evaluación
+ * POST /api/assessments/:assessmentId/attempts
+ */
+const startAttempt = async (
+  assessmentId: string,
+  enrollmentId: string
+): Promise<StartAttemptResponse> => {
+  const response = await apiClient.post<ApiResponse<StartAttemptResponse>>(
+    `/assessments/${assessmentId}/attempts`,
+    { enrollmentId }
   );
   return response.data.data;
 };
 
-const remove = async (id: string): Promise<void> => {
-  await apiClient.delete(`/assessments/${id}`);
+/**
+ * Endpoint #4: Guardar/actualizar respuestas (auto-save)
+ * PATCH /api/assessments/attempts/:attemptId/answers
+ */
+const saveAnswers = async (
+  attemptId: string,
+  answers: SaveAnswersRequest['answers']
+): Promise<SaveAnswersResponse> => {
+  const response = await apiClient.patch<ApiResponse<SaveAnswersResponse>>(
+    `/assessments/attempts/${attemptId}/answers`,
+    { answers }
+  );
+  return response.data.data;
 };
 
+/**
+ * Endpoint #5: Enviar evaluación (submit)
+ * POST /api/assessments/attempts/:attemptId/submit
+ */
+const submitAttempt = async (
+  attemptId: string,
+  submitData: SubmitAttemptRequest
+): Promise<AssessmentAttempt> => {
+  const response = await apiClient.post<ApiResponse<AssessmentAttempt>>(
+    `/assessments/attempts/${attemptId}/submit`,
+    submitData
+  );
+  return response.data.data;
+};
+
+/**
+ * Endpoint #6: Obtener resultado de un intento
+ * GET /api/assessments/attempts/:attemptId
+ */
+const getAttemptById = async (
+  attemptId: string
+): Promise<AssessmentAttempt> => {
+  const response = await apiClient.get<ApiResponse<AssessmentAttempt>>(
+    `/assessments/attempts/${attemptId}`
+  );
+  return response.data.data;
+};
+
+/**
+ * Endpoint #7: Listar intentos de una evaluación
+ * GET /api/assessments/:assessmentId/attempts
+ */
 const getAttemptsByAssessment = async (
   assessmentId: string
 ): Promise<AssessmentAttempt[]> => {
@@ -65,64 +116,67 @@ const getAttemptsByAssessment = async (
   return response.data.data;
 };
 
-const getAttemptById = async (attemptId: string): Promise<AssessmentAttempt> => {
-  const response = await apiClient.get<ApiResponse<AssessmentAttempt>>(
-    `/assessments/attempts/${attemptId}`
-  );
-  return response.data.data;
-};
-
-const startAttempt = async (
-  data: StartAttemptRequest
-): Promise<AssessmentAttempt> => {
-  const response = await apiClient.post<ApiResponse<AssessmentAttempt>>(
-    '/assessments/attempts/start',
-    data
-  );
-  return response.data.data;
-};
-
-const answerQuestion = async (
-  data: AnswerQuestionRequest
-): Promise<AttemptAnswer> => {
-  const response = await apiClient.post<ApiResponse<AttemptAnswer>>(
-    '/assessments/attempts/answer',
-    data
-  );
-  return response.data.data;
-};
-
-const submitAttempt = async (
-  data: SubmitAttemptRequest
-): Promise<AssessmentAttempt> => {
-  const response = await apiClient.post<ApiResponse<AssessmentAttempt>>(
-    '/assessments/attempts/submit',
-    data
-  );
-  return response.data.data;
-};
-
-const getAttemptsByStudent = async (
+/**
+ * Endpoint #8: Listar evaluaciones pendientes del estudiante
+ * GET /api/students/:studentId/assessments/pending
+ */
+const getPendingAssessments = async (
   studentId: string
-): Promise<AssessmentAttempt[]> => {
-  const response = await apiClient.get<ApiResponse<AssessmentAttempt[]>>(
-    `/assessments/attempts/student/${studentId}`
+): Promise<PendingAssessment[]> => {
+  const response = await apiClient.get<ApiResponse<PendingAssessment[]>>(
+    `/students/${studentId}/assessments/pending`
+  );
+
+  return response.data.data;
+};
+
+/**
+ * Crear una nueva evaluación (para profesores)
+ * POST /api/assessments
+ */
+const create = async (data: CreateAssessmentRequest): Promise<Assessment> => {
+  const response = await apiClient.post<ApiResponse<Assessment>>(
+    '/assessments',
+    data
   );
   return response.data.data;
+};
+
+/**
+ * Actualizar una evaluación (para profesores)
+ * PATCH /api/assessments/:assessmentId
+ */
+const update = async (
+  id: string,
+  data: UpdateAssessmentRequest
+): Promise<Assessment> => {
+  const response = await apiClient.patch<ApiResponse<Assessment>>(
+    `/assessments/${id}`,
+    data
+  );
+  return response.data.data;
+};
+
+/**
+ * Eliminar una evaluación (para profesores)
+ * DELETE /api/assessments/:assessmentId
+ */
+const remove = async (id: string): Promise<void> => {
+  await apiClient.delete(`/assessments/${id}`);
 };
 
 const assessmentService = {
-  create,
-  getAll,
+  getAssessmentsByCourse,
   getById,
+  startAttempt,
+  saveAnswers,
+  submitAttempt,
+  getAttemptById,
+  getAttemptsByAssessment,
+  getPendingAssessments,
+  create,
   update,
   remove,
-  getAttemptsByAssessment,
-  getAttemptById,
-  startAttempt,
-  answerQuestion,
-  submitAttempt,
-  getAttemptsByStudent,
 };
 
 export default assessmentService;

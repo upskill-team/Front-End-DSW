@@ -9,6 +9,7 @@ import type { Course } from '../../types/entities';
 
 export interface CourseCardListProps extends React.HTMLAttributes<HTMLDivElement> {
   course: Course;
+  onViewMore?: () => void;
 }
 
 const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
@@ -55,9 +56,7 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                     </Badge>
                   </div>
                   <CardTitle className="mb-2 group-hover:text-blue-600 transition-colors text-lg md:text-xl">
-                    <Link to={`/courses/${course.id}`}>
-                      {course.name}
-                    </Link>
+                    {course.name}
                   </CardTitle>
                   <CardDescription className="mb-2 line-clamp-2 text-sm">
                     {course.description}
@@ -69,7 +68,7 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                   <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-sm text-slate-600">
                     <div className="flex items-center space-x-1">
                       <Users className="w-3 h-3" />
-                      <span>{course.students?.length || 0} estudiantes</span>
+                      <span>{course.students?.length} {course.students?.length === 1 ? 'Estudiante' : 'Estudiantes'}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <BookOpen className="w-3 h-3" />
