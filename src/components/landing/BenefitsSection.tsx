@@ -1,17 +1,14 @@
-import { Clock, Smartphone, Award, Users, BookOpen, TrendingUp } from 'lucide-react';
+import { Clock, Smartphone, BookOpen } from 'lucide-react';
 
 const benefits = [
   { icon: Clock, title: "Aprende a tu ritmo", description: "Accede a los cursos cuando quieras, sin horarios fijos. Pausa, retrocede y repite las lecciones." },
   { icon: Smartphone, title: "Desde cualquier dispositivo", description: "Estudia desde tu computadora, tablet o móvil. Tu progreso se sincroniza automáticamente." },
-  { icon: Award, title: "Certificaciones oficiales", description: "Obtén certificados reconocidos por la industria al completar tus cursos y mejora tu perfil." },
-  { icon: Users, title: "Comunidad activa", description: "Conecta con otros estudiantes, participa en foros y recibe apoyo de instructores expertos." },
   { icon: BookOpen, title: "Contenido actualizado", description: "Nuestros cursos se actualizan constantemente para incluir las últimas tendencias y tecnologías." },
-  { icon: TrendingUp, title: "Progreso medible", description: "Sigue tu avance con estadísticas detalladas y un sistema de puntuación gamificado." },
 ];
 
 export function BenefitsSection() {
   return (
-    <section className="py-20 px-4 bg-gradient-to-br from-green-50 to-blue-50">
+    <section className="py-10 px-4">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-poppins font-bold text-slate-800 mb-4">¿Por qué elegir UpSkill?</h2>

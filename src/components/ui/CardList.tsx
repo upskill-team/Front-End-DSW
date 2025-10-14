@@ -7,24 +7,6 @@ import { Card, CardContent, CardTitle, CardDescription } from './Card';
 
 import { Link } from 'react-router-dom';
 
-interface Course {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  price: number;
-  originalPrice: number;
-  views: number;
-  rating: number;
-  students: number;
-  duration: string;
-  level: string;
-  category: string;
-  instructor: string;
-  lessons: number;
-  isNew: boolean;
-  isBestseller: boolean;
-}
 import type { Course } from '../../types/entities';
 
 /**
@@ -52,10 +34,6 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
     const instructorName = course.professor?.user 
       ? `${course.professor.user.name} ${course.professor.user.surname}`
       : 'Instructor no disponible';
-      
-    // Helper to calculate total lessons (materials + questions)
-    const totalLessons = course.units.reduce((acc, unit) => 
-        acc + (unit.materials?.length || 0) + (unit.questions?.length || 0), 0);
 
     return (
       <Card
@@ -106,11 +84,11 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                   <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-sm text-slate-600">
                     <div className="flex items-center space-x-1">
                       <Users className="w-3 h-3" />
-                      <span>{course.students?.length || 0} estudiantes</span>
+                      <span>{course.students?.length} {course.students?.length === 1 ? 'Estudiante' : 'Estudiantes'}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <BookOpen className="w-3 h-3" />
-                      <span>{totalLessons} {totalLessons === 1 ? 'Unidad' : 'Unidades'}</span>
+                      <span>{course.units.length} {course.units.length === 1 ? 'Unidad' : 'Unidades'}</span>
                     </div>
                   </div>
                 </div>

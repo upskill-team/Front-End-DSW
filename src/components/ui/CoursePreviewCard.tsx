@@ -34,7 +34,6 @@ export type CoursePreviewCardProps = CourseObjectProps | IndividualPropsPreview;
 
 const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProps>(
   ({ course, name, description, imageUrl, isFree, price, courseType, hideButton = false, className, ...props }, ref) => {
-    // If we have a course object, use its properties
     const displayName = course?.name ?? name;
     const displayDescription = course?.description ?? description;
     const displayImage = course?.imageUrl ?? imageUrl;
@@ -42,20 +41,15 @@ const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProp
     const displayPrice = course?.price ?? price;
     const displayCourseType = course?.courseType ?? courseType;
 
-    // Helper to get instructor name safely (only for course objects)
     const instructorName = course?.professor?.user 
       ? `${course.professor.user.name} ${course.professor.user.surname}`
       : 'Instructor no disponible';
-      
-    // Helper to calculate total lessons (only for course objects)
-    const totalLessons = course?.units.reduce((acc, unit) => 
-        acc + (unit.materials?.length || 0) + (unit.questions?.length || 0), 0) ?? 0;
 
     return (
       <Card
         ref={ref}
         className={cn(
-          "group transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:shadow-lg cursor-pointer",
+          "group transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:shadow-lg cursor-pointer m-2",
           className
         )}
         {...props}
@@ -91,11 +85,11 @@ const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProp
               <div className="grid grid-cols-2 gap-4 text-sm text-slate-600">
                 <div className="flex items-center space-x-1">
                   <Users className="w-3 h-3" />
-                  <span>{course.students?.length || 0} estudiantes</span>
+                  <span>{course.students?.length} {course.students?.length === 1 ? 'Estudiante' : 'Estudiantes'}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <BookOpen className="w-3 h-3" />
-                  <span>{totalLessons} {totalLessons === 1 ? 'Unidad' : 'Unidades'}</span>
+                  <span>{course.units.length} {course.units.length === 1 ? 'Unidad' : 'Unidades'}</span>
                 </div>
               </div>
             )}
