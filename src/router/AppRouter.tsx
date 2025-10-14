@@ -29,56 +29,181 @@ import ProfessorAssessmentAttempts from '../pages/Professor/ProfessorAssessmentA
 import ProfilePage from '../pages/User/ProfilePage.tsx';
 import CourseDetails from '../pages/Course/CourseDetails.tsx';
 import CourseLearn from '../pages/Course/CourseLearn.tsx';
+import CourseAssessmentsPage from '../pages/Course/CourseAssessmentsPage.tsx';
+import TakeAssessmentPage from '../pages/Course/TakeAssessmentPage.tsx';
+import AssessmentResultsPage from '../pages/Course/AssessmentResultsPage.tsx';
+import AssessmentAttemptsPage from '../pages/Course/AssessmentAttemptsPage.tsx';
+import MyLearningPage from '../pages/User/MyLearningPage.tsx';
 
 const AppRouter = () => {
   return (
     <>
-    <ScrollToTop />
-    <Routes>
-      <Route element={<AuthLayout />}>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-      </Route>
-
-      <Route element={<MainLayout />}>
-      
-        <Route path="/" element={<LandingPage />} />
-
-        <Route path="/courses" element={<CourseListPage />} />
-        <Route path="/courses/:courseId" element={<CourseDetails />} />
-        <Route path="/courses/learn/:courseId" element={<CourseLearn />} />
-
-        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-
-        <Route path="/professor/dashboard" element={<ProtectedRoute allowedRoles={['professor']}><ProfessorDashboard /></ProtectedRoute>}>
-            <Route index element={<Navigate to="courses" replace />} />
-            <Route path="courses" element={<ProfessorCoursesPage />} />
-            <Route path='courses/new' element={<ProfessorCourseCreation />} />
-            <Route path="courses/:courseId/edit" element={<ProfessorCourseEdition/>}/>
-            <Route path="assessments" element={<ProfessorAssessmentsPage />} />
-            <Route path="assessments/new" element={<ProfessorAssessmentEditor />} />
-            <Route path="assessments/:assessmentId/edit" element={<ProfessorAssessmentEditor />} />
-            <Route path="assessments/:assessmentId/attempts" element={<ProfessorAssessmentAttempts />} />
-            <Route path="analytics" element={<ProfessorAnalyticsPage />} />
-            <Route path="students" element={<ProfessorStudentsPage />} />
+      <ScrollToTop />
+      <Routes>
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
         </Route>
 
-        <Route path="/professor/apply" element={<ProtectedRoute allowedRoles={['admin', 'student']}><ProfessorAppeal /></ProtectedRoute>} />
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<LandingPage />} />
 
-        <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><Navigate to="/admin/dashboard" replace /></ProtectedRoute>} />
-        <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
-        <Route path="/admin/appeals" element={<ProtectedRoute allowedRoles={['admin']}><ProfessorAppealsPage /></ProtectedRoute>} />
-        <Route path="/admin/courses" element={<ProtectedRoute allowedRoles={['admin']}><CoursesPage /></ProtectedRoute>} />
-        <Route path="/admin/users" element={<ProtectedRoute allowedRoles={['admin']}><UsersPage /></ProtectedRoute>} />
-        <Route path="/admin/analytics" element={<ProtectedRoute allowedRoles={['admin']}><AnalyticsPage /></ProtectedRoute>} />
-        <Route path="/admin/courseTypes" element={<ProtectedRoute allowedRoles={['admin']}><CourseTypesPage /></ProtectedRoute>} />
+          <Route path="/courses" element={<CourseListPage />} />
+          <Route path="/courses/:courseId" element={<CourseDetails />} />
+          <Route path="/courses/learn/:courseId" element={<CourseLearn />} />
+          <Route
+            path="/courses/:courseId/assessments"
+            element={
+              <ProtectedRoute allowedRoles={['student', 'professor']}>
+                <CourseAssessmentsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/courses/:courseId/assessments/:assessmentId/take"
+            element={
+              <ProtectedRoute allowedRoles={['student', 'professor']}>
+                <TakeAssessmentPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/courses/:courseId/assessments/:assessmentId/results/:attemptId"
+            element={
+              <ProtectedRoute allowedRoles={['student', 'professor']}>
+                <AssessmentResultsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/courses/:courseId/assessments/:assessmentId/attempts"
+            element={
+              <ProtectedRoute allowedRoles={['student', 'professor']}>
+                <AssessmentAttemptsPage />
+              </ProtectedRoute>
+            }
+          />
 
-      </Route>
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-learning"
+            element={
+              <ProtectedRoute allowedRoles={['student', 'professor']}>
+                <MyLearningPage />
+              </ProtectedRoute>
+            }
+          />
 
-      <Route path="/unauthorized" element={<UnauthorizedPage />} />
-    </Routes>
+          <Route
+            path="/professor/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['professor']}>
+                <ProfessorDashboard />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="courses" replace />} />
+            <Route path="courses" element={<ProfessorCoursesPage />} />
+            <Route path="courses/new" element={<ProfessorCourseCreation />} />
+            <Route
+              path="courses/:courseId/edit"
+              element={<ProfessorCourseEdition />}
+            />
+            <Route path="assessments" element={<ProfessorAssessmentsPage />} />
+            <Route
+              path="assessments/new"
+              element={<ProfessorAssessmentEditor />}
+            />
+            <Route
+              path="assessments/:assessmentId/edit"
+              element={<ProfessorAssessmentEditor />}
+            />
+            <Route
+              path="assessments/:assessmentId/attempts"
+              element={<ProfessorAssessmentAttempts />}
+            />
+            <Route path="analytics" element={<ProfessorAnalyticsPage />} />
+            <Route path="students" element={<ProfessorStudentsPage />} />
+          </Route>
+
+          <Route
+            path="/professor/apply"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'student']}>
+                <ProfessorAppeal />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <Navigate to="/admin/dashboard" replace />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/appeals"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <ProfessorAppealsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/courses"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <CoursesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <UsersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/analytics"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AnalyticsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/courseTypes"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <CourseTypesPage />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+
+        <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      </Routes>
     </>
   );
 };

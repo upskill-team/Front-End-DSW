@@ -1,23 +1,27 @@
-import { useState } from "react";
-import CardList from "../../components/ui/CardList.tsx";
-import CoursePreviewCard from "../../components/ui/CoursePreviewCard.tsx";
-import type { SearchCoursesParams } from "../../types/shared.ts";
-import { useSearchCourses } from "../../hooks/useCourses.ts";
-import { useCourseTypes } from "../../hooks/useCourseTypes.ts";
-import Input from "../../components/ui/Input.tsx";
-import Select from "../../components/ui/Select.tsx";
-import Switch from "../../components/ui/Switch.tsx";
-import Label from "../../components/ui/Label.tsx";
-import Button from "../../components/ui/Button.tsx";
-import { Search, LayoutGrid, List } from "lucide-react";
-import { useDebounce } from "../../hooks/useDebounce.ts";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import CardList from '../../components/ui/CardList.tsx';
+import CoursePreviewCard from '../../components/ui/CoursePreviewCard.tsx';
+import type { SearchCoursesParams } from '../../types/shared.ts';
+import { useSearchCourses } from '../../hooks/useCourses.ts';
+import { useCourseTypes } from '../../hooks/useCourseTypes.ts';
+import Input from '../../components/ui/Input.tsx';
+import Select from '../../components/ui/Select.tsx';
+import Switch from '../../components/ui/Switch.tsx';
+import Label from '../../components/ui/Label.tsx';
+import Button from '../../components/ui/Button.tsx';
+import { Search, LayoutGrid, List } from 'lucide-react';
+import { useDebounce } from '../../hooks/useDebounce.ts';
 
 const CourseListPage = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [isGridView, setIsGridView] = useState(true); 
+  const [isGridView, setIsGridView] = useState(true);
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  const [filters, setFilters] = useState<Omit<SearchCoursesParams, 'q' | 'offset'>>({
+  const [filters, setFilters] = useState<
+    Omit<SearchCoursesParams, 'q' | 'offset'>
+  >({
     courseTypeId: '',
     isFree: undefined,
     sortBy: 'createdAt',
@@ -25,27 +29,30 @@ const CourseListPage = () => {
     limit: 9,
   });
 
-  const { 
-    data, 
-    isLoading, 
-    isError, 
-    error, 
-    fetchNextPage, 
-    hasNextPage, 
-    isFetchingNextPage 
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
   } = useSearchCourses({
     ...filters,
     q: debouncedSearchTerm,
-    status: "publicado",
+    status: 'publicado',
   });
-  
+
   const { data: courseTypes, isLoading: isLoadingTypes } = useCourseTypes();
 
-  const courses = data?.pages.flatMap(page => page.courses) || [];
+  const courses = data?.pages.flatMap((page) => page.courses) || [];
   const totalCourses = data?.pages[0]?.total || 0;
 
-  const handleFilterChange = (key: keyof typeof filters, value: string | boolean | undefined) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+  const handleFilterChange = (
+    key: keyof typeof filters,
+    value: string | boolean | undefined
+  ) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   return (
@@ -62,7 +69,7 @@ const CourseListPage = () => {
       <div className="flex justify-end mb-4">
         <div className="hidden md:inline-flex bg-white/80 backdrop-blur-sm rounded-lg shadow-md p-1">
           <Button
-            variant={!isGridView ? "primary" : "ghost"}
+            variant={!isGridView ? 'primary' : 'ghost'}
             size="sm"
             onClick={() => setIsGridView(false)}
             className="rounded-lg"
@@ -71,7 +78,7 @@ const CourseListPage = () => {
             <List className="h-4 w-4" />
           </Button>
           <Button
-            variant={isGridView ? "primary" : "ghost"}
+            variant={isGridView ? 'primary' : 'ghost'}
             size="sm"
             onClick={() => setIsGridView(true)}
             className="rounded-lg"
@@ -99,7 +106,11 @@ const CourseListPage = () => {
           disabled={isLoadingTypes}
         >
           <option value="">Todas</option>
-          {courseTypes?.map(ct => <option key={ct.id} value={ct.id}>{ct.name}</option>)}
+          {courseTypes?.map((ct) => (
+            <option key={ct.id} value={ct.id}>
+              {ct.name}
+            </option>
+          ))}
         </Select>
         <Select
           id="sort-by-filter"
@@ -107,7 +118,11 @@ const CourseListPage = () => {
           value={`${filters.sortBy}-${filters.sortOrder}`}
           onChange={(e) => {
             const [sortBy, sortOrder] = e.target.value.split('-');
-            setFilters(prev => ({ ...prev, sortBy, sortOrder: sortOrder as 'ASC' | 'DESC' }));
+            setFilters((prev) => ({
+              ...prev,
+              sortBy,
+              sortOrder: sortOrder as 'ASC' | 'DESC',
+            }));
           }}
         >
           <option value="createdAt-DESC">Más nuevos</option>
@@ -120,7 +135,12 @@ const CourseListPage = () => {
             <Switch
               id="is-free-filter"
               checked={filters.isFree === true}
-              onChange={(e) => handleFilterChange('isFree', e.target.checked ? true : undefined)}
+              onChange={(e) =>
+                handleFilterChange(
+                  'isFree',
+                  e.target.checked ? true : undefined
+                )
+              }
             />
             <Label htmlFor="is-free-filter">Mostrar solo gratuitos</Label>
           </div>
@@ -130,18 +150,34 @@ const CourseListPage = () => {
       {isLoading ? (
         <p className="text-center text-slate-600 py-10">Cargando cursos...</p>
       ) : isError ? (
-        <p className="text-center text-red-600 py-10">Error: {error?.message}</p>
+        <p className="text-center text-red-600 py-10">
+          Error: {error?.message}
+        </p>
       ) : (
         <>
-          <div className={isGridView ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
+          <div
+            className={
+              isGridView
+                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+                : 'space-y-4'
+            }
+          >
             {courses.length > 0 ? (
-              courses.map((course) => (
+              courses.map((course) =>
                 isGridView ? (
-                  <CoursePreviewCard key={course.id} course={course} />
+                  <CoursePreviewCard
+                    key={course.id}
+                    course={course}
+                    onViewMore={() => navigate(`/courses/${course.id}`)}
+                  />
                 ) : (
-                  <CardList key={course.id} course={course} />
+                  <CardList
+                    key={course.id}
+                    course={course}
+                    onViewMore={() => navigate(`/courses/${course.id}`)}
+                  />
                 )
-              ))
+              )
             ) : (
               <div className="col-span-full text-center text-slate-600 text-lg py-10">
                 <p>No se encontraron cursos con los filtros aplicados.</p>

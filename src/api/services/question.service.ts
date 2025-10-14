@@ -123,6 +123,16 @@ const getAllByCourse = async (courseId: string): Promise<Question[]> => {
   return response.data.data;
 };
 
+const getById = async (
+  courseId: string,
+  questionId: string
+): Promise<Question> => {
+  const response = await apiClient.get<ApiResponse<Question>>(
+    `/courses/${courseId}/questions/${questionId}`
+  );
+  return response.data.data;
+};
+
 const remove = async (
   courseId: string,
   unitNumber: number,
@@ -138,6 +148,7 @@ export const questionService = {
   createGeneral,
   getAllByCourse,
   getByUnit,
+  getById,
   update,
   delete: remove,
 };

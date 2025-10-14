@@ -1,13 +1,20 @@
 import * as React from 'react';
-import { Users, BookOpen } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./Card";
-import Badge from "./Badge";
+import { Users, BookOpen } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from './Card';
+import Badge from './Badge';
 import Button from './Button';
 import type { Course, CourseType } from '../../types/entities';
 import { cn } from '../../lib/utils';
 
 interface BasePreviewCardProps extends React.HTMLAttributes<HTMLDivElement> {
   hideButton?: boolean;
+  onViewMore?: () => void;
 }
 
 interface CourseObjectProps extends BasePreviewCardProps {
@@ -32,8 +39,27 @@ interface IndividualPropsPreview extends BasePreviewCardProps {
 
 export type CoursePreviewCardProps = CourseObjectProps | IndividualPropsPreview;
 
-const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProps>(
-  ({ course, name, description, imageUrl, isFree, price, courseType, hideButton = false, className, ...props }, ref) => {
+const CoursePreviewCard = React.forwardRef<
+  HTMLDivElement,
+  CoursePreviewCardProps
+>(
+  (
+    {
+      course,
+      name,
+      description,
+      imageUrl,
+      isFree,
+      price,
+      courseType,
+      hideButton = false,
+      onViewMore,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    // If we have a course object, use its properties
     const displayName = course?.name ?? name;
     const displayDescription = course?.description ?? description;
     const displayImage = course?.imageUrl ?? imageUrl;
@@ -41,23 +67,32 @@ const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProp
     const displayPrice = course?.price ?? price;
     const displayCourseType = course?.courseType ?? courseType;
 
-    const instructorName = course?.professor?.user 
+    // Helper to get instructor name safely (only for course objects)
+    const instructorName = course?.professor?.user
       ? `${course.professor.user.name} ${course.professor.user.surname}`
       : 'Instructor no disponible';
+
+    // Helper to calculate total lessons (only for course objects)
+    const totalLessons =
+      course?.units.reduce(
+        (acc, unit) =>
+          acc + (unit.materials?.length || 0) + (unit.questions?.length || 0),
+        0
+      ) ?? 0;
 
     return (
       <Card
         ref={ref}
         className={cn(
-          "group transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:shadow-lg cursor-pointer m-2",
+          'group transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:shadow-lg cursor-pointer m-2',
           className
         )}
         {...props}
       >
         <div className="relative overflow-hidden rounded-t-lg">
           <img
-            src={displayImage || "/img/noImage.jpg"}
-            alt={displayName || "Vista previa del curso"}
+            src={displayImage || '/img/noImage.jpg'}
+            alt={displayName || 'Vista previa del curso'}
             className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
           />
         </div>
@@ -74,9 +109,7 @@ const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProp
             {displayDescription || 'La descripción del curso aparecerá aquí...'}
           </CardDescription>
           {course && (
-            <p className="text-sm text-slate-500 mt-1">
-              Por {instructorName}
-            </p>
+            <p className="text-sm text-slate-500 mt-1">Por {instructorName}</p>
           )}
         </CardHeader>
         <CardContent className="pt-2">
@@ -89,7 +122,9 @@ const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProp
                 </div>
                 <div className="flex items-center space-x-1">
                   <BookOpen className="w-3 h-3" />
-                  <span>{course.units.length} {course.units.length === 1 ? 'Unidad' : 'Unidades'}</span>
+                  <span>
+                    {totalLessons} {totalLessons === 1 ? 'Lección' : 'Lecciones'}
+                  </span>
                 </div>
               </div>
             )}
@@ -105,6 +140,10 @@ const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProp
                 <Button
                   variant="primary"
                   size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onViewMore?.();
+                  }}
                 >
                   Ver más
                 </Button>

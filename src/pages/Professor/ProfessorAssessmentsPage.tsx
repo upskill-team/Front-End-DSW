@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useProfessorCourses } from '../../hooks/useCourses';
-import { useAssessments, useDeleteAssessment } from '../../hooks/useAssessments';
+import {
+  useAssessmentsForProfessor,
+  useDeleteAssessment,
+} from '../../hooks/useAssessments';
 import Button from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import Select from '../../components/ui/Select';
@@ -23,12 +26,15 @@ export default function ProfessorAssessmentsPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const courseIdFromUrl = searchParams.get('courseId');
-  const [selectedCourseId, setSelectedCourseId] = useState<string>(courseIdFromUrl || 'all');
+  const [selectedCourseId, setSelectedCourseId] = useState<string>(
+    courseIdFromUrl || 'all'
+  );
 
   const { data: courses, isLoading: isLoadingCourses } = useProfessorCourses();
-  const { data: assessments, isLoading: isLoadingAssessments } = useAssessments(
-    selectedCourseId === 'all' ? undefined : selectedCourseId
-  );
+  const { data: assessments, isLoading: isLoadingAssessments } =
+    useAssessmentsForProfessor(
+      selectedCourseId === 'all' ? undefined : selectedCourseId
+    );
 
   const deleteAssessmentMutation = useDeleteAssessment();
 
@@ -56,7 +62,7 @@ export default function ProfessorAssessmentsPage() {
     );
   }
 
-  const selectedCourse = courses?.find(c => c.id === selectedCourseId);
+  const selectedCourse = courses?.find((c) => c.id === selectedCourseId);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -72,7 +78,11 @@ export default function ProfessorAssessmentsPage() {
           {selectedCourseId !== 'all' && selectedCourse && (
             <Button
               variant="outline"
-              onClick={() => navigate(`/professor/dashboard/courses/${selectedCourseId}/edit`)}
+              onClick={() =>
+                navigate(
+                  `/professor/dashboard/courses/${selectedCourseId}/edit`
+                )
+              }
               className="flex items-center gap-2"
             >
               <BookOpen className="w-5 h-5" />
@@ -94,7 +104,9 @@ export default function ProfessorAssessmentsPage() {
         <Select
           label="Filtrar por curso"
           value={selectedCourseId}
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedCourseId(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+            setSelectedCourseId(e.target.value)
+          }
           className="max-w-xs"
         >
           <option value="all">Todos los cursos</option>

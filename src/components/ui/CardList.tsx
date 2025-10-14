@@ -4,19 +4,18 @@ import { cn } from '../../lib/utils';
 import Button from './Button';
 import Badge from './Badge';
 import { Card, CardContent, CardTitle, CardDescription } from './Card';
-
-import { Link } from 'react-router-dom';
-
 import type { Course } from '../../types/entities';
 
 /**
  * @interface CourseCardListProps
  * @extends React.HTMLAttributes<HTMLDivElement>
  * @property {Course} course - The course data object to display.
+ * @property {() => void} onViewMore - Callback function when "Ver más" button is clicked.
  */
 export interface CourseCardListProps
   extends React.HTMLAttributes<HTMLDivElement> {
   course: Course;
+  onViewMore?: () => void;
 }
 
 /**
@@ -28,12 +27,18 @@ export interface CourseCardListProps
  * @returns {JSX.Element} The rendered course card component.
  */
 const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
-  ({ course, className, ...props }, ref) => {
-
+  ({ course, onViewMore, className, ...props }, ref) => {
     // Helper to get instructor name safely
-    const instructorName = course.professor?.user 
+    const instructorName = course.professor?.user
       ? `${course.professor.user.name} ${course.professor.user.surname}`
       : 'Instructor no disponible';
+
+    // Helper to calculate total lessons (materials + questions)
+    const totalLessons = course.units.reduce(
+      (acc, unit) =>
+        acc + (unit.materials?.length || 0) + (unit.questions?.length || 0),
+      0
+    );
 
     return (
       <Card
@@ -70,9 +75,7 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                     </Badge>
                   </div>
                   <CardTitle className="mb-2 group-hover:text-blue-600 transition-colors text-lg md:text-xl">
-                    <Link to={`/courses/${course.id}`}>
-                      {course.name}
-                    </Link>
+                    {course.name}
                   </CardTitle>
                   <CardDescription className="mb-2 line-clamp-2 text-sm">
                     {course.description}
@@ -88,7 +91,10 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                     </div>
                     <div className="flex items-center space-x-1">
                       <BookOpen className="w-3 h-3" />
-                      <span>{course.units.length} {course.units.length === 1 ? 'Unidad' : 'Unidades'}</span>
+                      <span>
+                        {totalLessons}{' '}
+                        {totalLessons === 1 ? 'Lección' : 'Lecciones'}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -107,6 +113,10 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                     variant="primary"
                     size="sm"
                     className="w-full lg:w-auto"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onViewMore?.();
+                    }}
                   >
                     Ver más
                   </Button>

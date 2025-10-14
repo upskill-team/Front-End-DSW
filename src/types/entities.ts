@@ -73,6 +73,7 @@ export interface Enrollment {
   state: EnrollmentState;
   grade?: number;
   progress?: number; // Percentage (0-100)
+  completedUnits: number[]; // Array de unitNumbers completados
 }
 
 export interface Appeal {
@@ -105,17 +106,25 @@ export const QuestionType = {
 export type QuestionTypeValue =
   (typeof QuestionType)[keyof typeof QuestionType];
 
+export type QuestionAnswerType = 'multiple_choice' | 'open_ended';
+
+export interface MultipleChoiceOption {
+  id: string;
+  text: string;
+  isCorrect: boolean;
+}
+
 export interface Question {
   id?: string;
   questionText: string;
   questionType: QuestionTypeValue;
   payload: QuestionPayload;
   unitNumber?: number;
-}
-
-export interface MultipleChoiceOption {
-  text: string;
-  isCorrect: boolean;
+  // Propiedades adicionales para evaluaciones (assessments)
+  text?: string; // Texto de la pregunta
+  type?: QuestionAnswerType; // Tipo de respuesta esperada
+  points?: number; // Puntos asignados a la pregunta
+  options?: MultipleChoiceOption[]; // Opciones para preguntas de opción múltiple
 }
 
 export interface Material {
@@ -259,6 +268,7 @@ export interface AssessmentAttempt {
       id: string;
       name: string;
     };
+    passingScore?: number; // Nota mínima para aprobar
   };
   status: AssessmentAttemptStatus;
   startedAt: string;
@@ -267,6 +277,7 @@ export interface AssessmentAttempt {
   passed?: boolean;
   attemptNumber: number;
   answers?: AttemptAnswer[];
+  timeSpent?: number; // Tiempo invertido en minutos
 }
 
 export interface AttemptAnswer {
@@ -275,6 +286,11 @@ export interface AttemptAnswer {
   answer: number | string;
   isCorrect: boolean;
   answeredAt: string;
+  // Propiedades adicionales
+  selectedOptions?: string[]; // IDs de opciones seleccionadas (para multiple choice)
+  textAnswer?: string; // Respuesta de texto libre (para open ended)
+  feedback?: string; // Feedback del profesor sobre la respuesta
+  points?: number; // Puntos obtenidos en esta respuesta
 }
 
 export interface StartAttemptRequest {
@@ -294,4 +310,81 @@ export interface SubmitAttemptRequest {
     questionId: string;
     answer: number | string;
   }[];
+}
+
+export type AssessmentStatus =
+  | 'available'
+  | 'completed'
+  | 'expired'
+  | 'no_attempts_left';
+
+export interface AssessmentSummary {
+  id: string;
+  title: string;
+  description?: string;
+  duration?: number;
+  passingScore: number;
+  availableUntil?: string;
+  questionsCount: number;
+  attemptsCount: number;
+  maxAttempts?: number;
+  attemptsRemaining?: number;
+  bestScore?: number;
+  lastAttemptDate?: string;
+  status: AssessmentStatus;
+}
+
+export interface AssessmentWithMetadata extends Assessment {
+  questionsCount: number;
+  attemptsCount: number;
+  maxAttempts?: number;
+  attemptsRemaining?: number;
+  bestScore?: number;
+  lastAttemptDate?: string;
+  status: AssessmentStatus;
+}
+
+export interface PendingAssessment {
+  id: string;
+  title: string;
+  course: {
+    id: string;
+    name: string;
+    imageUrl?: string;
+  };
+  description?: string;
+  duration?: number;
+  availableUntil?: string;
+  passingScore: number;
+  questionsCount: number;
+  attemptsRemaining?: number;
+  maxAttempts?: number;
+  status: AssessmentStatus;
+}
+
+export interface SaveAnswersRequest {
+  answers: {
+    questionId: string;
+    answer: number | string;
+  }[];
+}
+
+export interface SaveAnswersResponse {
+  id: string;
+  status: AssessmentAttemptStatus;
+  answersCount: number;
+  lastSavedAt: string;
+}
+
+export interface StartAttemptResponse {
+  id: string;
+  assessment: string;
+  student: string;
+  startedAt: string;
+  submittedAt: null;
+  score: null;
+  passed: null;
+  answers: AttemptAnswer[];
+  status: AssessmentAttemptStatus;
+  timeSpent: number;
 }

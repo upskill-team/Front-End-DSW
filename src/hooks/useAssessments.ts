@@ -1,30 +1,45 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import assessmentService from '../api/services/assessment.service';
+import apiClient from '../api/apiClient';
 import type {
   Assessment,
+  AssessmentSummary,
+  AssessmentWithMetadata,
+  PendingAssessment,
   CreateAssessmentRequest,
   UpdateAssessmentRequest,
   AssessmentAttempt,
-  StartAttemptRequest,
-  AnswerQuestionRequest,
+  StartAttemptResponse,
+  SaveAnswersRequest,
+  SaveAnswersResponse,
   SubmitAttemptRequest,
 } from '../types/entities';
 
-export const useAssessments = (courseId?: string) => {
-  return useQuery<Assessment[], Error>({
-    queryKey: courseId ? ['assessments', courseId] : ['assessments'],
-    queryFn: () => assessmentService.getAll(courseId),
+/**
+ * Endpoint #1: Obtener evaluaciones de un curso con metadata del estudiante
+ */
+export const useAssessmentsByCourse = (courseId: string | undefined) => {
+  return useQuery<AssessmentSummary[], Error>({
+    queryKey: ['assessments', 'course', courseId],
+    queryFn: () => assessmentService.getAssessmentsByCourse(courseId!),
+    enabled: !!courseId,
   });
 };
 
+/**
+ * Endpoint #2: Obtener detalle de una evaluación con metadata
+ */
 export const useAssessment = (id: string | undefined) => {
-  return useQuery<Assessment, Error>({
+  return useQuery<AssessmentWithMetadata, Error>({
     queryKey: ['assessment', id],
     queryFn: () => assessmentService.getById(id!),
     enabled: !!id,
   });
 };
 
+/**
+ * Endpoint #7: Listar intentos de una evaluación
+ */
 export const useAssessmentAttempts = (assessmentId: string | undefined) => {
   return useQuery<AssessmentAttempt[], Error>({
     queryKey: ['assessment-attempts', assessmentId],
@@ -33,6 +48,9 @@ export const useAssessmentAttempts = (assessmentId: string | undefined) => {
   });
 };
 
+/**
+ * Endpoint #6: Obtener resultado de un intento
+ */
 export const useAttemptDetails = (attemptId: string | undefined) => {
   return useQuery<AssessmentAttempt, Error>({
     queryKey: ['attempt', attemptId],
@@ -41,10 +59,13 @@ export const useAttemptDetails = (attemptId: string | undefined) => {
   });
 };
 
-export const useStudentAttempts = (studentId: string | undefined) => {
-  return useQuery<AssessmentAttempt[], Error>({
-    queryKey: ['student-attempts', studentId],
-    queryFn: () => assessmentService.getAttemptsByStudent(studentId!),
+/**
+ * Endpoint #8: Evaluaciones pendientes del estudiante
+ */
+export const usePendingAssessments = (studentId: string | undefined) => {
+  return useQuery<PendingAssessment[], Error>({
+    queryKey: ['pending-assessments', studentId],
+    queryFn: () => assessmentService.getPendingAssessments(studentId!),
     enabled: !!studentId,
   });
 };
@@ -95,43 +116,102 @@ export const useDeleteAssessment = () => {
   });
 };
 
+/**
+ * Endpoint #3: Iniciar un intento de evaluación
+ */
 export const useStartAttempt = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<AssessmentAttempt, Error, StartAttemptRequest>({
-    mutationFn: (data) => assessmentService.startAttempt(data),
-    onSuccess: (attempt) => {
+  return useMutation<
+    StartAttemptResponse,
+    Error,
+    { assessmentId: string; enrollmentId: string }
+  >({
+    mutationFn: ({ assessmentId, enrollmentId }) =>
+      assessmentService.startAttempt(assessmentId, enrollmentId),
+    onSuccess: (_attempt, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['assessment-attempts', attempt.assessment.id],
+        queryKey: ['assessment-attempts', variables.assessmentId],
       });
       queryClient.invalidateQueries({
-        queryKey: ['student-attempts', attempt.student.id],
+        queryKey: ['pending-assessments'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['assessments', 'course'],
       });
     },
   });
 };
 
-export const useAnswerQuestion = () => {
-  return useMutation<unknown, Error, AnswerQuestionRequest>({
-    mutationFn: (data) => assessmentService.answerQuestion(data),
+/**
+ * Endpoint #4: Guardar respuestas (auto-save)
+ */
+export const useSaveAnswers = () => {
+  return useMutation<
+    SaveAnswersResponse,
+    Error,
+    { attemptId: string; answers: SaveAnswersRequest['answers'] }
+  >({
+    mutationFn: ({ attemptId, answers }) =>
+      assessmentService.saveAnswers(attemptId, answers),
   });
 };
 
+/**
+ * Endpoint #5: Enviar evaluación
+ */
 export const useSubmitAttempt = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<AssessmentAttempt, Error, SubmitAttemptRequest>({
-    mutationFn: (data) => assessmentService.submitAttempt(data),
+  return useMutation<
+    AssessmentAttempt,
+    Error,
+    { attemptId: string; submitData: SubmitAttemptRequest }
+  >({
+    mutationFn: ({ attemptId, submitData }) =>
+      assessmentService.submitAttempt(attemptId, submitData),
     onSuccess: (attempt) => {
+      const assessmentId =
+        typeof attempt.assessment === 'string'
+          ? attempt.assessment
+          : attempt.assessment.id;
+
       queryClient.invalidateQueries({
-        queryKey: ['assessment-attempts', attempt.assessment.id],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['student-attempts', attempt.student.id],
+        queryKey: ['assessment-attempts', assessmentId],
       });
       queryClient.invalidateQueries({
         queryKey: ['attempt', attempt.id],
       });
+      queryClient.invalidateQueries({
+        queryKey: ['pending-assessments'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['assessments', 'course'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['enrollment'],
+      });
+    },
+  });
+};
+
+/**
+ * Hook para profesores: Obtener todas las evaluaciones o de un curso específico
+ * (Sin metadata del estudiante)
+ */
+export const useAssessmentsForProfessor = (courseId?: string) => {
+  return useQuery<Assessment[], Error>({
+    queryKey: courseId
+      ? ['assessments', 'professor', courseId]
+      : ['assessments', 'professor'],
+    queryFn: async () => {
+      // Por ahora usamos el endpoint básico del servicio
+      // El backend debería tener un endpoint específico para profesores
+      const url = courseId
+        ? `/assessments?courseId=${courseId}`
+        : '/assessments';
+      const response = await apiClient.get(url);
+      return response.data.data;
     },
   });
 };
