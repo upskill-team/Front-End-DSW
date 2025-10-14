@@ -1,41 +1,88 @@
-import { Star, Users, Clock } from 'lucide-react';
-
-const trendingCourses = [
-    { id: 1, title: "Desarrollo Web Completo", description: "Aprende HTML, CSS, JavaScript y React desde cero", image: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2070&auto=format&fit=crop", rating: 4.8, students: 2340, duration: "40 horas" },
-    { id: 2, title: "Diseño UX/UI Profesional", description: "Domina Figma y los principios del diseño centrado en el usuario", image: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?q=80&w=2070&auto=format&fit=crop", rating: 4.9, students: 1890, duration: "35 horas" },
-    { id: 3, title: "Marketing Digital Avanzado", description: "Estrategias de SEO, SEM y redes sociales para crecer", image: "https://images.unsplash.com/photo-1557862921-37829c790f19?q=80&w=2071&auto=format&fit=crop", rating: 4.7, students: 1560, duration: "28 horas" },
-    { id: 4, title: "Python para Data Science", description: "Análisis, machine learning y visualización con Python", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop", rating: 4.6, students: 1230, duration: "45 horas" },
-];
+import { useTrendingCourses } from '../../hooks/useCourses.ts';
+import CoursePreviewCard from '../ui/CoursePreviewCard.tsx';
+import { Link } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
 
 export function TrendingCourses() {
+  const { data: courses, isLoading, isError, error } = useTrendingCourses();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const itemsPerPage = 3;
+  const maxItems = 6;
+
+  const topCourses = useMemo(() => {
+    if (!courses) return [];
+    return courses.slice(0, maxItems);
+  }, [courses]);
+
+  const displayCourses = useMemo(() => {
+    if (!topCourses.length) return [];
+    return [...topCourses, ...topCourses];
+  }, [topCourses]);
+
+  const handleTransitionEnd = () => {
+    if (currentIndex >= maxItems) {
+      setIsTransitioning(true);
+      setCurrentIndex(0);
+      setTimeout(() => setIsTransitioning(false), 50);
+    }
+  };
+
+  useEffect(() => {
+    if (!topCourses.length) return;
+    
+    const interval = setInterval(() => {
+      setCurrentIndex(prev => prev + 1);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [topCourses.length]);
+
   return (
-    <section className="py-20 px-4 bg-white/50">
+    <section className="py-10 px-4">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center lg:text-left mb-12">
           <h2 className="text-3xl lg:text-4xl font-poppins font-bold text-slate-800 mb-4">Cursos en Tendencia</h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0">Los cursos más populares y mejor valorados por nuestra comunidad</p>
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0">Nuestros cursos con mayor cantidad de alumnos inscritos</p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {trendingCourses.map((course) => (
-            <div key={course.id} className="group rounded-lg overflow-hidden bg-white/80 backdrop-blur-sm shadow-md hover:shadow-xl transition-all duration-300 border border-transparent hover:border-blue-200">
-              <div className="relative overflow-hidden">
-                <img src={course.image} alt={course.title} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
-                <div className="absolute top-3 right-3 px-2 py-1 bg-yellow-100 text-yellow-800 border border-yellow-200 rounded-md text-xs font-medium flex items-center">
-                  <Star className="w-3 h-3 mr-1 fill-current" />
-                  {course.rating}
-                </div>
+        
+        {isLoading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="rounded-lg bg-white/80 p-4 animate-pulse">
+                <div className="w-full h-48 bg-slate-200 rounded-lg mb-4"></div>
+                <div className="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-slate-200 rounded w-1/2"></div>
               </div>
-              <div className="p-4">
-                <h3 className="text-lg font-poppins font-semibold text-slate-800 line-clamp-2 h-14">{course.title}</h3>
-                <p className="text-sm text-slate-600 line-clamp-2 h-10 mt-1">{course.description}</p>
-                <div className="flex items-center justify-between text-xs text-slate-500 mt-4 pt-2 border-t">
-                  <div className="flex items-center space-x-1"><Users className="w-3 h-3" /><span>{course.students.toLocaleString()}</span></div>
-                  <div className="flex items-center space-x-1"><Clock className="w-3 h-3" /><span>{course.duration}</span></div>
-                </div>
+            ))}
+          </div>
+        )}
+
+        {isError && (
+          <div className="text-center p-8 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-600">No se pudieron cargar los cursos: {error.message}</p>
+          </div>
+        )}
+
+        {!isLoading && !isError && topCourses.length > 0 && (
+          <div className="relative">
+            <div className="overflow-hidden">
+              <div 
+                className={`flex ${isTransitioning ? '' : 'transition-transform duration-500 ease-in-out'}`}
+                style={{ transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)` }}
+                onTransitionEnd={handleTransitionEnd}
+              >
+                {displayCourses.map((course, index) => (
+                  <div key={`${course.id}-${index}`} className="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 px-3">
+                    <Link to={`/courses/${course.id}`}>
+                      <CoursePreviewCard course={course} />
+                    </Link>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );

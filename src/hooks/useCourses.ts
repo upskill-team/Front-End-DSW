@@ -102,3 +102,10 @@ export const useSearchCourses = (params: SearchCoursesParams) => {
     },
   })
 }
+
+export const useTrendingCourses = () => {
+  return useQuery<Course[], AxiosError>({
+    queryKey: ['courses', 'trending'],
+    queryFn: courseService.getTrendingCourses,
+  });
+}

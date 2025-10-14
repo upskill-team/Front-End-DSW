@@ -30,6 +30,11 @@ const getById = async (courseId: string): Promise<Course> => {
   return response.data.data;
 };
 
+const getTrendingCourses = async (): Promise<Course[]> => {
+  const response = await apiClient.get<ApiResponse<Course[]>>('/courses/trending');
+  return response.data.data;
+}
+
 const create = async (payload: FormData): Promise<Course> => {
   const response = await apiClient.post<ApiResponse<Course>>(
     '/courses',
@@ -82,6 +87,7 @@ const quickSave = async (
 export const courseService = {
   getProfessorCourses,
   getById,
+  getTrendingCourses,
   create,
   update,
   remove,

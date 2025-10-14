@@ -84,7 +84,7 @@ const CoursePreviewCard = React.forwardRef<
       <Card
         ref={ref}
         className={cn(
-          'group transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:shadow-lg cursor-pointer',
+          'group transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:shadow-lg cursor-pointer m-2',
           className
         )}
         {...props}
@@ -118,12 +118,12 @@ const CoursePreviewCard = React.forwardRef<
               <div className="grid grid-cols-2 gap-4 text-sm text-slate-600">
                 <div className="flex items-center space-x-1">
                   <Users className="w-3 h-3" />
-                  <span>{course.students?.length || 0} estudiantes</span>
+                  <span>{course.students?.length} {course.students?.length === 1 ? 'Estudiante' : 'Estudiantes'}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <BookOpen className="w-3 h-3" />
                   <span>
-                    {totalLessons} {totalLessons === 1 ? 'Unidad' : 'Unidades'}
+                    {totalLessons} {totalLessons === 1 ? 'Lección' : 'Lecciones'}
                   </span>
                 </div>
               </div>

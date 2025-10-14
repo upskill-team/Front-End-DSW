@@ -87,13 +87,13 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                   <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-sm text-slate-600">
                     <div className="flex items-center space-x-1">
                       <Users className="w-3 h-3" />
-                      <span>{course.students?.length || 0} estudiantes</span>
+                      <span>{course.students?.length} {course.students?.length === 1 ? 'Estudiante' : 'Estudiantes'}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <BookOpen className="w-3 h-3" />
                       <span>
                         {totalLessons}{' '}
-                        {totalLessons === 1 ? 'Unidad' : 'Unidades'}
+                        {totalLessons === 1 ? 'Lección' : 'Lecciones'}
                       </span>
                     </div>
                   </div>
