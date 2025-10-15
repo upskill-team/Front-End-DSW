@@ -7,28 +7,29 @@ import RegisterPage from '../pages/Auth/RegisterPage';
 import ForgotPasswordPage from '../pages/Auth/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/Auth/ResetPasswordPage';
 import CourseListPage from '../pages/Course/CourseListPage';
+import CourseDetails from '../pages/Course/CourseDetails.tsx';
+import CourseLearn from '../pages/Course/CourseLearn.tsx';
+import PaymentSuccess from '../pages/Payment/PaymentSuccess.tsx';
 import AdminDashboard from '../pages/Admin/AdminDashboard';
 import ProfessorDashboard from '../pages/Professor/ProfessorDashboard';
-import UnauthorizedPage from '../pages/UnauthorizedPage';
-import ProtectedRoute from './ProtectedRoute';
 import ProfessorAppeal from '../pages/Professor/ProfessorAppeal.tsx';
 import ProfessorAppealsPage from '../pages/Admin/ProfessorAppealsPage.tsx';
-import UsersPage from '../pages/Admin/UsersPage.tsx';
-import AnalyticsPage from '../pages/Admin/AnalyticsPage.tsx';
-import CoursesPage from '../pages/Admin/CoursesPage.tsx';
-import CourseTypesPage from '../pages/Admin/CourseTypesPage.tsx';
 import ProfessorCoursesPage from '../pages/Professor/ProfessorCoursesPage.tsx';
 import ProfessorAnalyticsPage from '../pages/Professor/ProfessorAnalyticsPage.tsx';
 import ProfessorStudentsPage from '../pages/Professor/ProfessorStudentsPage.tsx';
-import ScrollToTop from '../components/layouts/ScrollToTop';
 import ProfessorCourseCreation from '../pages/Professor/ProfessorCourseCreation.tsx';
 import ProfessorCourseEdition from '../pages/Professor/ProfessorCourseEdition.tsx';
 import ProfessorAssessmentsPage from '../pages/Professor/ProfessorAssessmentsPage.tsx';
 import ProfessorAssessmentEditor from '../pages/Professor/ProfessorAssessmentEditor.tsx';
 import ProfessorAssessmentAttempts from '../pages/Professor/ProfessorAssessmentAttempts.tsx';
+import UsersPage from '../pages/Admin/UsersPage.tsx';
+import AnalyticsPage from '../pages/Admin/AnalyticsPage.tsx';
+import CoursesPage from '../pages/Admin/CoursesPage.tsx';
+import CourseTypesPage from '../pages/Admin/CourseTypesPage.tsx';
 import ProfilePage from '../pages/User/ProfilePage.tsx';
-import CourseDetails from '../pages/Course/CourseDetails.tsx';
-import CourseLearn from '../pages/Course/CourseLearn.tsx';
+import UnauthorizedPage from '../pages/UnauthorizedPage';
+import ProtectedRoute from './ProtectedRoute';
+import ScrollToTop from '../components/layouts/ScrollToTop';
 import CourseAssessmentsPage from '../pages/Course/CourseAssessmentsPage.tsx';
 import TakeAssessmentPage from '../pages/Course/TakeAssessmentPage.tsx';
 import AssessmentResultsPage from '../pages/Course/AssessmentResultsPage.tsx';
@@ -40,6 +41,7 @@ const AppRouter = () => {
     <>
       <ScrollToTop />
       <Routes>
+        {/* ============= AUTH LAYOUT ============= */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -47,6 +49,7 @@ const AppRouter = () => {
           <Route path="/reset-password" element={<ResetPasswordPage />} />
         </Route>
 
+        {/* ============= MAIN LAYOUT ============= */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<LandingPage />} />
 
@@ -86,6 +89,12 @@ const AppRouter = () => {
             }
           />
 
+          {/* --- Pago (NO PROTEGIDA) --- */}
+          {/* La ruta en sí no está protegida para que Mercado Pago pueda redirigir */}
+          {/* El flujo de pago se protege en el backend (createPreference requiere auth) */}
+          <Route path="/payment/success" element={<PaymentSuccess />} />
+
+          {/* --- Protegidas: Perfil --- */}
           <Route
             path="/profile"
             element={
@@ -94,6 +103,7 @@ const AppRouter = () => {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/my-learning"
             element={
@@ -103,6 +113,7 @@ const AppRouter = () => {
             }
           />
 
+          {/* --- Protegidas: Profesor --- */}
           <Route
             path="/professor/dashboard"
             element={
@@ -114,15 +125,9 @@ const AppRouter = () => {
             <Route index element={<Navigate to="courses" replace />} />
             <Route path="courses" element={<ProfessorCoursesPage />} />
             <Route path="courses/new" element={<ProfessorCourseCreation />} />
-            <Route
-              path="courses/:courseId/edit"
-              element={<ProfessorCourseEdition />}
-            />
+            <Route path="courses/:courseId/edit" element={<ProfessorCourseEdition />} />
             <Route path="assessments" element={<ProfessorAssessmentsPage />} />
-            <Route
-              path="assessments/new"
-              element={<ProfessorAssessmentEditor />}
-            />
+            <Route path="assessments/new" element={<ProfessorAssessmentEditor />} />
             <Route
               path="assessments/:assessmentId/edit"
               element={<ProfessorAssessmentEditor />}
@@ -144,14 +149,7 @@ const AppRouter = () => {
             }
           />
 
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <Navigate to="/admin/dashboard" replace />
-              </ProtectedRoute>
-            }
-          />
+          {/* --- Protegidas: Admin --- */}
           <Route
             path="/admin/dashboard"
             element={
@@ -160,6 +158,7 @@ const AppRouter = () => {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/admin/appeals"
             element={
@@ -168,6 +167,7 @@ const AppRouter = () => {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/admin/courses"
             element={
@@ -176,6 +176,7 @@ const AppRouter = () => {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/admin/users"
             element={
@@ -184,6 +185,7 @@ const AppRouter = () => {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/admin/analytics"
             element={
@@ -192,6 +194,7 @@ const AppRouter = () => {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/admin/courseTypes"
             element={
@@ -200,9 +203,23 @@ const AppRouter = () => {
               </ProtectedRoute>
             }
           />
+
+          {/* --- Redirecciones Admin --- */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <Navigate to="/admin/dashboard" replace />
+              </ProtectedRoute>
+            }
+          />
         </Route>
 
+        {/* ============= ERROR PAGES ============= */}
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
+        {/* --- Ruta por defecto (catch-all) --- */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

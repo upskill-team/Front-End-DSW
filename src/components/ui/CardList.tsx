@@ -4,41 +4,20 @@ import { cn } from '../../lib/utils';
 import Button from './Button';
 import Badge from './Badge';
 import { Card, CardContent, CardTitle, CardDescription } from './Card';
+import { Link } from 'react-router-dom';
 import type { Course } from '../../types/entities';
 
-/**
- * @interface CourseCardListProps
- * @extends React.HTMLAttributes<HTMLDivElement>
- * @property {Course} course - The course data object to display.
- * @property {() => void} onViewMore - Callback function when "Ver más" button is clicked.
- */
-export interface CourseCardListProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface CourseCardListProps extends React.HTMLAttributes<HTMLDivElement> {
   course: Course;
   onViewMore?: () => void;
 }
 
-/**
- * A specialized card component for displaying a single course in a list view.
- * It uses the base Card system for consistent styling while implementing a custom horizontal layout.
- *
- * @param {CourseCardListProps} props - The properties for the component.
- * @param {React.Ref<HTMLDivElement>} ref - The ref forwarded to the underlying Card component.
- * @returns {JSX.Element} The rendered course card component.
- */
 const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
-  ({ course, onViewMore, className, ...props }, ref) => {
-    // Helper to get instructor name safely
-    const instructorName = course.professor?.user
+  ({ course, className, ...props }, ref) => {
+
+    const instructorName = course.professor?.user 
       ? `${course.professor.user.name} ${course.professor.user.surname}`
       : 'Instructor no disponible';
-
-    // Helper to calculate total lessons (materials + questions)
-    const totalLessons = course.units.reduce(
-      (acc, unit) =>
-        acc + (unit.materials?.length || 0) + (unit.questions?.length || 0),
-      0
-    );
 
     return (
       <Card
@@ -52,11 +31,13 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
         <CardContent className="p-4 md:p-6">
           <div className="flex flex-col md:flex-row gap-4 md:gap-6">
             <div className="relative flex-shrink-0 overflow-hidden rounded-lg">
-              <img
-                src={course.imageUrl || 'public/img/noImage.jpg'}
-                alt={course.name}
-                className="w-full h-40 md:w-48 md:h-32 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-              />
+              <Link to={`/courses/${course.id}`}>
+                <img
+                  src={course.imageUrl || '/img/noImage.jpg'}
+                  alt={course.name}
+                  className="w-full h-40 md:w-48 md:h-32 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                />
+              </Link>
               <div className="absolute top-2 left-2 flex flex-col gap-1">
                 {course.isFree && (
                   <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium">
@@ -91,10 +72,7 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                     </div>
                     <div className="flex items-center space-x-1">
                       <BookOpen className="w-3 h-3" />
-                      <span>
-                        {totalLessons}{' '}
-                        {totalLessons === 1 ? 'Lección' : 'Lecciones'}
-                      </span>
+                      <span>{course.units.length} {course.units.length === 1 ? 'Unidad' : 'Unidades'}</span>
                     </div>
                   </div>
                 </div>
@@ -109,17 +87,15 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                       )}
                     </span>
                   </div>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    className="w-full lg:w-auto"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onViewMore?.();
-                    }}
-                  >
-                    Ver más
-                  </Button>
+                  <Link to={`/courses/${course.id}`}>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      className="w-full lg:w-auto"
+                    >
+                      Ver más
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
