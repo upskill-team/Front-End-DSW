@@ -165,6 +165,15 @@ function CourseDetails() {
                     {course.professor?.user?.surname}
                   </p>
                 </div>
+
+                {
+                  course?.institution?(
+                    <div className="ml-6">
+                      <p className="text-sm text-slate-600">Institución</p>
+                      <p className="font-semibold text-slate-800">{course.institution?.name}</p>
+                    </div>
+                  ):null
+                }
               </div>
             </div>
 
@@ -183,9 +192,12 @@ function CourseDetails() {
                         <Play className="w-4 h-4 text-blue-600" />
                       </div>
                       <div>
-                        <p className="font-medium text-slate-800">
-                          {seccion.name}
-                        </p>
+                        <p className="font-medium text-slate-800">{seccion.name}</p>
+                        {
+                          seccion.description?(
+                            <p className="text-sm text-slate-600">{seccion.description}</p>
+                          ):null
+                        }
                         <p className="text-sm text-slate-600">
                           {seccion.materials?.length > 0 && (
                             <span>{seccion.materials.length} Recursos</span>

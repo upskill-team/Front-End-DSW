@@ -137,6 +137,7 @@ export interface Unit {
   // ⚠️ Unit es embeddable - NO tiene id propio
   unitNumber: number; // Identificador único + orden
   name: string;
+  description?: string;
   detail: string; // Contenido principal (no description)
   questions: string[]; // Referencias a Question IDs (no objetos completos)
   materials: Material[]; // Materiales embebidos

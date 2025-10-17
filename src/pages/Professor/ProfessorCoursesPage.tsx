@@ -3,7 +3,6 @@ import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import { Edit, Plus, Star } from 'lucide-react';
 import { useProfessorCourses } from '../../hooks/useCourses.ts';
-import { formatCurrency } from '../../lib/currency';
 import CoursePreviewCard from '../../components/ui/CoursePreviewCard';
 
 const ProfessorCoursesPage = () => {
