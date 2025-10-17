@@ -7,6 +7,7 @@ import { useEnrollInCourse, useExistingEnrollment } from "../../hooks/useEnrollm
 import { useAuth } from "../../hooks/useAuth.ts";
 import { useCreatePreference } from '../../hooks/usePayment.ts';
 import { formatCurrency } from '../../lib/currency';
+import { AxiosError } from "axios";
 
 function CourseDetails() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -24,28 +25,29 @@ function CourseDetails() {
 
   const handleEnroll = () => {
     if (!isAuthenticated || !user) {
-      alert('Debes iniciar sesión para inscribirte en un curso.');
+      alert('Debes iniciar sesión para inscribirte.');
       navigate('/login');
       return;
     }
     if (!course) return;
 
     if (course.isFree) {
-      if (!user.studentProfile?.id) {
-        alert('Tu perfil de estudiante no está disponible.');
-        return;
-      }
-        enroll({
-            studentId: user.id,
-            courseId: course.id,
-        }, {
-            onSuccess: () => {
-                navigate(`/courses/learn/${course.id}`);
-            },
-            onError: (err) => {
-                alert(`Error al inscribir: ${err.message}`);
-            }
-        });
+      enroll({
+        studentId: user.id,
+        courseId: course.id,
+      }, {
+        onSuccess: () => {
+          alert('¡Inscripción exitosa!');
+          navigate(`/courses/learn/${course.id}`);
+        },
+        onError: (err) => {
+          if (err instanceof AxiosError && err.response?.data) {
+            alert(err.response.data);
+          } else {
+            alert('Ocurrió un error al intentar inscribirte.');
+          }
+        }
+      });
     } else {
       createPreference(course.id);
     }
@@ -72,6 +74,28 @@ function CourseDetails() {
         </Button>
       );
     }
+
+    if (!isAuthenticated) {
+    return (
+      <Button
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-lg font-semibold"
+        onClick={() => navigate('/login')}
+      >
+        Inscribirse ahora
+      </Button>
+    );
+  }
+
+  if (user?.role === 'professor' && user.professorProfile?.id === course?.professor.id) {
+    return (
+      <Button
+        className="w-full h-12 text-lg font-semibold"
+        disabled
+      >
+        Este es tu curso
+      </Button>
+    );
+  }
 
     return (
       <Button

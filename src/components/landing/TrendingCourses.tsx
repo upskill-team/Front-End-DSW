@@ -1,6 +1,5 @@
 import { useTrendingCourses } from '../../hooks/useCourses.ts';
 import CoursePreviewCard from '../ui/CoursePreviewCard.tsx';
-import { Link } from 'react-router-dom';
 import { useState, useEffect, useMemo } from 'react';
 
 export function TrendingCourses() {
@@ -100,9 +99,7 @@ export function TrendingCourses() {
                     className="flex-shrink-0 px-3"
                     style={{ width: `${100 / itemsPerPage}%` }}
                   >
-                    <Link to={`/courses/${course.id}`}>
-                      <CoursePreviewCard course={course} />
-                    </Link>
+                    <CoursePreviewCard course={course} />
                   </div>
                 ))}
               </div>
