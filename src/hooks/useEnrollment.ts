@@ -1,9 +1,16 @@
+// src/hooks/useEnrollment.ts
+
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { enrollService } from '../api/services/enrollment.service';
 import type { Enrollment } from '../types/entities';
 import type { AxiosError } from 'axios';
 
-type EnrollInCoursePayload = Parameters<typeof enrollService.enrollInCourse>[0];
+// El payload para inscribirse necesita el ID del perfil de estudiante
+type EnrollInCoursePayload = {
+  studentId: string;
+  courseId: string;
+};
+
 type UpdateEnrollmentPayload = {
   enrollmentId: string;
   data: Parameters<typeof enrollService.update>[1];
@@ -22,6 +29,7 @@ export const useExistingEnrollment = (
   options?: Partial<UseQueryOptions<Enrollment | null, AxiosError>>
 ) => {
   return useQuery<Enrollment | null, AxiosError>({
+    // Esta es la clave que DEBEMOS usar consistentemente
     queryKey: ['enrollment', 'student', studentId, 'course', courseId],
     queryFn: () => enrollService.findByStudentAndCourse({ studentId: studentId!, courseId: courseId! }),
     enabled: !!studentId && !!courseId,
@@ -57,11 +65,24 @@ export const useEnrollInCourse = () => {
 
   const mutation = useMutation<Enrollment, AxiosError, EnrollInCoursePayload>({
     mutationFn: enrollService.enrollInCourse,
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ['enrollment', 'student', variables.studentId, 'course', variables.courseId]
-      });
-      queryClient.invalidateQueries({ queryKey: ['enrollments', 'student', variables.studentId] });
+    // --- LÓGICA DE CACHÉ DEFINITIVA ---
+    onSuccess: (newEnrollment) => {
+      // `newEnrollment` es la respuesta del backend. Contiene el perfil de estudiante completo.
+      // `newEnrollment.student.id` ES el `studentProfile.id` que necesitamos para la caché.
+      
+      const queryKey = [
+        'enrollment', 
+        'student', 
+        newEnrollment.student.id, // <-- Usamos el ID del perfil de estudiante devuelto por la API
+        'course', 
+        newEnrollment.course.id   // <-- Usamos el ID del curso devuelto por la API
+      ];
+      
+      // Actualizamos la caché para la clave que usa `useExistingEnrollment`
+      queryClient.setQueryData(queryKey, newEnrollment);
+
+      // Invalidamos la lista general de inscripciones del estudiante
+      queryClient.invalidateQueries({ queryKey: ['enrollments', 'student', newEnrollment.student.id] });
     },
   });
 

@@ -13,6 +13,7 @@ import type {
   SaveAnswersRequest,
   SaveAnswersResponse,
   SubmitAttemptRequest,
+  AssessmentStatistics,
 } from '../types/entities';
 
 /**
@@ -125,10 +126,10 @@ export const useStartAttempt = () => {
   return useMutation<
     StartAttemptResponse,
     Error,
-    { assessmentId: string; enrollmentId: string }
+    { assessmentId: string; studentId: string }
   >({
-    mutationFn: ({ assessmentId, enrollmentId }) =>
-      assessmentService.startAttempt(assessmentId, enrollmentId),
+    mutationFn: ({ assessmentId, studentId }) =>
+      assessmentService.startAttempt(assessmentId, studentId),
     onSuccess: (_attempt, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['assessment-attempts', variables.assessmentId],
@@ -214,4 +215,26 @@ export const useAssessmentsForProfessor = (courseId?: string) => {
       return response.data.data;
     },
   });
+};
+
+/**
+ * Hook para profesores: Obtener estadísticas de una evaluación
+ */
+export const useAssessmentStatistics = (assessmentId: string | undefined) => {
+  return useQuery<AssessmentStatistics, Error>({
+    queryKey: ['assessment-statistics', assessmentId],
+    queryFn: () => assessmentService.getAssessmentStatistics(assessmentId!),
+    enabled: !!assessmentId,
+  });
+};
+
+/**
+ * Hook para profesores: Obtener todos los intentos de una evaluación
+ */
+export const useAllAttemptsForProfessor = (assessmentId: string | undefined) => {
+    return useQuery<AssessmentAttempt[], Error>({
+        queryKey: ['all-attempts', assessmentId],
+        queryFn: () => assessmentService.getAllAttemptsForProfessor(assessmentId!),
+        enabled: !!assessmentId,
+    });
 };

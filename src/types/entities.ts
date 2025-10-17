@@ -388,3 +388,33 @@ export interface StartAttemptResponse {
   status: AssessmentAttemptStatus;
   timeSpent: number;
 }
+
+export interface StudentAttemptSummary {
+  studentId: string;
+  studentName: string;
+  attempts: number;
+  bestScore: number;
+  passed: boolean;
+  lastAttemptDate?: string;
+}
+
+export interface QuestionStatistic {
+  questionId: string;
+  questionText: string;
+  correctAnswers: number;
+  totalAnswers: number;
+  successRate: number;
+}
+
+export interface AssessmentStatistics {
+  assessmentId: string;
+  title: string;
+  totalAttempts: number;
+  uniqueStudents: number;
+  averageScore: number;
+  highestScore: number;
+  lowestScore: number;
+  passRate: number;
+  attemptsByStudent: StudentAttemptSummary[];
+  questionStatistics: QuestionStatistic[];
+}
