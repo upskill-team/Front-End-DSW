@@ -143,6 +143,15 @@ function CourseDetails() {
                   <p className="text-sm text-slate-600">Creado por</p>
                   <p className="font-semibold text-slate-800">{course.professor?.user?.name} {course.professor?.user?.surname}</p>
                 </div>
+
+                {
+                  course?.institution?(
+                    <div className="ml-6">
+                      <p className="text-sm text-slate-600">Institución</p>
+                      <p className="font-semibold text-slate-800">{course.institution?.name}</p>
+                    </div>
+                  ):null
+                }
               </div>
             </div>
             
@@ -160,6 +169,11 @@ function CourseDetails() {
                       </div>
                       <div>
                         <p className="font-medium text-slate-800">{seccion.name}</p>
+                        {
+                          seccion.description?(
+                            <p className="text-sm text-slate-600">{seccion.description}</p>
+                          ):null
+                        }
                         <p className="text-sm text-slate-600">
                           {seccion.materials?.length > 0 && <span>{seccion.materials.length} Recursos</span>}
                           {seccion.materials?.length > 0 && seccion.questions?.length > 0 && <span className="mx-2">·</span>}
