@@ -26,6 +26,7 @@ export default function QuestionForm({
   onSave,
   onCancel,
   readonly = false,
+  isLoading = false,
   saveButtonText = 'Guardar Pregunta',
 }: QuestionFormProps) {
   const [isSaving, setIsSaving] = useState(false);
