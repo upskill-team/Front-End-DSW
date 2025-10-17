@@ -34,6 +34,7 @@ import TakeAssessmentPage from '../pages/Course/TakeAssessmentPage.tsx';
 import AssessmentResultsPage from '../pages/Course/AssessmentResultsPage.tsx';
 import AssessmentAttemptsPage from '../pages/Course/AssessmentAttemptsPage.tsx';
 import MyLearningPage from '../pages/User/MyLearningPage.tsx';
+import EnrollmentProtectedRoute from './EnrollmentProtectedRoute'
 
 const AppRouter = () => {
   return (
@@ -54,12 +55,19 @@ const AppRouter = () => {
 
           <Route path="/courses" element={<CourseListPage />} />
           <Route path="/courses/:courseId" element={<CourseDetails />} />
-          <Route path="/courses/learn/:courseId" element={<CourseLearn />} />
+          <Route path="/courses/learn/:courseId" element={
+            <EnrollmentProtectedRoute>
+              <CourseLearn />
+            </EnrollmentProtectedRoute>
+            }
+          />
           <Route
             path="/courses/:courseId/assessments"
             element={
               <ProtectedRoute allowedRoles={['student', 'professor']}>
-                <CourseAssessmentsPage />
+                <EnrollmentProtectedRoute>
+                  <CourseAssessmentsPage />
+                </EnrollmentProtectedRoute>
               </ProtectedRoute>
             }
           />
@@ -67,7 +75,9 @@ const AppRouter = () => {
             path="/courses/:courseId/assessments/:assessmentId/take"
             element={
               <ProtectedRoute allowedRoles={['student', 'professor']}>
-                <TakeAssessmentPage />
+                <EnrollmentProtectedRoute>
+                  <TakeAssessmentPage />
+                </EnrollmentProtectedRoute>
               </ProtectedRoute>
             }
           />
@@ -75,7 +85,9 @@ const AppRouter = () => {
             path="/courses/:courseId/assessments/:assessmentId/results/:attemptId"
             element={
               <ProtectedRoute allowedRoles={['student', 'professor']}>
-                <AssessmentResultsPage />
+                <EnrollmentProtectedRoute>
+                  <AssessmentResultsPage />
+                </EnrollmentProtectedRoute>
               </ProtectedRoute>
             }
           />
@@ -83,7 +95,9 @@ const AppRouter = () => {
             path="/courses/:courseId/assessments/:assessmentId/attempts"
             element={
               <ProtectedRoute allowedRoles={['student', 'professor']}>
-                <AssessmentAttemptsPage />
+                <EnrollmentProtectedRoute>
+                  <AssessmentAttemptsPage />
+                </EnrollmentProtectedRoute>
               </ProtectedRoute>
             }
           />
