@@ -66,9 +66,7 @@ export default function CourseConfigModal({
           onChange={(e) => handleInputChange('status', e.target.value)}
         >
           <option value="en-desarrollo">En desarrollo</option>
-          <option value="revision">En revisión</option>
           <option value="publicado">Publicado</option>
-          <option value="pausado">Pausado</option>
         </Select>
 
         <div>

@@ -27,6 +27,7 @@ import GeneralQuestionsManager from '../../components/professor/courseEditor/Gen
 import type { Block } from '@blocknote/core';
 import type { Unit, UnitEditorData, Question } from '../../types/entities';
 import { QuestionType } from '../../types/entities';
+import { useUpdateCourse } from '../../hooks/useCourses'
 
 export default function ProfessorCourseEditorPage() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -43,6 +44,7 @@ export default function ProfessorCourseEditorPage() {
   const createQuestionMutation = useCreateQuestion();
   const updateQuestionMutation = useUpdateQuestion();
   const deleteQuestionMutation = useDeleteQuestion();
+  
 
   // Estados principales
   const [courseConfig, setCourseConfig] = useState({
@@ -85,7 +87,8 @@ export default function ProfessorCourseEditorPage() {
 
   // Estados para formularios
   const [tempConfig, setTempConfig] = useState(courseConfig);
-  const [, setNewImageFile] = useState<File | null>(null);
+  const { mutate: updateCourse } = useUpdateCourse(); // <-- Usa el hook correcto
+  const [newImageFile, setNewImageFile] = useState<File | null>(null);
   const [editingUnit, setEditingUnit] = useState<Unit | null>(null);
   const [newUnitName, setNewUnitName] = useState('');
   const [newUnitDescription, setNewUnitDescription] = useState('');
@@ -549,32 +552,38 @@ export default function ProfessorCourseEditorPage() {
   const handleSaveConfig = () => {
     if (!courseId) return;
 
-    // Convertir precio de pesos a centavos antes de enviar
-    const configToSend = {
-      ...tempConfig,
-      priceInCents: tempConfig.isFree ? undefined : toCents(tempConfig.price),
+    const formData = new FormData();
+
+    const configData = {
+      name: tempConfig.name,
+      description: tempConfig.description,
+      status: tempConfig.status,
+      isFree: tempConfig.isFree,
+      priceInCents: tempConfig.isFree ? 0 : toCents(tempConfig.price),
     };
 
-    // Eliminar el campo 'price' del objeto a enviar (solo enviamos priceInCents)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { price, ...configWithoutPrice } = configToSend;
+    formData.append('courseData', JSON.stringify(configData));
 
-    console.log('Saving course config:', configWithoutPrice);
+    if (newImageFile) {
+      formData.append('image', newImageFile);
+    }
 
-    quickSaveMutation.mutate(
+    updateCourse(
+      { courseId, data: formData },
       {
-        courseId,
-        data: {
-          type: 'course-config',
-          data: configWithoutPrice,
-        },
-      },
-      {
-        onSuccess: () => {
-          setCourseConfig(tempConfig);
+        onSuccess: (updatedCourse) => {
+          setCourseConfig({
+            name: updatedCourse.name,
+            description: updatedCourse.description,
+            status: updatedCourse.status,
+            isFree: updatedCourse.isFree,
+            price: updatedCourse.priceInCents ? toAmount(updatedCourse.priceInCents) : 0,
+          });
           setIsConfigModalOpen(false);
+          setNewImageFile(null);
           setSaveError(null);
           setLastSavedAt(new Date());
+          alert('Configuración guardada exitosamente.');
         },
         onError: (error) => {
           setSaveError(error.message || 'Error al guardar configuración');
