@@ -269,24 +269,24 @@ export default function ProfessorCourseEditorPage() {
   };
 
   // Handler para preguntas (crear o editar)
-  const handleSaveQuestion = () => {
+  const handleSaveQuestion = (questionToSave: Question) => {
     if (!courseId || !selectedUnitId) return;
 
+    // Usamos 'questionToSave' directamente, en lugar del estado 'newQuestion'.
     const questionData = {
-      questionText: newQuestion.questionText,
-      questionType: newQuestion.questionType,
-      payload: newQuestion.payload,
+      questionText: questionToSave.questionText,
+      questionType: questionToSave.questionType,
+      payload: questionToSave.payload, // ¡Aquí viajan los datos correctos!
     };
 
-    const isEditing = !!newQuestion.id;
+    const isEditing = !!questionToSave.id;
 
     if (isEditing) {
-      // Actualizar pregunta existente
       updateQuestionMutation.mutate(
         {
           courseId,
           unitNumber: selectedUnitId,
-          questionId: newQuestion.id!,
+          questionId: questionToSave.id!,
           data: questionData,
         },
         {
@@ -300,7 +300,6 @@ export default function ProfessorCourseEditorPage() {
         }
       );
     } else {
-      // Crear nueva pregunta
       createQuestionMutation.mutate(
         {
           courseId,
@@ -318,7 +317,7 @@ export default function ProfessorCourseEditorPage() {
         }
       );
     }
-  };
+  }
 
   const resetQuestionForm = () => {
     setNewQuestion({

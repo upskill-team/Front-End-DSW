@@ -15,6 +15,7 @@ interface QuestionFormProps {
   onCancel: () => void;
   readonly?: boolean;
   saveButtonText?: string;
+  isLoading: boolean;
 }
 
 export default function QuestionForm({
@@ -25,6 +26,7 @@ export default function QuestionForm({
   onSave,
   onCancel,
   readonly = false,
+  isLoading = false,
   saveButtonText = 'Guardar Pregunta',
 }: QuestionFormProps) {
   const [isSaving, setIsSaving] = useState(false);
@@ -79,7 +81,7 @@ export default function QuestionForm({
       return;
     }
 
-    setIsSaving(true);
+    setIsSaving(!isSaving);
     try {
       const questionData: Question = {
         id: initialQuestion?.id,
@@ -97,7 +99,7 @@ export default function QuestionForm({
       console.error('Error saving question:', error);
       alert('Error al guardar la pregunta');
     } finally {
-      setIsSaving(false);
+      setIsSaving(!isSaving);
     }
   };
 
