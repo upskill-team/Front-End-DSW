@@ -179,6 +179,7 @@ export default function ProfessorCourseEditorPage() {
         ).map((unitBackend) => ({
           unitNumber: unitBackend.unitNumber,
           name: unitBackend.name,
+          description: unitBackend.description,
           detail: unitBackend.detail,
           questions: unitBackend.questions,
           materials: unitBackend.materials,
@@ -252,7 +253,8 @@ export default function ProfessorCourseEditorPage() {
 
     const data = {
       name: newUnitName,
-      detail: `<h1>${newUnitName}</h1><p></p>`,
+      description: newUnitDescription,
+      detail: `<h1>${newUnitName}</h1><p>${newUnitDescription}</p>`,
       unitNumber: nextUnitNumber,
     };
 
@@ -369,6 +371,7 @@ export default function ProfessorCourseEditorPage() {
 
     const data = {
       name: newUnitName,
+      description: newUnitDescription,
       detail: editingUnit.detail, // Mantener el detalle actual
     };
 
@@ -592,7 +595,7 @@ export default function ProfessorCourseEditorPage() {
   const handleEditUnit = (unit: Unit) => {
     setEditingUnit(unit);
     setNewUnitName(unit.name);
-    setNewUnitDescription(''); // Backend no tiene description
+    setNewUnitDescription(unit.description || '');; // Backend no tiene description
     setIsUnitModalOpen(true);
   };
 

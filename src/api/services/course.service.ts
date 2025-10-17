@@ -36,6 +36,7 @@ const getTrendingCourses = async (): Promise<Course[]> => {
 }
 
 const create = async (payload: FormData): Promise<Course> => {
+  console.log(payload.get('useInstitution'));
   const response = await apiClient.post<ApiResponse<Course>>(
     '/courses',
     payload

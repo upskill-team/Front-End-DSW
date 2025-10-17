@@ -22,6 +22,7 @@ import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
 import { AxiosError } from "axios";
 import { toCents } from "../../lib/currency.ts";
+import { useManagedInstitution } from "../../hooks/useInstitutionMutations.ts";
 
 const CourseSchema = v.pipe(
   v.object({
@@ -30,6 +31,7 @@ const CourseSchema = v.pipe(
     isFree: v.boolean(),
     price: v.optional(v.number("El precio debe ser un número")),
     courseTypeId: v.pipe(v.string(), v.minLength(1, "Debes seleccionar una categoría.")),
+    useInstitution: v.optional(v.boolean()),
   }),
   v.forward(
     v.check(
@@ -47,6 +49,11 @@ export default function ProfessorCourseCreation() {
 
   const { mutate: createCourse, isPending, error: mutationError } = useCreateCourse();
   const { data: courseTypes = [], isLoading: isLoadingTypes } = useCourseTypes();
+  const {
+    data: managedInstitution = null,
+    isLoading: isLoadingInstitution
+  } = useManagedInstitution();
+
 
   const { register, handleSubmit, formState: { errors }, watch } = useForm<CourseFormValues>({
     resolver: valibotResolver(CourseSchema),
@@ -56,6 +63,7 @@ export default function ProfessorCourseCreation() {
       isFree: true,
       price: 0,
       courseTypeId: "",
+      useInstitution: false
     }
   });
 
@@ -81,6 +89,7 @@ export default function ProfessorCourseCreation() {
     dataToSend.append('description', formData.description);
     dataToSend.append('courseTypeId', formData.courseTypeId);
     dataToSend.append('isFree', String(formData.isFree));
+
     // Convertir precio de pesos a centavos antes de enviar
     const priceInCents = formData.isFree ? 0 : toCents(formData.price || 0);
     dataToSend.append('priceInCents', String(priceInCents)); 
@@ -89,6 +98,7 @@ export default function ProfessorCourseCreation() {
     if (imageInput.files && imageInput.files[0]) {
       dataToSend.append('image', imageInput.files[0]);
     }
+
 
     createCourse(dataToSend, {
       onSuccess: (createdCourse) => {
@@ -159,6 +169,22 @@ export default function ProfessorCourseCreation() {
               </Select>
             )}
             {errors.courseTypeId && <p className="text-sm text-red-500 mt-1">{errors.courseTypeId.message}</p>}
+
+            {
+              isLoadingInstitution ? <p>Cargando institución...</p> :(
+                managedInstitution ? (
+                <div className="space-y-4 rounded-lg border p-4">
+                  <div className="flex items-center justify-between">
+                  <Label htmlFor="is-free">¿Asociar a su intitucion?</Label>
+                    <Switch
+                    id="useInstitution"
+                    {...register("useInstitution")}
+                  />
+                  </div>
+                </div>) : null
+              )
+            }
+
 
             <div>
               <Label>Imagen del curso</Label>
