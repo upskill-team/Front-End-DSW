@@ -1,6 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../api/apiClient';
 import type { Professor } from '../types/entities';
+import type { AxiosError } from 'axios'
+
+export interface ProfessorAnalyticsData {
+  totalStudents: number;
+  publishedCourses: number;
+  averageRating: number;
+  totalEarnings: number;
+}
 
 /**
  * Hook to get the current professor profile
@@ -15,5 +23,19 @@ export const useProfessorProfile = () => {
     // Only run this query if user is authenticated and is a professor
     enabled: true,
     retry: false,
+  });
+};
+
+/**
+ * Hook to get the analytics data for the current professor's dashboard
+ */
+export const useProfessorAnalytics = () => {
+  return useQuery<ProfessorAnalyticsData, AxiosError>({
+    queryKey: ['professor', 'analytics'],
+    queryFn: async () => {
+      const response = await apiClient.get('/professors/me/analytics');
+      return response.data.data;
+    },
+    staleTime: 1000 * 60 * 5, // Cache por 5 minutos
   });
 };

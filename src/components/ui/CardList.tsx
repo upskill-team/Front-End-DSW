@@ -20,6 +20,8 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
       ? `${course.professor.user.name} ${course.professor.user.surname}`
       : 'Instructor no disponible';
 
+    const displayAmountStudents = course?.studentsCount ?? course?.students?.length ?? 0;
+
     return (
       <Card
         ref={ref}
@@ -69,7 +71,7 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                   <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-sm text-slate-600">
                     <div className="flex items-center space-x-1">
                       <Users className="w-3 h-3" />
-                      <span>{course.students?.length} {course.students?.length === 1 ? 'Estudiante' : 'Estudiantes'}</span>
+                      <span>{displayAmountStudents} { (displayAmountStudents ?? 0) === 1 ? 'Estudiante' : 'Estudiantes'}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <BookOpen className="w-3 h-3" />

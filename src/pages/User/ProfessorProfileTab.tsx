@@ -78,20 +78,21 @@ export default function InstructorProfileTab() {
       return (
         <>
           <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-lg border">
-            <div className="flex items-start justify-between">
-                <div className="space-y-2">
+            <div className="flex items-start justify-between gap-4">
+                <div className="space-y-2 min-w-0"> {/* min-w-0 para que el texto se ajuste */}
                   <h3 className="text-lg font-semibold text-slate-800">Tu Institución</h3>
-                  <p className="text-slate-800 font-bold text-xl">{managedInstitution.name}</p>
-                  <p className="text-slate-600 text-sm max-w-prose">{managedInstitution.description}</p>
+                  <p className="text-slate-800 font-bold text-xl truncate">{managedInstitution.name}</p>
+                  <p className="text-slate-600 text-sm max-w-prose line-clamp-2">{managedInstitution.description}</p>
                   <div className="pt-2">
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200">
                       <Crown className="w-3 h-3 mr-1.5" /> Eres el encargado
                     </span>
                   </div>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => setShowEditModal(true)}>
-                    <Edit className="w-4 h-4 mr-2" />
-                    Editar
+                {/* --- CORRECCIÓN AQUÍ --- */}
+                <Button variant="outline" size="sm" onClick={() => setShowEditModal(true)} className="flex-shrink-0">
+                    <Edit className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Editar</span>
                 </Button>
             </div>
           </div>

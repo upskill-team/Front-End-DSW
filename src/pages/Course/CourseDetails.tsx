@@ -1,22 +1,10 @@
-import {
-  Award,
-  BookOpen,
-  Download,
-  Globe,
-  Play,
-  Smartphone,
-  Star,
-  Users,
-} from 'lucide-react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useCourseById } from '../../hooks/useCourses.ts';
-import Badge from '../../components/ui/Badge.tsx';
-import Button from '../../components/ui/Button.tsx';
-import {
-  useEnrollInCourse,
-  useExistingEnrollment,
-} from '../../hooks/useEnrollment.ts';
-import { useAuth } from '../../hooks/useAuth.ts';
+import { Award, BookOpen, Download, Globe, Play, Smartphone, Users } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useCourseById } from "../../hooks/useCourses.ts";
+import Badge from "../../components/ui/Badge.tsx";
+import Button from "../../components/ui/Button.tsx";
+import { useEnrollInCourse, useExistingEnrollment } from "../../hooks/useEnrollment.ts";
+import { useAuth } from "../../hooks/useAuth.ts";
 import { useCreatePreference } from '../../hooks/usePayment.ts';
 import { formatCurrency } from '../../lib/currency';
 
@@ -47,20 +35,17 @@ function CourseDetails() {
         alert('Tu perfil de estudiante no está disponible.');
         return;
       }
-      enroll(
-        {
-          studentId: user.studentProfile.id,
-          courseId: course.id,
-        },
-        {
-          onSuccess: () => {
-            navigate(`/courses/learn/${course.id}`);
-          },
-          onError: (err) => {
-            alert(`Error al inscribir: ${err.message}`);
-          },
-        }
-      );
+        enroll({
+            studentId: user.id,
+            courseId: course.id,
+        }, {
+            onSuccess: () => {
+                navigate(`/courses/learn/${course.id}`);
+            },
+            onError: (err) => {
+                alert(`Error al inscribir: ${err.message}`);
+            }
+        });
     } else {
       createPreference(course.id);
     }
@@ -151,11 +136,6 @@ function CourseDetails() {
               </p>
 
               <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 mb-6">
-                <div className="flex items-center space-x-1">
-                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                  <span className="font-semibold text-slate-800">4.8</span>
-                  <span>(1,250 valoraciones)</span>
-                </div>
                 <div className="flex items-center space-x-1">
                   <Users className="w-4 h-4" />
                   <span>{course.students?.length || 0} estudiantes</span>
