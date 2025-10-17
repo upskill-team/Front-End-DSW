@@ -54,13 +54,15 @@ const AppRouter = () => {
           <Route path="/" element={<LandingPage />} />
 
           <Route path="/courses" element={<CourseListPage />} />
-          <Route path="/courses/:courseId" element={<CourseDetails />} />
+          
           <Route path="/courses/learn/:courseId" element={
             <EnrollmentProtectedRoute>
               <CourseLearn />
             </EnrollmentProtectedRoute>
             }
           />
+          
+          <Route path="/courses/:courseId" element={<CourseDetails />} />
           <Route
             path="/courses/:courseId/assessments"
             element={
