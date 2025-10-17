@@ -6,6 +6,7 @@ import Badge from './Badge';
 import { Card, CardContent, CardTitle, CardDescription } from './Card';
 import { Link } from 'react-router-dom';
 import type { Course } from '../../types/entities';
+import { formatCurrency } from '../../lib/currency';
 
 export interface CourseCardListProps extends React.HTMLAttributes<HTMLDivElement> {
   course: Course;
@@ -84,8 +85,10 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                     <span className="text-lg font-bold text-slate-800">
                       {course.isFree ? (
                         <span className="text-green-600">Gratis</span>
+                      ) : course.priceInCents ? (
+                        <span>{formatCurrency(course.priceInCents)}</span>
                       ) : (
-                        <span>${course.price}</span>
+                        <span>Precio no disponible</span>
                       )}
                     </span>
                   </div>

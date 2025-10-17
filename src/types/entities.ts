@@ -38,7 +38,7 @@ export interface Course {
   courseType: CourseType;
   professor: Professor;
   isFree: boolean;
-  price: number;
+  priceInCents?: number; // Precio en centavos (ej: 10050 = $100.50)
   status: string;
   rating?: number;
   studentsCount?: number;
@@ -177,7 +177,7 @@ export interface CourseConfigData {
   description?: string;
   status?: string;
   isFree?: boolean;
-  price?: number;
+  priceInCents?: number; // Precio en centavos
 }
 
 export interface UnitContentData {

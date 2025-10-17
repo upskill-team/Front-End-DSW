@@ -12,6 +12,8 @@ import Button from './Button';
 import type { Course, CourseType } from '../../types/entities';
 import { cn } from '../../lib/utils';
 import { Link } from 'react-router-dom';
+import { formatCurrency } from '../../lib/currency';
+
 interface BasePreviewCardProps extends React.HTMLAttributes<HTMLDivElement> {
   hideButton?: boolean;
   hideInstructor?: boolean;
@@ -47,7 +49,9 @@ const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProp
     const displayDescription = course?.description ?? description;
     const displayImage = course?.imageUrl ?? imageUrl;
     const displayIsFree = course?.isFree ?? isFree;
-    const displayPrice = course?.price ?? price;
+    
+    // Manejar precio: si es un curso, usar priceInCents; si son props individuales, convertir price (pesos) a centavos
+    const displayPriceInCents = course?.priceInCents ?? (price !== undefined ? Math.round(price * 100) : 0);
     const displayCourseType = course?.courseType ?? courseType;
     const displayAmountStudents = course?.studentsCount ?? course?.students?.length ?? 0;
 
@@ -110,7 +114,7 @@ const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProp
                     {displayIsFree ? (
                       <span className="text-green-600">Gratis</span>
                     ) : (
-                      <span>${displayPrice}</span>
+                      <span>{formatCurrency(displayPriceInCents)}</span>
                     )}
                   </div>
                   {!hideButton && (

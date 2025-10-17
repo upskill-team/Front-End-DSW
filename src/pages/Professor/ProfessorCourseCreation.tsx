@@ -21,6 +21,7 @@ import * as v from 'valibot';
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
 import { AxiosError } from "axios";
+import { toCents } from "../../lib/currency.ts";
 import { useManagedInstitution } from "../../hooks/useInstitutionMutations.ts";
 
 const CourseSchema = v.pipe(
@@ -88,8 +89,10 @@ export default function ProfessorCourseCreation() {
     dataToSend.append('description', formData.description);
     dataToSend.append('courseTypeId', formData.courseTypeId);
     dataToSend.append('isFree', String(formData.isFree));
-    dataToSend.append('price', String(formData.isFree ? 0 : formData.price || 0)); 
-    dataToSend.append('useInstitution',formData.useInstitution ? true: false);
+
+    // Convertir precio de pesos a centavos antes de enviar
+    const priceInCents = formData.isFree ? 0 : toCents(formData.price || 0);
+    dataToSend.append('priceInCents', String(priceInCents)); 
 
     const imageInput = document.getElementById('course-image') as HTMLInputElement;
     if (imageInput.files && imageInput.files[0]) {

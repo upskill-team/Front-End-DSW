@@ -97,7 +97,6 @@ const ProfessorCoursesPage = () => {
                 </Badge>
               )}
             </div>
-
             <div className="absolute bottom-5 right-5 z-10">
               <Button
                 variant="outline"
