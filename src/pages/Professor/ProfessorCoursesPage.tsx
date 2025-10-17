@@ -10,6 +10,7 @@ import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import { BookOpen, Users, DollarSign, Edit, Star, Plus } from 'lucide-react';
 import { useProfessorCourses } from '../../hooks/useCourses.ts';
+import { formatCurrency } from '../../lib/currency';
 
 const ProfessorCoursesPage = () => {
   const { data: courses, isLoading, error } = useProfessorCourses();
@@ -174,7 +175,9 @@ const ProfessorCoursesPage = () => {
                     <span>
                       {course.isFree
                         ? 'Gratis'
-                        : `$${course.price.toLocaleString()}`}
+                        : course.priceInCents 
+                          ? formatCurrency(course.priceInCents)
+                          : 'Precio no disponible'}
                     </span>
                   </div>
                 </div>

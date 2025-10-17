@@ -10,7 +10,7 @@ export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+
   const courseId = searchParams.get('course_id');
 
   const { data: enrollment, isSuccess } = useExistingEnrollment(
@@ -27,12 +27,14 @@ export default function PaymentSuccess() {
     }
   );
 
-  const [message, setMessage] = useState('Verificando tu inscripción, por favor espera...');
+  const [message, setMessage] = useState(
+    'Verificando tu inscripción, por favor espera...'
+  );
 
   useEffect(() => {
     if (isSuccess && enrollment) {
       setMessage('¡Inscripción confirmada! Serás redirigido en 3 segundos...');
-      
+
       const timer = setTimeout(() => {
         if (courseId) {
           navigate(`/courses/learn/${courseId}`);

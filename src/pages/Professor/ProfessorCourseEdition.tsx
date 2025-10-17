@@ -18,6 +18,7 @@ import {
 import CourseHeader from '../../components/professor/courseEditor/CourseHeader';
 import CourseSidebar from '../../components/professor/courseEditor/CourseSidebar';
 import UnitContent from '../../components/professor/courseEditor/UnitContent';
+import { toAmount, toCents } from '../../lib/currency';
 import CourseConfigModal from '../../components/professor/courseEditor/modals/CourseConfigModal';
 import UnitModal from '../../components/professor/courseEditor/modals/UnitModal';
 import QuestionEditor from '../../components/professor/courseEditor/QuestionEditor';
@@ -49,7 +50,7 @@ export default function ProfessorCourseEditorPage() {
     description: '',
     status: 'en-desarrollo',
     isFree: false,
-    price: 0,
+    price: 0, // En pesos para el formulario (UX)
   });
   const [units, setUnits] = useState<UnitEditorData[]>([]);
   const [selectedUnitId, setSelectedUnitId] = useState<number | null>(null);
@@ -168,7 +169,8 @@ export default function ProfessorCourseEditorPage() {
           description: currentCourse.description,
           status: currentCourse.status || 'en-desarrollo',
           isFree: currentCourse.isFree,
-          price: currentCourse.price,
+          // Convertir centavos a pesos para mostrar en el formulario
+          price: currentCourse.priceInCents ? toAmount(currentCourse.priceInCents) : 0,
         });
 
         // Convertir unidades del backend a formato del editor
@@ -545,14 +547,24 @@ export default function ProfessorCourseEditorPage() {
   const handleSaveConfig = () => {
     if (!courseId) return;
 
-    console.log('Saving course config:', tempConfig);
+    // Convertir precio de pesos a centavos antes de enviar
+    const configToSend = {
+      ...tempConfig,
+      priceInCents: tempConfig.isFree ? undefined : toCents(tempConfig.price),
+    };
+
+    // Eliminar el campo 'price' del objeto a enviar (solo enviamos priceInCents)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { price, ...configWithoutPrice } = configToSend;
+
+    console.log('Saving course config:', configWithoutPrice);
 
     quickSaveMutation.mutate(
       {
         courseId,
         data: {
           type: 'course-config',
-          data: tempConfig,
+          data: configWithoutPrice,
         },
       },
       {
