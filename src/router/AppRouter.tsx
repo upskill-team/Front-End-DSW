@@ -16,7 +16,6 @@ import ProfessorAppeal from '../pages/Professor/ProfessorAppeal.tsx';
 import ProfessorAppealsPage from '../pages/Admin/ProfessorAppealsPage.tsx';
 import ProfessorCoursesPage from '../pages/Professor/ProfessorCoursesPage.tsx';
 import ProfessorAnalyticsPage from '../pages/Professor/ProfessorAnalyticsPage.tsx';
-import ProfessorStudentsPage from '../pages/Professor/ProfessorStudentsPage.tsx';
 import ProfessorCourseCreation from '../pages/Professor/ProfessorCourseCreation.tsx';
 import ProfessorCourseEdition from '../pages/Professor/ProfessorCourseEdition.tsx';
 import ProfessorAssessmentsPage from '../pages/Professor/ProfessorAssessmentsPage.tsx';
@@ -137,7 +136,6 @@ const AppRouter = () => {
               element={<ProfessorAssessmentAttempts />}
             />
             <Route path="analytics" element={<ProfessorAnalyticsPage />} />
-            <Route path="students" element={<ProfessorStudentsPage />} />
           </Route>
 
           <Route

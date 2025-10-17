@@ -14,7 +14,7 @@ import Select from '../../components/ui/Select';
 import Switch from '../../components/ui/Switch';
 import Label from '../../components/ui/Label';
 import QuestionSelector from '../../components/professor/assessments/QuestionSelector';
-import { ArrowLeft, Save, Plus } from 'lucide-react';
+import { ArrowLeft, Save, Plus, Trash2 } from 'lucide-react';
 import type {
   CreateAssessmentRequest,
   UpdateAssessmentRequest,
@@ -157,7 +157,6 @@ export default function ProfessorAssessmentEditorPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <Button
           variant="outline"
@@ -180,7 +179,6 @@ export default function ProfessorAssessmentEditorPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Información Básica */}
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">Información Básica</h2>
 
@@ -225,7 +223,6 @@ export default function ProfessorAssessmentEditorPage() {
           </div>
         </Card>
 
-        {/* Configuración de la Evaluación */}
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">Configuración</h2>
 
@@ -277,7 +274,6 @@ export default function ProfessorAssessmentEditorPage() {
           </div>
         </Card>
 
-        {/* Disponibilidad */}
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">Disponibilidad</h2>
 
@@ -302,71 +298,64 @@ export default function ProfessorAssessmentEditorPage() {
           </div>
         </Card>
 
-        {/* Preguntas */}
         <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">
-              Preguntas ({selectedQuestions.length})
-            </h2>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowQuestionSelector(true)}
-              className="flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              {selectedQuestions.length === 0
-                ? 'Seleccionar Preguntas'
-                : 'Agregar Más Preguntas'}
-            </Button>
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <h2 className="text-xl font-semibold">
+            Preguntas ({selectedQuestions.length})
+          </h2>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm" 
+            onClick={() => setShowQuestionSelector(true)}
+            className="flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            {selectedQuestions.length === 0 ? 'Seleccionar' : 'Editar Selección'}
+          </Button>
+        </div>
+
+        {selectedQuestions.length === 0 ? (
+          <div className="text-center py-8 text-gray-500 border-2 border-dashed rounded-lg">
+            <p>No hay preguntas seleccionadas</p>
+            <p className="text-sm mt-1">
+              Haz clic en "Seleccionar" para agregar preguntas a la evaluación
+            </p>
           </div>
-
-          {selectedQuestions.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <p>No hay preguntas seleccionadas</p>
-              <p className="text-sm mt-1">
-                Haz clic en "Seleccionar Preguntas" para agregar preguntas a la
-                evaluación
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {selectedQuestions.map((question, index) => (
-                <div
-                  key={question.id}
-                  className="flex items-start justify-between p-4 border rounded-lg"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-sm text-gray-500">
-                        #{index + 1}
-                      </span>
-                      <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded">
-                        {question.questionType}
-                      </span>
-                    </div>
-                    <p className="text-gray-900">{question.questionText}</p>
+        ) : (
+          <div className="space-y-3">
+            {selectedQuestions.map((question, index) => (
+              <div
+                key={question.id}
+                className="flex items-start justify-between p-3 sm:p-4 border rounded-lg bg-slate-50"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-semibold text-sm text-gray-500">#{index + 1}</span>
+                    <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded">{question.questionType}</span>
                   </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedQuestions(
-                        selectedQuestions.filter((q) => q.id !== question.id)
-                      );
-                    }}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    Eliminar
-                  </Button>
+                  <p className="text-gray-900 truncate">{question.questionText}</p>
                 </div>
-              ))}
-            </div>
-          )}
-        </Card>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedQuestions(
+                      selectedQuestions.filter((q) => q.id !== question.id)
+                    );
+                  }}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50 p-2 h-auto"
+                  aria-label="Eliminar pregunta"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
 
-        {/* Actions */}
         <div className="flex justify-end gap-3">
           <Button
             type="button"
@@ -390,7 +379,6 @@ export default function ProfessorAssessmentEditorPage() {
         </div>
       </form>
 
-      {/* Question Selector Modal */}
       {showQuestionSelector && formData.courseId && (
         <QuestionSelector
           courseId={formData.courseId}
