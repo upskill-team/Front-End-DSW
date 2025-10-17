@@ -1,15 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
-import { BookOpen, Users, DollarSign, Edit, Star, Plus } from 'lucide-react';
+import { Edit, Plus, Star } from 'lucide-react';
 import { useProfessorCourses } from '../../hooks/useCourses.ts';
+import CoursePreviewCard from '../../components/ui/CoursePreviewCard';
 
 const ProfessorCoursesPage = () => {
   const { data: courses, isLoading, error } = useProfessorCourses();
@@ -114,83 +108,40 @@ const ProfessorCoursesPage = () => {
       </div>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.map((course) => (
-          <Card
-            key={course.id}
-            className="group hover:shadow-lg transition-all duration-300"
-          >
-            <div className="relative overflow-hidden rounded-t-lg">
-              <img
-                src={course.imageUrl || '/img/noImage.jpg'}
-                alt={course.name}
-                className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div className="absolute top-3 right-3">
-                <Badge className={getStatusBadge(course.status).className}>
-                  {getStatusBadge(course.status).text}
-                </Badge>
-              </div>
+          <div key={course.id} className="relative">
+            <div className="absolute top-5 right-5 z-10 flex flex-col gap-2 items-end">
+              <Badge className={getStatusBadge(course.status).className}>
+                {getStatusBadge(course.status).text}
+              </Badge>
               {course.rating && (
-                <div className="absolute top-3 left-3">
-                  <Badge className="bg-white/90 text-slate-700 border-0">
-                    <Star className="w-3 h-3 mr-1 fill-current text-yellow-500" />
-                    {course.rating.toFixed(1)}
-                  </Badge>
-                </div>
+                <Badge className="bg-white/90 text-slate-700 border-0">
+                  <Star className="w-3 h-3 mr-1 fill-current text-yellow-500" />
+                  {course.rating.toFixed(1)}
+                </Badge>
               )}
             </div>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-semibold text-slate-800 line-clamp-2 h-14">
-                {course.name}
-              </CardTitle>
-              <CardDescription className="text-sm text-slate-600">
-                {course.description}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-4 text-sm text-slate-600">
-                  <div className="flex items-center space-x-1">
-                    <Users className="w-3 h-3" />
-                    <span>
-                      {course.studentsCount ?? (course.students ?? []).length}{' '}
-                      estudiantes
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <BookOpen className="w-3 h-3" />
-                    <span>
-                      {course.units.reduce(
-                        (acc, unit) =>
-                          acc +
-                          (unit.materials ?? []).length +
-                          (unit.questions ?? []).length,
-                        0
-                      )}{' '}
-                      lecciones
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-1 col-span-2">
-                    <DollarSign className="w-3 h-3" />
-                    <span>
-                      {course.isFree
-                        ? 'Gratis'
-                        : `$${course.price.toLocaleString()}`}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex justify-end pt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 w-8 p-0"
-                    onClick={() => handleNavigateToEdit(course.id)}
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+
+            <div className="absolute bottom-5 right-5 z-10">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 w-9 p-0 bg-white hover:bg-slate-50"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavigateToEdit(course.id);
+                }}
+              >
+                <Edit className="w-4 h-4" />
+              </Button>
+            </div>
+
+            <CoursePreviewCard 
+              course={course} 
+              hideButton={true}
+              hideInstructor={true}
+              onViewMore={() => handleNavigateToEdit(course.id)}
+            />
+          </div>
         ))}
       </div>
     </div>
