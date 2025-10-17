@@ -126,8 +126,8 @@ const CourseListPage = () => {
           }}
         >
           <option value="name-ASC">Nombre (A-Z)</option>
-          <option value="price-ASC">Precio (Menor a mayor)</option>
-          <option value="price-DESC">Precio (Mayor a menor)</option>
+          <option value="priceInCents-ASC">Precio (Menor a mayor)</option>
+          <option value="priceInCents-DESC">Precio (Mayor a menor)</option>
         </Select>
         <div className="flex items-center justify-center h-full">
           <div className="flex items-center gap-3">

@@ -5,13 +5,14 @@ import {
 } from '../../ui/Dialog.tsx';
 import QuestionForm from '../../common/QuestionForm';
 import type { Question } from '../../../types/entities.ts';
+import { useState } from 'react';
 
 interface QuestionEditorProps {
   isOpen: boolean;
   onClose: () => void;
   question: Question;
   onChange: (question: Question) => void;
-  onSave: () => void;
+  onSave: (question: Question) => void;
   readonly?: boolean;
 }
 
@@ -19,14 +20,19 @@ function QuestionEditor({
   isOpen,
   onClose,
   question,
-  onChange,
   onSave,
   readonly = false,
 }: QuestionEditorProps) {
+  const [isPending, setIsPending] = useState(false);
+
   const handleSave = async (updatedQuestion: Question) => {
-    onChange(updatedQuestion);
-    onSave();
-  };
+    setIsPending(true);
+    try {
+      await onSave(updatedQuestion);
+    } finally {
+      setIsPending(false);
+    }
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -47,6 +53,7 @@ function QuestionEditor({
           onSave={handleSave}
           onCancel={onClose}
           readonly={readonly}
+          isLoading={isPending}
           saveButtonText={question.id ? 'Actualizar Pregunta' : 'Crear Pregunta'}
         />
       </div>
