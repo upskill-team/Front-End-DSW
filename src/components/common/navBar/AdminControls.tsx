@@ -1,10 +1,8 @@
 import {
   BarChart3,
-  BookOpen,
   ClipboardList,
   GraduationCap,
   LayoutDashboard,
-  Users
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { Location } from "react-router-dom";
@@ -45,28 +43,6 @@ export function AdminControls({
       >
         <BarChart3 className="w-4 h-4" />{" "}
         <span className="hidden xl:inline ml-2">Analíticas</span>
-      </Link>
-      <Link
-        to="/admin/users"
-        title="Usuarios"
-        onClick={() => handleLinkClick("/admin/users")}
-        className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${
-          location?.pathname.startsWith("/admin/users") ? activeLinkClasses : inactiveLinkClasses
-        }`}
-      >
-        <Users className="w-4 h-4" />{" "}
-        <span className="hidden xl:inline ml-2">Usuarios</span>
-      </Link>
-      <Link
-        to="/admin/courses"
-        title="Gestion de Cursos"
-        onClick={() => handleLinkClick("/admin/courses")}
-        className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center transition-colors ${
-          location?.pathname.startsWith("/admin/courses") ? activeLinkClasses : inactiveLinkClasses
-        }`}
-      >
-        <BookOpen className="w-4 h-4" />{" "}
-        <span className="hidden xl:inline ml-2">Gestion de Cursos</span>
       </Link>
       <Link
         to="/admin/courseTypes"

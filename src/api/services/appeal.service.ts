@@ -22,9 +22,8 @@ const createAppeal = async (formData: FormData): Promise<Appeal> => {
 
 const findAllAppeals = async (params: SearchAppealsParams = {}): Promise<PaginatedAppealsResponse> => {
   const queryParams = new URLSearchParams();
-
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null) {
+    if (value !== undefined && value !== null && value !== '') {
       queryParams.append(key, String(value));
     }
   });

@@ -21,9 +21,7 @@ import ProfessorCourseEdition from '../pages/Professor/ProfessorCourseEdition.ts
 import ProfessorAssessmentsPage from '../pages/Professor/ProfessorAssessmentsPage.tsx';
 import ProfessorAssessmentEditor from '../pages/Professor/ProfessorAssessmentEditor.tsx';
 import ProfessorAssessmentAttempts from '../pages/Professor/ProfessorAssessmentAttempts.tsx';
-import UsersPage from '../pages/Admin/UsersPage.tsx';
 import AnalyticsPage from '../pages/Admin/AnalyticsPage.tsx';
-import CoursesPage from '../pages/Admin/CoursesPage.tsx';
 import CourseTypesPage from '../pages/Admin/CourseTypesPage.tsx';
 import ProfilePage from '../pages/User/ProfilePage.tsx';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
@@ -176,24 +174,6 @@ const AppRouter = () => {
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <ProfessorAppealsPage />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/admin/courses"
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <CoursesPage />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/admin/users"
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <UsersPage />
               </ProtectedRoute>
             }
           />

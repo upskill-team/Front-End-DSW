@@ -1,11 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { courseTypeService } from '../api/services/courseType.service';
 import type { CourseType } from '../types/entities';
+import type { SearchCourseTypesParams } from '../types/shared';
 
-export const useCourseTypes = () => {
+export const useCourseTypes = (params: SearchCourseTypesParams) => {
   return useQuery({
-    queryKey: ['courseTypes'],
-    queryFn: courseTypeService.findAll,
+    queryKey: ['courseTypes', params],
+    queryFn: () => courseTypeService.findAll(params),
   });
 };
 

@@ -1,5 +1,6 @@
 import apiClient from '../apiClient';
 import type { CourseType } from '../../types/entities';
+import type { PaginatedCourseTypesResponse, SearchCourseTypesParams } from '../../types/shared';
 
 type CourseTypePayload = Omit<CourseType, 'id' | 'courses'>;
 
@@ -9,8 +10,15 @@ interface ApiResponse<T> {
   data: T;
 }
 
-const findAll = async (): Promise<CourseType[]> => {
-  const response = await apiClient.get<ApiResponse<CourseType[]>>('/courseTypes');
+const findAll = async (params: SearchCourseTypesParams = {}): Promise<PaginatedCourseTypesResponse> => {
+  const queryParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      queryParams.append(key, String(value));
+    }
+  });
+
+  const response = await apiClient.get<ApiResponse<PaginatedCourseTypesResponse>>(`/courseTypes?${queryParams.toString()}`);
   return response.data.data;
 };
 
