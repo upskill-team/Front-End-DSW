@@ -197,8 +197,8 @@ export function NavBar() {
                  <div className="pt-2">
                      <p className="px-3 text-xs font-semibold text-slate-400 uppercase">Panel de Admin</p>
                      <MobileNavLink to="/admin/dashboard" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</MobileNavLink>
-                     <MobileNavLink to="/admin/users" onClick={() => setIsMobileMenuOpen(false)}>Usuarios</MobileNavLink>
-                     <MobileNavLink to="/admin/courses" onClick={() => setIsMobileMenuOpen(false)}>Cursos</MobileNavLink>
+                     <MobileNavLink to="/admin/analytics" onClick={() => setIsMobileMenuOpen(false)}>Analíticas</MobileNavLink>
+                     <MobileNavLink to="/admin/courseTypes" onClick={() => setIsMobileMenuOpen(false)}>Tipos de Cursos</MobileNavLink>
                      <MobileNavLink to="/admin/appeals" onClick={() => setIsMobileMenuOpen(false)}>Solicitudes</MobileNavLink>
                  </div>
               )}

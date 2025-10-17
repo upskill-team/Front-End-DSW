@@ -35,3 +35,16 @@ export interface PaginatedAppealsResponse {
   appeals: Appeal[];
   total: number;
 }
+
+export interface SearchCourseTypesParams {
+  limit?: number;
+  offset?: number;
+  q?: string;
+  sortBy?: string;
+  sortOrder?: 'ASC' | 'DESC';
+}
+
+export interface PaginatedCourseTypesResponse {
+  courseTypes: import('./entities').CourseType[];
+  total: number;
+}
