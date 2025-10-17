@@ -1,13 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../api/apiClient';
 import type { Professor } from '../types/entities';
-import type { AxiosError } from 'axios'
+import type { AxiosError } from 'axios';
+
+export interface MonthlyEarning {
+  month: string; // Formato: "2025-10"
+  earningsInCents: number;
+  salesCount: number;
+}
 
 export interface ProfessorAnalyticsData {
   totalStudents: number;
   publishedCourses: number;
-  averageRating: number;
-  totalEarnings: number;
+  totalEarningsInCents: number;
+  monthlyEarnings: MonthlyEarning[];
+  totalSales: number;
+  lastSaleDate: string | null; // ISO date string
 }
 
 /**
@@ -17,7 +25,11 @@ export const useProfessorProfile = () => {
   return useQuery({
     queryKey: ['professors', 'me'],
     queryFn: async () => {
-      const response = await apiClient.get<{ status: number; message: string; data: Professor }>('/professors/me');
+      const response = await apiClient.get<{
+        status: number;
+        message: string;
+        data: Professor;
+      }>('/professors/me');
       return response.data.data;
     },
     // Only run this query if user is authenticated and is a professor
