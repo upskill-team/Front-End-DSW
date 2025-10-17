@@ -72,34 +72,25 @@ export default function CourseAssessmentsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
-      {/* Header */}
       <div className="bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
-        <div className="container mx-auto px-6 py-6">
+        <div className="container mx-auto px-4 sm:px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate(`/courses/learn/${courseId}`)}
-                className="mb-3"
-              >
+              <Button variant="outline" size="sm" onClick={() => navigate(`/courses/learn/${courseId}`)} className="mb-3">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Volver al Curso
               </Button>
-              <h1 className="text-3xl font-bold text-slate-800 flex items-center">
-                <FileText className="w-8 h-8 mr-3 text-purple-600" />
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 flex items-center">
+                <FileText className="w-6 h-6 sm:w-8 sm:h-8 mr-3 text-purple-600" />
                 Evaluaciones del Curso
               </h1>
-              <p className="text-slate-600 mt-1">
-                Completa las evaluaciones para demostrar tu conocimiento
-              </p>
+              <p className="text-slate-600 mt-1">Completa las evaluaciones para demostrar tu conocimiento</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 sm:px-6 py-8">
         {assessments && assessments.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
             {assessments.map((assessment) => (
@@ -110,9 +101,7 @@ export default function CourseAssessmentsPage() {
                   if (enrollment) {
                     navigate(
                       `/courses/${courseId}/assessments/${assessment.id}/take`,
-                      {
-                        state: { enrollmentId: enrollment.id },
-                      }
+                      { state: { enrollmentId: enrollment.id } }
                     );
                   }
                 }}
@@ -242,7 +231,6 @@ function AssessmentCard({
       </CardHeader>
 
       <CardContent>
-        {/* Información clave */}
         <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
           <div className="flex items-center gap-2 text-slate-600">
             <Target className="w-4 h-4 text-purple-600" />
@@ -269,7 +257,6 @@ function AssessmentCard({
           )}
         </div>
 
-        {/* Progreso e intentos */}
         <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-slate-700">Intentos</span>
@@ -307,7 +294,6 @@ function AssessmentCard({
             )}
         </div>
 
-        {/* Botones de acción */}
         <div className="flex gap-2">
           {canTakeAssessment ? (
             <>

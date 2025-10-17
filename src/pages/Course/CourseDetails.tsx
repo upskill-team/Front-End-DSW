@@ -34,7 +34,7 @@ function CourseDetails() {
             return;
         }
         enroll({
-            studentId: user.studentProfile.id,
+            studentId: user.id,
             courseId: course.id,
         }, {
             onSuccess: () => {

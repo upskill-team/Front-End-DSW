@@ -4,7 +4,11 @@ import type { Enrollment } from '../types/entities';
 import type { AxiosError } from 'axios';
 import apiClient from '../api/apiClient'
 
-type EnrollInCoursePayload = Parameters<typeof enrollService.enrollInCourse>[0];
+type EnrollInCoursePayload = {
+  studentId: string;
+  courseId: string;
+};
+
 type UpdateEnrollmentPayload = {
   enrollmentId: string;
   data: Parameters<typeof enrollService.update>[1];
@@ -58,11 +62,19 @@ export const useEnrollInCourse = () => {
 
   const mutation = useMutation<Enrollment, AxiosError, EnrollInCoursePayload>({
     mutationFn: enrollService.enrollInCourse,
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ['enrollment', 'student', variables.studentId, 'course', variables.courseId]
-      });
-      queryClient.invalidateQueries({ queryKey: ['enrollments', 'student', variables.studentId] });
+    onSuccess: (newEnrollment) => {
+      
+      const queryKey = [
+        'enrollment', 
+        'student', 
+        newEnrollment.student.id,
+        'course', 
+        newEnrollment.course.id
+      ];
+
+      queryClient.setQueryData(queryKey, newEnrollment);
+
+      queryClient.invalidateQueries({ queryKey: ['enrollments', 'student', newEnrollment.student.id] });
     },
   });
 
@@ -119,8 +131,6 @@ export const useCompleteUnit = () => {
     mutationFn: ({ enrollmentId, unitNumber }) =>
       enrollService.completeUnit(enrollmentId, unitNumber),
     onSuccess: (data) => {
-      // Invalidar queries relacionadas
-      // El backend puede devolver solo IDs o objetos completos, manejamos ambos casos
       const studentId =
         typeof data.student === 'string' ? data.student : data.student?.id;
       const courseId =
@@ -136,7 +146,6 @@ export const useCompleteUnit = () => {
         });
       }
 
-      // Invalidar todas las queries de enrollments como fallback
       queryClient.invalidateQueries({
         queryKey: ['enrollment'],
       });
@@ -169,8 +178,6 @@ export const useUncompleteUnit = () => {
     mutationFn: ({ enrollmentId, unitNumber }) =>
       enrollService.uncompleteUnit(enrollmentId, unitNumber),
     onSuccess: (data) => {
-      // Invalidar queries relacionadas
-      // El backend puede devolver solo IDs o objetos completos, manejamos ambos casos
       const studentId =
         typeof data.student === 'string' ? data.student : data.student?.id;
       const courseId =
@@ -186,7 +193,6 @@ export const useUncompleteUnit = () => {
         });
       }
 
-      // Invalidar todas las queries de enrollments como fallback
       queryClient.invalidateQueries({
         queryKey: ['enrollment'],
       });
@@ -206,7 +212,7 @@ export const useUncompleteUnit = () => {
 };
 
 /**
- * Hook to fetch the 10 most recent enrollments for the current professor.
+ * Hook to fetch the 5 most recent enrollments for the current professor.
  */
 export const useProfessorRecentEnrollments = () => {
   return useQuery<Enrollment[], AxiosError>({

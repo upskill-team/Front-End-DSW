@@ -11,6 +11,7 @@ import type {
   SubmitAttemptRequest,
   CreateAssessmentRequest,
   UpdateAssessmentRequest,
+  AssessmentStatistics,
 } from '../../types/entities';
 
 interface ApiResponse<T> {
@@ -51,11 +52,11 @@ const getById = async (
  */
 const startAttempt = async (
   assessmentId: string,
-  enrollmentId: string
+  studentId: string
 ): Promise<StartAttemptResponse> => {
   const response = await apiClient.post<ApiResponse<StartAttemptResponse>>(
     `/assessments/${assessmentId}/attempts`,
-    { enrollmentId }
+    { studentId } // <-- Lo envía en el body
   );
   return response.data.data;
 };
@@ -165,6 +166,28 @@ const remove = async (id: string): Promise<void> => {
   await apiClient.delete(`/assessments/${id}`);
 };
 
+/**
+ * Obtener estadísticas de una evaluación (para profesores)
+ * GET /api/assessments/:assessmentId/statistics
+ */
+const getAssessmentStatistics = async (assessmentId: string): Promise<AssessmentStatistics> => {
+  const response = await apiClient.get<ApiResponse<AssessmentStatistics>>(
+    `/assessments/${assessmentId}/statistics`
+  );
+  return response.data.data;
+};
+
+/**
+ * Obtener todos los intentos de una evaluación (para profesores)
+ * GET /api/assessments/:assessmentId/all-attempts
+ */
+const getAllAttemptsForProfessor = async (assessmentId: string): Promise<AssessmentAttempt[]> => {
+    const response = await apiClient.get<ApiResponse<AssessmentAttempt[]>>(
+        `/assessments/${assessmentId}/all-attempts`
+    );
+    return response.data.data;
+};
+
 const assessmentService = {
   getAssessmentsByCourse,
   getById,
@@ -177,6 +200,8 @@ const assessmentService = {
   create,
   update,
   remove,
+  getAssessmentStatistics,
+  getAllAttemptsForProfessor,
 };
 
 export default assessmentService;

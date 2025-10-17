@@ -7,35 +7,22 @@ import CoursePreviewCard from '../../components/ui/CoursePreviewCard';
 
 const ProfessorCoursesPage = () => {
   const { data: courses, isLoading, error } = useProfessorCourses();
-
   const navigate = useNavigate();
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'published':
       case 'publicado':
-        return {
-          className: 'bg-green-100 text-green-700 border-green-200',
-          text: 'Publicado',
-        };
+        return { className: 'bg-green-100 text-green-700 border-green-200', text: 'Publicado' };
       case 'draft':
       case 'borrador':
       case 'en-desarrollo':
-        return {
-          className: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-          text: 'Borrador',
-        };
+        return { className: 'bg-yellow-100 text-yellow-700 border-yellow-200', text: 'Borrador' };
       case 'archived':
       case 'archivado':
-        return {
-          className: 'bg-gray-100 text-gray-700 border-gray-200',
-          text: 'Archivado',
-        };
+        return { className: 'bg-gray-100 text-gray-700 border-gray-200', text: 'Archivado' };
       default:
-        return {
-          className: 'bg-blue-100 text-blue-700 border-blue-200',
-          text: status,
-        };
+        return { className: 'bg-blue-100 text-blue-700 border-blue-200', text: status };
     }
   };
 
@@ -73,11 +60,7 @@ const ProfessorCoursesPage = () => {
         <p className="text-slate-600 mt-2 mb-4">
           ¡Es un buen momento para empezar a crear!
         </p>
-        <Button
-          size="md"
-          className="bg-green-500 hover:bg-green-600 text-white"
-          onClick={handleNavigateToCreate}
-        >
+        <Button size="md" className="bg-green-500 hover:bg-green-600 text-white" onClick={handleNavigateToCreate}>
           <Plus className="w-4 h-4 mr-2" />
           Crear tu Primer Curso
         </Button>
@@ -90,16 +73,10 @@ const ProfessorCoursesPage = () => {
       <div className="mb-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-slate-800">
-              Mis Cursos ({courses.length})
-            </h2>
+            <h2 className="text-2xl font-bold text-slate-800">Mis Cursos ({courses.length})</h2>
           </div>
           <div className="flex gap-3">
-            <Button
-              size="md"
-              className="bg-green-500 hover:bg-green-600 text-white"
-              onClick={handleNavigateToCreate}
-            >
+            <Button size="md" className="bg-green-500 hover:bg-green-600 text-white" onClick={handleNavigateToCreate}>
               <Plus className="w-4 h-4 mr-2" />
               Crear Curso
             </Button>
