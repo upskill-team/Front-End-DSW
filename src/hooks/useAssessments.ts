@@ -206,8 +206,6 @@ export const useAssessmentsForProfessor = (courseId?: string) => {
       ? ['assessments', 'professor', courseId]
       : ['assessments', 'professor'],
     queryFn: async () => {
-      // Por ahora usamos el endpoint básico del servicio
-      // El backend debería tener un endpoint específico para profesores
       const url = courseId
         ? `/assessments?courseId=${courseId}`
         : '/assessments';

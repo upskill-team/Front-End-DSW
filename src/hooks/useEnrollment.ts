@@ -1,11 +1,8 @@
-// src/hooks/useEnrollment.ts
-
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { enrollService } from '../api/services/enrollment.service';
 import type { Enrollment } from '../types/entities';
 import type { AxiosError } from 'axios';
 
-// El payload para inscribirse necesita el ID del perfil de estudiante
 type EnrollInCoursePayload = {
   studentId: string;
   courseId: string;
@@ -29,7 +26,6 @@ export const useExistingEnrollment = (
   options?: Partial<UseQueryOptions<Enrollment | null, AxiosError>>
 ) => {
   return useQuery<Enrollment | null, AxiosError>({
-    // Esta es la clave que DEBEMOS usar consistentemente
     queryKey: ['enrollment', 'student', studentId, 'course', courseId],
     queryFn: () => enrollService.findByStudentAndCourse({ studentId: studentId!, courseId: courseId! }),
     enabled: !!studentId && !!courseId,
@@ -65,23 +61,18 @@ export const useEnrollInCourse = () => {
 
   const mutation = useMutation<Enrollment, AxiosError, EnrollInCoursePayload>({
     mutationFn: enrollService.enrollInCourse,
-    // --- LÓGICA DE CACHÉ DEFINITIVA ---
     onSuccess: (newEnrollment) => {
-      // `newEnrollment` es la respuesta del backend. Contiene el perfil de estudiante completo.
-      // `newEnrollment.student.id` ES el `studentProfile.id` que necesitamos para la caché.
       
       const queryKey = [
         'enrollment', 
         'student', 
-        newEnrollment.student.id, // <-- Usamos el ID del perfil de estudiante devuelto por la API
+        newEnrollment.student.id,
         'course', 
-        newEnrollment.course.id   // <-- Usamos el ID del curso devuelto por la API
+        newEnrollment.course.id
       ];
-      
-      // Actualizamos la caché para la clave que usa `useExistingEnrollment`
+
       queryClient.setQueryData(queryKey, newEnrollment);
 
-      // Invalidamos la lista general de inscripciones del estudiante
       queryClient.invalidateQueries({ queryKey: ['enrollments', 'student', newEnrollment.student.id] });
     },
   });
@@ -139,8 +130,6 @@ export const useCompleteUnit = () => {
     mutationFn: ({ enrollmentId, unitNumber }) =>
       enrollService.completeUnit(enrollmentId, unitNumber),
     onSuccess: (data) => {
-      // Invalidar queries relacionadas
-      // El backend puede devolver solo IDs o objetos completos, manejamos ambos casos
       const studentId =
         typeof data.student === 'string' ? data.student : data.student?.id;
       const courseId =
@@ -156,7 +145,6 @@ export const useCompleteUnit = () => {
         });
       }
 
-      // Invalidar todas las queries de enrollments como fallback
       queryClient.invalidateQueries({
         queryKey: ['enrollment'],
       });
@@ -189,8 +177,6 @@ export const useUncompleteUnit = () => {
     mutationFn: ({ enrollmentId, unitNumber }) =>
       enrollService.uncompleteUnit(enrollmentId, unitNumber),
     onSuccess: (data) => {
-      // Invalidar queries relacionadas
-      // El backend puede devolver solo IDs o objetos completos, manejamos ambos casos
       const studentId =
         typeof data.student === 'string' ? data.student : data.student?.id;
       const courseId =
@@ -206,7 +192,6 @@ export const useUncompleteUnit = () => {
         });
       }
 
-      // Invalidar todas las queries de enrollments como fallback
       queryClient.invalidateQueries({
         queryKey: ['enrollment'],
       });

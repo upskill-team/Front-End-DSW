@@ -243,7 +243,6 @@ function EnrollmentCard({
 
   return (
     <Card className="group hover:shadow-xl transition-all duration-300 overflow-hidden w-full">
-      {/* Imagen del curso */}
       <div className="relative h-40 sm:h-48 overflow-hidden bg-gradient-to-br from-blue-100 to-slate-100">
         {enrollment.course.imageUrl ? (
           <img
@@ -256,7 +255,6 @@ function EnrollmentCard({
             <BookOpen className="w-12 h-12 sm:w-16 sm:h-16 text-slate-400" />
           </div>
         )}
-        {/* Badge de estado */}
         <div className="absolute top-2 sm:top-3 right-2 sm:right-3 shadow-lg">
           <StatusBadge status={isCompleted ? 'completed' : 'in-progress'} />
         </div>

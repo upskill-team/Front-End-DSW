@@ -69,7 +69,6 @@ export default function AssessmentAttemptsPage() {
     );
   }
 
-  // Calcular estadísticas
   const completedAttempts = attempts.filter((a) => a.submittedAt);
   const scores = completedAttempts.map((a) => a.score ?? 0);
   const bestScore = scores.length > 0 ? Math.max(...scores) : 0;
@@ -109,9 +108,7 @@ export default function AssessmentAttemptsPage() {
         </div>
       </div>
 
-      {/* Content */}
       <div className="container mx-auto px-6 py-8 max-w-6xl">
-        {/* Estadísticas Generales */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
             <CardContent className="p-6 text-center">
@@ -158,7 +155,6 @@ export default function AssessmentAttemptsPage() {
           </Card>
         </div>
 
-        {/* Lista de Intentos */}
         <div className="space-y-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold text-slate-800">
@@ -223,7 +219,6 @@ export default function AssessmentAttemptsPage() {
                     >
                       <CardContent className="p-6">
                         <div className="flex items-center justify-between">
-                          {/* Izquierda: Número y fecha */}
                           <div className="flex items-center gap-4">
                             <div
                               className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
@@ -278,7 +273,6 @@ export default function AssessmentAttemptsPage() {
                             </div>
                           </div>
 
-                          {/* Derecha: Score y tiempo */}
                           <div className="flex items-center gap-6">
                             {isCompleted ? (
                               <>
@@ -301,7 +295,6 @@ export default function AssessmentAttemptsPage() {
                                     Tiempo
                                   </p>
                                   <p className="text-lg font-semibold text-slate-700">
-                                    {/* timeSpent not in type, using startedAt/submittedAt */}
                                     {attempt.submittedAt && attempt.startedAt
                                       ? Math.round(
                                           (new Date(
@@ -340,7 +333,6 @@ export default function AssessmentAttemptsPage() {
           )}
         </div>
 
-        {/* Botones Finales */}
         <div className="mt-8 flex justify-center gap-3">
           <Button
             variant="outline"

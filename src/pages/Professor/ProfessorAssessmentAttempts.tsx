@@ -223,7 +223,6 @@ function AttemptDetailsModal({ attempt, onClose }: AttemptDetailsModalProps) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-4xl max-h-[90vh] flex flex-col">
-        {/* Header Corregido */}
         <div className="p-4 sm:p-6 border-b">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-xl sm:text-2xl font-bold">Detalles del Intento</h2>
@@ -231,7 +230,6 @@ function AttemptDetailsModal({ attempt, onClose }: AttemptDetailsModalProps) {
               <XCircle className="w-6 h-6 text-gray-500" />
             </button>
           </div>
-          {/* Contenedor flex con flex-wrap para que se apile en móvil */}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-600">
             <span><strong>Estudiante:</strong> {attempt.student.name} {attempt.student.surname}</span>
             <span className="hidden sm:inline">•</span>
@@ -245,7 +243,6 @@ function AttemptDetailsModal({ attempt, onClose }: AttemptDetailsModalProps) {
           </div>
         </div>
 
-        {/* Answers (sin cambios) */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           <h3 className="text-lg font-semibold mb-4">Respuestas</h3>
           {attempt.answers && attempt.answers.length > 0 ? (
@@ -303,7 +300,6 @@ function AttemptDetailsModal({ attempt, onClose }: AttemptDetailsModalProps) {
           )}
         </div>
 
-        {/* Footer (sin cambios) */}
         <div className="p-4 sm:p-6 border-t flex justify-end">
           <Button onClick={onClose}>Cerrar</Button>
         </div>

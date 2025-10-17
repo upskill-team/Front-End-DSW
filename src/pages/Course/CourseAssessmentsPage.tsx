@@ -36,7 +36,6 @@ export default function CourseAssessmentsPage() {
     error,
   } = useAssessmentsByCourse(courseId);
 
-  // Obtenemos la inscripción para pasar el enrollmentId a la página de la evaluación
   const { data: enrollment } = useExistingEnrollment(studentId, courseId);
 
   if (isLoading) {
@@ -232,7 +231,6 @@ function AssessmentCard({
       </CardHeader>
 
       <CardContent>
-        {/* Información clave */}
         <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
           <div className="flex items-center gap-2 text-slate-600">
             <Target className="w-4 h-4 text-purple-600" />
@@ -259,7 +257,6 @@ function AssessmentCard({
           )}
         </div>
 
-        {/* Progreso e intentos */}
         <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-slate-700">Intentos</span>
@@ -297,7 +294,6 @@ function AssessmentCard({
             )}
         </div>
 
-        {/* Botones de acción */}
         <div className="flex gap-2">
           {canTakeAssessment ? (
             <>

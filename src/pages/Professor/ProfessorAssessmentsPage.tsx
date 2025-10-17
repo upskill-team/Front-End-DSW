@@ -18,7 +18,7 @@ import {
   CheckCircle,
   XCircle,
   BookOpen,
-  BarChart3, // <-- Importar ícono
+  BarChart3,
 } from 'lucide-react';
 import type { Assessment } from '../../types/entities';
 

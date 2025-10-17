@@ -157,7 +157,6 @@ export default function ProfessorAssessmentEditorPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <Button
           variant="outline"
@@ -180,7 +179,6 @@ export default function ProfessorAssessmentEditorPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Información Básica */}
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">Información Básica</h2>
 
@@ -225,7 +223,6 @@ export default function ProfessorAssessmentEditorPage() {
           </div>
         </Card>
 
-        {/* Configuración de la Evaluación */}
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">Configuración</h2>
 
@@ -277,7 +274,6 @@ export default function ProfessorAssessmentEditorPage() {
           </div>
         </Card>
 
-        {/* Disponibilidad */}
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">Disponibilidad</h2>
 
@@ -302,7 +298,6 @@ export default function ProfessorAssessmentEditorPage() {
           </div>
         </Card>
 
-        {/* Preguntas */}
         <Card className="p-6">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
           <h2 className="text-xl font-semibold">
@@ -311,7 +306,7 @@ export default function ProfessorAssessmentEditorPage() {
           <Button
             type="button"
             variant="outline"
-            size="sm" // <-- Tamaño más pequeño
+            size="sm" 
             onClick={() => setShowQuestionSelector(true)}
             className="flex items-center gap-2"
           >
@@ -361,7 +356,6 @@ export default function ProfessorAssessmentEditorPage() {
         )}
       </Card>
 
-        {/* Actions */}
         <div className="flex justify-end gap-3">
           <Button
             type="button"
@@ -385,7 +379,6 @@ export default function ProfessorAssessmentEditorPage() {
         </div>
       </form>
 
-      {/* Question Selector Modal */}
       {showQuestionSelector && formData.courseId && (
         <QuestionSelector
           courseId={formData.courseId}

@@ -1,5 +1,3 @@
-// src/pages/Course/CourseLearn.tsx
-
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import {
