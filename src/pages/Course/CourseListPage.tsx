@@ -5,6 +5,7 @@ import CoursePreviewCard from '../../components/ui/CoursePreviewCard.tsx';
 import type { SearchCoursesParams } from '../../types/shared.ts';
 import { useSearchCourses } from '../../hooks/useCourses.ts';
 import { useCourseTypes } from '../../hooks/useCourseTypes.ts';
+import { useInstitutions } from '../../hooks/useInstitutionMutations.ts';
 import Input from '../../components/ui/Input.tsx';
 import Select from '../../components/ui/Select.tsx';
 import Switch from '../../components/ui/Switch.tsx';
@@ -23,6 +24,7 @@ const CourseListPage = () => {
     Omit<SearchCoursesParams, 'q' | 'offset'>
   >({
     courseTypeId: '',
+    institutionId: '',
     isFree: undefined,
     sortBy: 'createdAt',
     sortOrder: 'DESC',
@@ -45,6 +47,8 @@ const CourseListPage = () => {
 
   const { data: courseTypesData, isLoading: isLoadingTypes } = useCourseTypes({});
   const courseTypes = courseTypesData?.courseTypes || [];
+
+  const { data: institutions, isLoading: isLoadingInstitutions } = useInstitutions();
 
   const courses = data?.pages.flatMap((page) => page.courses) || [];
   const totalCourses = data?.pages[0]?.total || 0;
@@ -90,60 +94,78 @@ const CourseListPage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-md items-end">
-        <Input
-          id="search-q"
-          label="Buscar por nombre"
-          icon={<Search size={16} />}
-          placeholder="Ej: React, Marketing..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <Select
-          id="course-type-filter"
-          label="Categoría"
-          value={filters.courseTypeId}
-          onChange={(e) => handleFilterChange('courseTypeId', e.target.value)}
-          disabled={isLoadingTypes}
-        >
-          <option value="">Todas</option>
-          {courseTypes?.map((ct) => (
-            <option key={ct.id} value={ct.id}>
-              {ct.name}
-            </option>
-          ))}
-        </Select>
-        <Select
-          id="sort-by-filter"
-          label="Ordenar por"
-          value={`${filters.sortBy}-${filters.sortOrder}`}
-          onChange={(e) => {
-            const [sortBy, sortOrder] = e.target.value.split('-');
-            setFilters((prev) => ({
-              ...prev,
-              sortBy,
-              sortOrder: sortOrder as 'ASC' | 'DESC',
-            }));
-          }}
-        >
-          <option value="createdAt-DESC">Más nuevos</option>
-          <option value="name-ASC">Nombre (A-Z)</option>
-          <option value="price-ASC">Precio (Menor a mayor)</option>
-          <option value="price-DESC">Precio (Mayor a menor)</option>
-        </Select>
-        <div className="flex items-center justify-center h-full pb-2">
-          <div className="flex items-center gap-3">
-            <Switch
-              id="is-free-filter"
-              checked={filters.isFree === true}
-              onChange={(e) =>
-                handleFilterChange(
-                  'isFree',
-                  e.target.checked ? true : undefined
-                )
-              }
-            />
-            <Label htmlFor="is-free-filter">Mostrar solo gratuitos</Label>
+      <div className="mb-8 p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-md space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Input
+            id="search-q"
+            label="Buscar"
+            icon={<Search size={16} />}
+            placeholder="Nombre, instructor, institución..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Select
+            id="course-type-filter"
+            label="Categoría"
+            value={filters.courseTypeId || ''}
+            onChange={(e) => handleFilterChange('courseTypeId', e.target.value)}
+            disabled={isLoadingTypes}
+          >
+            <option value="">Todas las categorías</option>
+            {courseTypes?.map((ct) => (
+              <option key={ct.id} value={ct.id}>
+                {ct.name}
+              </option>
+            ))}
+          </Select>
+          <Select
+            id="institution-filter"
+            label="Institución"
+            value={filters.institutionId || ''}
+            onChange={(e) => handleFilterChange('institutionId', e.target.value)}
+            disabled={isLoadingInstitutions}
+          >
+            <option value="">Todas las instituciones</option>
+            {institutions?.map((inst) => (
+              <option key={inst.id} value={inst.id}>
+                {inst.name}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+          <Select
+            id="sort-by-filter"
+            label="Ordenar por"
+            value={`${filters.sortBy}-${filters.sortOrder}`}
+            onChange={(e) => {
+              const [sortBy, sortOrder] = e.target.value.split('-');
+              setFilters((prev) => ({
+                ...prev,
+                sortBy,
+                sortOrder: sortOrder as 'ASC' | 'DESC',
+              }));
+            }}
+          >
+            <option value="createdAt-DESC">Más nuevos</option>
+            <option value="name-ASC">Nombre (A-Z)</option>
+            <option value="priceInCents-ASC">Precio (Menor a mayor)</option>
+            <option value="priceInCents-DESC">Precio (Mayor a menor)</option>
+          </Select>
+          <div className="flex items-center h-full pb-2">
+            <div className="flex items-center gap-3">
+              <Switch
+                id="is-free-filter"
+                checked={filters.isFree === true}
+                onChange={(e) =>
+                  handleFilterChange(
+                    'isFree',
+                    e.target.checked ? true : undefined
+                  )
+                }
+              />
+              <Label htmlFor="is-free-filter">Solo cursos gratuitos</Label>
+            </div>
           </div>
         </div>
       </div>

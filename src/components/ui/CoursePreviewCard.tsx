@@ -90,9 +90,14 @@ const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProp
                 {displayDescription || 'La descripción del curso aparecerá aquí...'}
               </CardDescription>
               {course && !hideInstructor && (
-                <p className="text-sm text-slate-500 mt-1">
-                  Por {instructorName}
-                </p>
+                <div className="text-sm text-slate-500 mt-1 space-y-0.5">
+                  <p>Por {instructorName}</p>
+                  {course.professor?.institution && (
+                    <p className="text-xs text-slate-400">
+                      {course.professor.institution.name}
+                    </p>
+                  )}
+                </div>
               )}
             </CardHeader>
             <CardContent className="pt-2 mt-auto">
