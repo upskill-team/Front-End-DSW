@@ -1,4 +1,4 @@
-import { Award, BookOpen, Download, Globe, Play, Smartphone, Star, Users } from "lucide-react";
+import { Award, BookOpen, Download, Globe, Play, Smartphone, Users } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useCourseById } from "../../hooks/useCourses.ts";
 import Badge from "../../components/ui/Badge.tsx";
@@ -118,11 +118,6 @@ function CourseDetails() {
               <p className="text-lg text-slate-600 mb-6 text-pretty">{course.description}</p>
 
               <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 mb-6">
-                <div className="flex items-center space-x-1">
-                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                  <span className="font-semibold text-slate-800">4.8</span>
-                  <span>(1,250 valoraciones)</span>
-                </div>
                 <div className="flex items-center space-x-1">
                   <Users className="w-4 h-4" />
                   <span>{course.students?.length || 0} estudiantes</span>

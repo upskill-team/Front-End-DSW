@@ -24,8 +24,8 @@ const CourseListPage = () => {
   >({
     courseTypeId: '',
     isFree: undefined,
-    sortBy: 'createdAt',
-    sortOrder: 'DESC',
+    sortBy: 'name',
+    sortOrder: 'ASC',
     limit: 9,
   });
 
@@ -125,12 +125,11 @@ const CourseListPage = () => {
             }));
           }}
         >
-          <option value="createdAt-DESC">Más nuevos</option>
           <option value="name-ASC">Nombre (A-Z)</option>
           <option value="price-ASC">Precio (Menor a mayor)</option>
           <option value="price-DESC">Precio (Mayor a menor)</option>
         </Select>
-        <div className="flex items-center justify-center h-full pb-2">
+        <div className="flex items-center justify-center h-full">
           <div className="flex items-center gap-3">
             <Switch
               id="is-free-filter"

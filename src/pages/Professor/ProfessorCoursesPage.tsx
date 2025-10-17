@@ -1,14 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
-import { BookOpen, Users, DollarSign, Edit, Plus } from 'lucide-react';
+import { Edit, Plus, Star } from 'lucide-react';
 import { useProfessorCourses } from '../../hooks/useCourses.ts';
+import CoursePreviewCard from '../../components/ui/CoursePreviewCard';
 
 const ProfessorCoursesPage = () => {
   const { data: courses, isLoading, error } = useProfessorCourses();
@@ -89,51 +84,42 @@ const ProfessorCoursesPage = () => {
         </div>
       </div>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {courses.map((course) => {
-          const statusInfo = getStatusBadge(course.status);
-          
-          return (
-            <Card key={course.id} className="group hover:shadow-lg transition-all duration-300 flex flex-col">
-              <div className="relative overflow-hidden rounded-t-lg">
-                <img src={course.imageUrl || '/img/noImage.jpg'} alt={course.name} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300" />
-                <div className="absolute top-3 right-3">
-                  <Badge className={statusInfo.className}>{statusInfo.text}</Badge>
-                </div>
-              </div>
-              <div className="flex flex-col flex-grow">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-semibold text-slate-800 line-clamp-2 h-14">{course.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0 flex-grow flex flex-col">
-                  <div className="space-y-3 flex-grow">
-                    <div className="grid grid-cols-2 gap-4 text-sm text-slate-600">
-                      <div className="flex items-center space-x-1">
-                        <Users className="w-3 h-3" />
-                        <span>{(course.students ?? []).length} estudiantes</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <BookOpen className="w-3 h-3" />
-                        <span>{(course.units ?? []).length} unidades</span>
-                      </div>
-                      <div className="flex items-center space-x-1 col-span-2">
-                        <DollarSign className="w-3 h-3" />
-                        <span>
-                          {course.isFree ? 'Gratis' : `$${(course.price || 0).toLocaleString()}`} {/* <-- CORRECCIÓN AQUÍ */}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex justify-end pt-4 mt-auto border-t">
-                    <Button variant="outline" size="sm" onClick={() => handleNavigateToEdit(course.id)}>
-                      <Edit className="w-4 h-4 mr-2" />
-                      Gestionar
-                    </Button>
-                  </div>
-                </CardContent>
-              </div>
-            </Card>
-          );
-        })}
+        {courses.map((course) => (
+          <div key={course.id} className="relative">
+            <div className="absolute top-5 right-5 z-10 flex flex-col gap-2 items-end">
+              <Badge className={getStatusBadge(course.status).className}>
+                {getStatusBadge(course.status).text}
+              </Badge>
+              {course.rating && (
+                <Badge className="bg-white/90 text-slate-700 border-0">
+                  <Star className="w-3 h-3 mr-1 fill-current text-yellow-500" />
+                  {course.rating.toFixed(1)}
+                </Badge>
+              )}
+            </div>
+
+            <div className="absolute bottom-5 right-5 z-10">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 w-9 p-0 bg-white hover:bg-slate-50"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavigateToEdit(course.id);
+                }}
+              >
+                <Edit className="w-4 h-4" />
+              </Button>
+            </div>
+
+            <CoursePreviewCard 
+              course={course} 
+              hideButton={true}
+              hideInstructor={true}
+              onViewMore={() => handleNavigateToEdit(course.id)}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );

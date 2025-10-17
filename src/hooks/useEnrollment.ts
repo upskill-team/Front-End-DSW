@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@ta
 import { enrollService } from '../api/services/enrollment.service';
 import type { Enrollment } from '../types/entities';
 import type { AxiosError } from 'axios';
+import apiClient from '../api/apiClient'
 
 type EnrollInCoursePayload = {
   studentId: string;
@@ -209,3 +210,17 @@ export const useUncompleteUnit = () => {
     error: mutation.error,
   };
 };
+
+/**
+ * Hook to fetch the 5 most recent enrollments for the current professor.
+ */
+export const useProfessorRecentEnrollments = () => {
+  return useQuery<Enrollment[], AxiosError>({
+    queryKey: ['professor', 'recentEnrollments'],
+    queryFn: async () => {
+      const response = await apiClient.get('/professors/me/recent-enrollments');
+      return response.data.data;
+    },
+    staleTime: 1000 * 60 * 5, 
+  })
+}

@@ -7,8 +7,25 @@ export function TrendingCourses() {
   const { data: courses, isLoading, isError, error } = useTrendingCourses();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const itemsPerPage = 3;
+  const [itemsPerPage, setItemsPerPage] = useState(3);
   const maxItems = 6;
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 640) {
+        setItemsPerPage(1);
+      } else if (width < 1024) {
+        setItemsPerPage(2);
+      } else {
+        setItemsPerPage(3);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const topCourses = useMemo(() => {
     if (!courses) return [];
@@ -37,6 +54,11 @@ export function TrendingCourses() {
     
     return () => clearInterval(interval);
   }, [topCourses.length]);
+
+  // Resetear índice cuando cambie itemsPerPage
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [itemsPerPage]);
 
   return (
     <section className="py-10 px-4">
@@ -73,7 +95,11 @@ export function TrendingCourses() {
                 onTransitionEnd={handleTransitionEnd}
               >
                 {displayCourses.map((course, index) => (
-                  <div key={`${course.id}-${index}`} className="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 px-3">
+                  <div 
+                    key={`${course.id}-${index}`} 
+                    className="flex-shrink-0 px-3"
+                    style={{ width: `${100 / itemsPerPage}%` }}
+                  >
                     <Link to={`/courses/${course.id}`}>
                       <CoursePreviewCard course={course} />
                     </Link>
