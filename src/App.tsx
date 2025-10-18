@@ -1,11 +1,14 @@
 import AppRouter from './router/AppRouter.tsx';
 import { AuthProvider } from './contexts/AuthProvider.tsx';
+import ErrorBoundary from './components/ui/ErrorBoundary.tsx';
 
 function App() {
   return (
-    <AuthProvider>
-      <AppRouter />
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <AppRouter />
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

@@ -1,3 +1,5 @@
+// src/components/ui/ErrorBoundary.tsx
+
 import { Component } from 'react';
 import type { ReactNode, ErrorInfo } from 'react';
 import Button from './Button';
@@ -5,8 +7,6 @@ import { AlertTriangle } from 'lucide-react';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
-  fallback?: ReactNode;
-  onReset?: () => void;
 }
 
 interface ErrorBoundaryState {
@@ -14,10 +14,6 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-/**
- * Error Boundary para capturar errores en componentes hijos.
- * Muestra un UI de fallback cuando ocurre un error.
- */
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -43,49 +39,49 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       hasError: false,
       error: null,
     });
-
-    if (this.props.onReset) {
-      this.props.onReset();
-    }
   };
 
   render() {
     if (this.state.hasError) {
-      // Si se proporciona un fallback personalizado, usarlo
-      if (this.props.fallback) {
-        return this.props.fallback;
-      }
-
-      // Fallback por defecto
       return (
-        <div className="min-h-[300px] flex items-center justify-center p-6">
-          <div className="text-center max-w-md bg-red-50 border-2 border-red-200 rounded-xl p-8">
+        <div className="w-full min-h-[400px] flex items-center justify-center p-4 bg-slate-50">
+          <div className="text-center max-w-md bg-white border-2 border-red-200 rounded-xl p-8 shadow-lg">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
               <AlertTriangle className="w-8 h-8 text-red-600" />
             </div>
             <h3 className="text-xl font-bold text-red-900 mb-2">
-              Algo salió mal
+              Oops, algo salió mal
             </h3>
-            <p className="text-red-700 mb-4">
-              Ocurrió un error al mostrar este contenido.
+            <p className="text-red-700 mb-6">
+              Ocurrió un error inesperado al intentar mostrar esta sección.
             </p>
-            {this.state.error && (
-              <details className="text-left mb-4">
+            
+            {import.meta.env.DEV && this.state.error && (
+              <details className="text-left mb-6 bg-red-50 p-3 rounded">
                 <summary className="cursor-pointer text-sm text-red-600 hover:text-red-800 font-medium">
-                  Detalles del error
+                  Detalles técnicos del error
                 </summary>
-                <pre className="mt-2 text-xs bg-red-100 p-3 rounded overflow-auto max-h-40">
+                <pre className="mt-2 text-xs text-red-800 overflow-auto max-h-40">
                   {this.state.error.message}
                 </pre>
               </details>
             )}
-            <Button
-              onClick={this.handleReset}
-              variant="outline"
-              className="border-red-300 text-red-700 hover:bg-red-100"
-            >
-              Intentar de nuevo
-            </Button>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+                 <Button
+                    onClick={() => (window.location.href = '/')}
+                    variant="outline"
+                    className="flex-1 border-slate-300"
+                  >
+                    Volver al Inicio
+                 </Button>
+                 <Button
+                    onClick={this.handleReset}
+                    className="flex-1 bg-red-600 hover:bg-red-700"
+                  >
+                    Intentar de nuevo
+                 </Button>
+            </div>
           </div>
         </div>
       );

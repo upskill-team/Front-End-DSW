@@ -2,7 +2,8 @@ import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@ta
 import { enrollService } from '../api/services/enrollment.service';
 import type { Enrollment } from '../types/entities';
 import type { AxiosError } from 'axios';
-import apiClient from '../api/apiClient'
+import apiClient from '../api/apiClient';
+import { toast } from 'react-hot-toast';
 
 type EnrollInCoursePayload = {
   studentId: string;
@@ -63,19 +64,14 @@ export const useEnrollInCourse = () => {
   const mutation = useMutation<Enrollment, AxiosError, EnrollInCoursePayload>({
     mutationFn: enrollService.enrollInCourse,
     onSuccess: (newEnrollment) => {
-      
-      const queryKey = [
-        'enrollment', 
-        'student', 
-        newEnrollment.student.id,
-        'course', 
-        newEnrollment.course.id
-      ];
-
+      const queryKey = ['enrollment', 'student', newEnrollment.student.id, 'course', newEnrollment.course.id];
       queryClient.setQueryData(queryKey, newEnrollment);
-
       queryClient.invalidateQueries({ queryKey: ['enrollments', 'student', newEnrollment.student.id] });
+      toast.success('¡Inscripción exitosa!');
     },
+    onError: (error) => {
+        toast.error(`Error en la inscripción: ${error.message}`);
+    }
   });
 
   return {

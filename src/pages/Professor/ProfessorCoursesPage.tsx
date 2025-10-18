@@ -4,9 +4,10 @@ import Badge from '../../components/ui/Badge';
 import { Edit, Plus, Star } from 'lucide-react';
 import { useProfessorCourses } from '../../hooks/useCourses.ts';
 import CoursePreviewCard from '../../components/ui/CoursePreviewCard';
+import ErrorState from '../../components/ui/ErrorState';
 
 const ProfessorCoursesPage = () => {
-  const { data: courses, isLoading, error } = useProfessorCourses();
+  const { data: courses, isLoading, error, isError, refetch } = useProfessorCourses();
   const navigate = useNavigate();
 
   const getStatusBadge = (status: string) => {
@@ -42,12 +43,12 @@ const ProfessorCoursesPage = () => {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
-      <div className="text-center p-8 bg-red-50 border border-red-200 rounded-lg">
-        <h3 className="text-red-800 font-semibold">Ocurrió un error</h3>
-        <p className="text-red-600">{error.message}</p>
-      </div>
+      <ErrorState
+        message={error?.message}
+        onRetry={() => refetch()}
+      />
     );
   }
 

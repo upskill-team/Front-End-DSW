@@ -5,6 +5,8 @@ import type { User } from '../types/entities.ts';
 import { userService } from '../api/services/user.service.ts';
 import { AuthContext } from './AuthContext';
 import apiClient, { TOKEN_STORAGE_KEY } from '../api/apiClient';
+import { toast } from 'react-hot-toast';
+import { isAxiosError } from 'axios';
 
 export interface AuthContextType {
   isAuthenticated: boolean;
@@ -16,25 +18,37 @@ export interface AuthContextType {
 
 // This provider handles authentication and user state globally.
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // State for the authenticated user and to know if we're loading data.
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const queryClient = useQueryClient();
 
-  // Function to get the user's profile and update the global state.
+  const logout = useCallback(() => {
+    queryClient.clear();
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    delete apiClient.defaults.headers.common['Authorization'];
+    setUser(null);
+  }, [queryClient]);
+
   const fetchProfileAndSetUser = useCallback(async () => {
     try {
       const userData = await userService.getProfile();
       setUser(userData);
     } catch (error) {
-      // If it fails, we remove the token and log out the user.
-      console.error('Failed to fetch profile, logging out.', error);
-      localStorage.removeItem(TOKEN_STORAGE_KEY);
-      setUser(null);
-    }
-  }, []);
+      if (isAxiosError(error) && error.response?.status === 401) {
+        toast.error('Tu sesión ha expirado. Por favor, vuelve a iniciar sesión.', {
+          id: 'session-expired-toast',
+          duration: 5000,
+        });
 
-  // When this runs for the first time, we look for a saved token and try to log in with it.
+        logout();
+
+      } else {
+        console.error('Failed to fetch profile, logging out.', error);
+        logout();
+      }
+    }
+  }, [logout]);
+
   useEffect(() => {
     const validateTokenOnLoad = async () => {
       const token = localStorage.getItem(TOKEN_STORAGE_KEY);
@@ -46,7 +60,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     validateTokenOnLoad();
   }, [fetchProfileAndSetUser]);
 
-  // Login function: saves the token, sets it in the header, and gets the profile.
   const login = useCallback(
     async (token: string) => {
       localStorage.setItem(TOKEN_STORAGE_KEY, token);
@@ -56,50 +69,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     [fetchProfileAndSetUser]
   );
 
-  // Logout function: removes the token and header, and clears the user.
-  const logout = useCallback(() => {
-    try {
-      // Clear all React Query caches to avoid stale data
-      queryClient.clear();
-
-      // Remove JWT token from localStorage using the correct key
-      localStorage.removeItem(TOKEN_STORAGE_KEY);
-
-      // Also remove any other common auth-related keys (defensive cleanup)
-      const authKeys = [
-        'jwt_token',
-        'token',
-        'authToken',
-        'access_token',
-        'refresh_token',
-      ];
-      authKeys.forEach((key) => {
-        if (localStorage.getItem(key)) {
-          localStorage.removeItem(key);
-        }
-      });
-
-      // Clear Authorization header from future requests
-      delete apiClient.defaults.headers.common['Authorization'];
-
-      // Clear user state
-      setUser(null);
-      setIsLoading(false);
-
-      console.log('Logout completado exitosamente');
-    } catch (error) {
-      console.error('Error durante logout:', error);
-      // Force cleanup even if something fails
-      localStorage.clear();
-      setUser(null);
-      setIsLoading(false);
-    }
-  }, [queryClient]);
-
-  // We keep these values ready so the app doesn't reload too much.
   const value = useMemo(
     () => ({
-      isAuthenticated: !!user, // We know if someone is logged in if there's a user object.
+      isAuthenticated: !!user,
       user,
       isLoading,
       login,
@@ -108,6 +80,5 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     [user, isLoading, login, logout]
   );
 
-  // Provide the context to child components.
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
