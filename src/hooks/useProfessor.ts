@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import apiClient from '../api/apiClient';
 import type { Professor } from '../types/entities';
 import type { AxiosError } from 'axios';
+import type { ApiResponse } from '../types/shared.ts';
 
 export interface MonthlyEarning {
   month: string; // Formato: "2025-10"
@@ -35,6 +36,22 @@ export const useProfessorProfile = () => {
     // Only run this query if user is authenticated and is a professor
     enabled: true,
     retry: false,
+  });
+};
+
+/**
+ * Hook para obtener una lista de todos los perfiles de profesor.
+ * Útil para directorios de instructores o vistas de administrador.
+ */
+export const useProfessors = () => {
+  return useQuery<Professor[], AxiosError>({
+    queryKey: ['professors', 'all'],
+
+    queryFn: async () => {
+      const response = await apiClient.get<ApiResponse<Professor[]>>('/professors');
+      return response.data.data;
+    },
+
   });
 };
 

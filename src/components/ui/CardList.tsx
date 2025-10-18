@@ -23,6 +23,7 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
     const displayAmountStudents = course?.studentsCount ?? course?.students?.length ?? 0;
 
     return (
+      <Link to={course ? `/courses/${course.id}` : '#'} className="block">
       <Card
         ref={ref}
         className={cn(
@@ -107,6 +108,7 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
           </div>
         </CardContent>
       </Card>
+  </Link>
     );
   }
 );

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import CardList from '../../components/ui/CardList.tsx';
 import CoursePreviewCard from '../../components/ui/CoursePreviewCard.tsx';
 import type { SearchCoursesParams } from '../../types/shared.ts';
@@ -13,23 +13,32 @@ import Label from '../../components/ui/Label.tsx';
 import Button from '../../components/ui/Button.tsx';
 import { Search, LayoutGrid, List } from 'lucide-react';
 import { useDebounce } from '../../hooks/useDebounce.ts';
+import { useProfessors } from '../../hooks/useProfessor.ts';
+
 
 const CourseListPage = () => {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
+  
   const [isGridView, setIsGridView] = useState(true);
-  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  
 
-  const [filters, setFilters] = useState<
-    Omit<SearchCoursesParams, 'q' | 'offset'>
-  >({
-    courseTypeId: '',
-    institutionId: '',
-    isFree: undefined,
-    sortBy: 'createdAt',
-    sortOrder: 'DESC',
-    limit: 9,
-  });
+  // Get search params from URL (if needed in future)
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const filters: SearchCoursesParams = {
+    q: searchParams.get('q') || '',
+    courseTypeId: searchParams.get('courseTypeId') || '',
+    institutionId: searchParams.get('institutionId') || '',
+    professorId: searchParams.get('professorId') || '',
+    isFree: searchParams.has('isFree') ? searchParams.get('isFree') === 'true' : undefined,
+    sortBy: searchParams.get('sortBy') || 'createdAt',
+    sortOrder: (searchParams.get('sortOrder') as 'ASC' | 'DESC') || 'DESC',
+    limit: Number(searchParams.get('limit')) || 9,
+    status: 'publicado'
+  };
+
+  const [searchTerm, setSearchTerm] = useState(filters.q || '');
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   const {
     data,
@@ -48,17 +57,35 @@ const CourseListPage = () => {
   const { data: courseTypesData, isLoading: isLoadingTypes } = useCourseTypes({});
   const courseTypes = courseTypesData?.courseTypes || [];
 
+  const {data: profeesorsData,isLoading:isLoadingProfessor } =useProfessors();
+  const professors = profeesorsData || [];
   const { data: institutions, isLoading: isLoadingInstitutions } = useInstitutions();
 
   const courses = data?.pages.flatMap((page) => page.courses) || [];
   const totalCourses = data?.pages[0]?.total || 0;
 
+  //Thi function handles changes in filters and updates the URL search params accordingly
   const handleFilterChange = (
-    key: keyof typeof filters,
-    value: string | boolean | undefined
+    key: keyof SearchCoursesParams,
+    value: string | boolean | undefined | number
   ) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+    setSearchParams(prevParams => {
+      // Delete the param if the value is undefined, null or empty string
+      if (value === undefined || value === null || value === '') {
+        prevParams.delete(key);
+      } else {
+
+        prevParams.set(key, String(value));
+      }
+      return prevParams;
+    }, { replace: true }); 
   };
+
+  // UseEffect to update URL search params when filters change
+  useEffect(() => {
+    handleFilterChange('q', debouncedSearchTerm);
+  });
+
 
   return (
     <div className="container mx-auto max-w-7xl">
@@ -138,13 +165,14 @@ const CourseListPage = () => {
             id="sort-by-filter"
             label="Ordenar por"
             value={`${filters.sortBy}-${filters.sortOrder}`}
-            onChange={(e) => {
+             onChange={(e) => { // Update both sortBy and sortOrder
               const [sortBy, sortOrder] = e.target.value.split('-');
-              setFilters((prev) => ({
-                ...prev,
-                sortBy,
-                sortOrder: sortOrder as 'ASC' | 'DESC',
-              }));
+              
+              setSearchParams(prev => {
+                prev.set('sortBy', sortBy);
+                prev.set('sortOrder', sortOrder);
+                return prev;
+              }, { replace: true });
             }}
           >
             <option value="createdAt-DESC">Más nuevos</option>
@@ -152,6 +180,25 @@ const CourseListPage = () => {
             <option value="priceInCents-ASC">Precio (Menor a mayor)</option>
             <option value="priceInCents-DESC">Precio (Mayor a menor)</option>
           </Select>
+
+        <Select
+          id="proffesor-filter"
+          label='Profesores'
+          value={filters.professorId || ''}
+          onChange={(e) => handleFilterChange('professorId', e.target.value)}
+          disabled={isLoadingProfessor}
+        >
+          <option value="">Todos los profesores</option>
+          {
+            professors.map((professor) => (
+              <option key={professor.id} value={professor.id}>
+                {professor.user.name} {professor.user.surname}
+              </option>
+            ))
+          }
+          
+        </Select>
+
           <div className="flex items-center h-full pb-2">
             <div className="flex items-center gap-3">
               <Switch
