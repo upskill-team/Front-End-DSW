@@ -131,6 +131,7 @@ function CourseDetails() {
     return <div className="text-center py-20">Curso no encontrado.</div>;
   }
 
+  console.log(course);
   return (
     <div>
       <div className="container mx-auto max-w-7xl">
@@ -139,9 +140,18 @@ function CourseDetails() {
             Cursos
           </Link>
           <span>/</span>
-          <Link to="/courses" className="hover:text-blue-600">
-            {course.courseType?.name}
-          </Link>
+          {course.courseType?.id ? (
+            <Link 
+   
+              to={`/courses?courseTypeId=${course.courseType.id || ''}`} 
+              className="hover:text-blue-600"
+            >
+              {course.courseType.name}
+            </Link>
+          ) : (
+      
+            <span>{course.courseType?.name || 'Sin categoría'}</span>
+          )}
           <span>/</span>
           <span className="text-slate-800">{course.name}</span>
         </div>
@@ -184,17 +194,17 @@ function CourseDetails() {
                 />
                 <div>
                   <p className="text-sm text-slate-600">Creado por</p>
-                  <p className="font-semibold text-slate-800">
+                  <Link to={`/courses?professorId=${course.professor.id || ''}`}  className="font-semibold text-slate-800 hover:text-blue-600 transition-colors">
                     {course.professor?.user?.name}{' '}
                     {course.professor?.user?.surname}
-                  </p>
+                  </Link>
                 </div>
 
                 {
                   course?.institution?(
                     <div className="ml-6">
                       <p className="text-sm text-slate-600">Institución</p>
-                      <p className="font-semibold text-slate-800">{course.institution?.name}</p>
+                      <Link to={`/courses?institutionId=${course.institution.institutionId || ''}`} className="font-semibold text-slate-800 hover:text-blue-600 transition-colors">{course.institution?.name}</Link>
                     </div>
                   ):null
                 }

@@ -12,9 +12,6 @@ import {
   Users,
   BookOpen,
   GraduationCap,
-  TrendingUp,
-  AlertCircle,
-  CheckCircle,
   DollarSign,
 } from 'lucide-react';
 import { appealService } from '../../api/services/appeal.service';
@@ -132,25 +129,24 @@ export default function AdminDashboard() {
         </div>
       ) : null}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <GraduationCap className="w-5 h-5 mr-2" />
-              Solicitudes Recientes
-            </CardTitle>
-            <CardDescription>
-              Últimas solicitudes recibidas.{' '}
-              <Link
-                to="/admin/teacher-requests"
-                className="text-blue-600 hover:underline"
-              >
-                Ver todas
-              </Link>
-              .
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <GraduationCap className="w-5 h-5 mr-2" />
+            Solicitudes Recientes
+          </CardTitle>
+          <CardDescription>
+            Últimas solicitudes recibidas.{' '}
+            <Link
+              to="/admin/teacher-requests"
+              className="text-blue-600 hover:underline"
+            >
+              Ver todas
+            </Link>
+            .
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
             <div className="space-y-4">
               {isLoading ? (
                 <p>Cargando...</p>
@@ -189,54 +185,6 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <AlertCircle className="w-5 h-5 mr-2" />
-              Alertas del Sistema
-            </CardTitle>
-            <CardDescription>
-              Notificaciones importantes de la plataforma.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
-              <AlertCircle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-yellow-800">
-                  5 solicitudes pendientes
-                </p>
-                <p className="text-xs text-yellow-600">
-                  Hay profesores esperando aprobación.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 border border-blue-200">
-              <TrendingUp className="w-4 h-4 text-blue-600 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-blue-800">
-                  Crecimiento del 23%
-                </p>
-                <p className="text-xs text-blue-600">
-                  Nuevos registros este mes
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
-              <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-green-800">
-                  Sistema actualizado
-                </p>
-                <p className="text-xs text-green-600">
-                  Última actualización: hace 2 días.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 }

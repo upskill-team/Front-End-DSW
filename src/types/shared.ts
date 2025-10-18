@@ -5,10 +5,12 @@ export interface SearchCoursesParams {
   offset?: number;
   status?: 'en-desarrollo' | 'bloqueado' | 'publicado' | 'pausado';
   isFree?: boolean;
-  q?: string; // Para búsqueda de texto
+  q?: string; // Para búsqueda de texto (nombre, profesor, institución, tipo)
   sortBy?: string;
   sortOrder?: 'ASC' | 'DESC';
   courseTypeId?: string;
+  institutionId?: string; // Nuevo: Filtrar por institución
+  professorId?: string; // Nuevo: Filtrar por profesor
 }
 
 export interface PaginatedCoursesResponse {

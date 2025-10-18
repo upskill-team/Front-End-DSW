@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import CardList from '../../components/ui/CardList.tsx';
 import CoursePreviewCard from '../../components/ui/CoursePreviewCard.tsx';
 import type { SearchCoursesParams } from '../../types/shared.ts';
 import { useSearchCourses } from '../../hooks/useCourses.ts';
 import { useCourseTypes } from '../../hooks/useCourseTypes.ts';
+import { useInstitutions } from '../../hooks/useInstitutionMutations.ts';
 import Input from '../../components/ui/Input.tsx';
 import Select from '../../components/ui/Select.tsx';
 import Switch from '../../components/ui/Switch.tsx';
@@ -12,22 +13,32 @@ import Label from '../../components/ui/Label.tsx';
 import Button from '../../components/ui/Button.tsx';
 import { Search, LayoutGrid, List } from 'lucide-react';
 import { useDebounce } from '../../hooks/useDebounce.ts';
+import { useProfessors } from '../../hooks/useProfessor.ts';
+
 
 const CourseListPage = () => {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
+  
   const [isGridView, setIsGridView] = useState(true);
-  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  
 
-  const [filters, setFilters] = useState<
-    Omit<SearchCoursesParams, 'q' | 'offset'>
-  >({
-    courseTypeId: '',
-    isFree: undefined,
-    sortBy: 'createdAt',
-    sortOrder: 'DESC',
-    limit: 9,
-  });
+  // Get search params from URL (if needed in future)
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const filters: SearchCoursesParams = {
+    q: searchParams.get('q') || '',
+    courseTypeId: searchParams.get('courseTypeId') || '',
+    institutionId: searchParams.get('institutionId') || '',
+    professorId: searchParams.get('professorId') || '',
+    isFree: searchParams.has('isFree') ? searchParams.get('isFree') === 'true' : undefined,
+    sortBy: searchParams.get('sortBy') || 'createdAt',
+    sortOrder: (searchParams.get('sortOrder') as 'ASC' | 'DESC') || 'DESC',
+    limit: Number(searchParams.get('limit')) || 9,
+    status: 'publicado'
+  };
+
+  const [searchTerm, setSearchTerm] = useState(filters.q || '');
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   const {
     data,
@@ -46,15 +57,35 @@ const CourseListPage = () => {
   const { data: courseTypesData, isLoading: isLoadingTypes } = useCourseTypes({});
   const courseTypes = courseTypesData?.courseTypes || [];
 
+  const {data: profeesorsData,isLoading:isLoadingProfessor } =useProfessors();
+  const professors = profeesorsData || [];
+  const { data: institutions, isLoading: isLoadingInstitutions } = useInstitutions();
+
   const courses = data?.pages.flatMap((page) => page.courses) || [];
   const totalCourses = data?.pages[0]?.total || 0;
 
+  //Thi function handles changes in filters and updates the URL search params accordingly
   const handleFilterChange = (
-    key: keyof typeof filters,
-    value: string | boolean | undefined
+    key: keyof SearchCoursesParams,
+    value: string | boolean | undefined | number
   ) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+    setSearchParams(prevParams => {
+      // Delete the param if the value is undefined, null or empty string
+      if (value === undefined || value === null || value === '') {
+        prevParams.delete(key);
+      } else {
+
+        prevParams.set(key, String(value));
+      }
+      return prevParams;
+    }, { replace: true }); 
   };
+
+  // UseEffect to update URL search params when filters change
+  useEffect(() => {
+    handleFilterChange('q', debouncedSearchTerm);
+  });
+
 
   return (
     <div className="container mx-auto max-w-7xl">
@@ -90,60 +121,98 @@ const CourseListPage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-md items-end">
-        <Input
-          id="search-q"
-          label="Buscar por nombre"
-          icon={<Search size={16} />}
-          placeholder="Ej: React, Marketing..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+      <div className="mb-8 p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-md space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Input
+            id="search-q"
+            label="Buscar"
+            icon={<Search size={16} />}
+            placeholder="Nombre, instructor, institución..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Select
+            id="course-type-filter"
+            label="Categoría"
+            value={filters.courseTypeId || ''}
+            onChange={(e) => handleFilterChange('courseTypeId', e.target.value)}
+            disabled={isLoadingTypes}
+          >
+            <option value="">Todas las categorías</option>
+            {courseTypes?.map((ct) => (
+              <option key={ct.id} value={ct.id}>
+                {ct.name}
+              </option>
+            ))}
+          </Select>
+          <Select
+            id="institution-filter"
+            label="Institución"
+            value={filters.institutionId || ''}
+            onChange={(e) => handleFilterChange('institutionId', e.target.value)}
+            disabled={isLoadingInstitutions}
+          >
+            <option value="">Todas las instituciones</option>
+            {institutions?.map((inst) => (
+              <option key={inst.id} value={inst.id}>
+                {inst.name}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+          <Select
+            id="sort-by-filter"
+            label="Ordenar por"
+            value={`${filters.sortBy}-${filters.sortOrder}`}
+             onChange={(e) => { // Update both sortBy and sortOrder
+              const [sortBy, sortOrder] = e.target.value.split('-');
+              
+              setSearchParams(prev => {
+                prev.set('sortBy', sortBy);
+                prev.set('sortOrder', sortOrder);
+                return prev;
+              }, { replace: true });
+            }}
+          >
+            <option value="createdAt-DESC">Más nuevos</option>
+            <option value="name-ASC">Nombre (A-Z)</option>
+            <option value="priceInCents-ASC">Precio (Menor a mayor)</option>
+            <option value="priceInCents-DESC">Precio (Mayor a menor)</option>
+          </Select>
+
         <Select
-          id="course-type-filter"
-          label="Categoría"
-          value={filters.courseTypeId}
-          onChange={(e) => handleFilterChange('courseTypeId', e.target.value)}
-          disabled={isLoadingTypes}
+          id="proffesor-filter"
+          label='Profesores'
+          value={filters.professorId || ''}
+          onChange={(e) => handleFilterChange('professorId', e.target.value)}
+          disabled={isLoadingProfessor}
         >
-          <option value="">Todas</option>
-          {courseTypes?.map((ct) => (
-            <option key={ct.id} value={ct.id}>
-              {ct.name}
-            </option>
-          ))}
+          <option value="">Todos los profesores</option>
+          {
+            professors.map((professor) => (
+              <option key={professor.id} value={professor.id}>
+                {professor.user.name} {professor.user.surname}
+              </option>
+            ))
+          }
+          
         </Select>
-        <Select
-          id="sort-by-filter"
-          label="Ordenar por"
-          value={`${filters.sortBy}-${filters.sortOrder}`}
-          onChange={(e) => {
-            const [sortBy, sortOrder] = e.target.value.split('-');
-            setFilters((prev) => ({
-              ...prev,
-              sortBy,
-              sortOrder: sortOrder as 'ASC' | 'DESC',
-            }));
-          }}
-        >
-          <option value="createdAt-DESC">Más nuevos</option>
-          <option value="name-ASC">Nombre (A-Z)</option>
-          <option value="price-ASC">Precio (Menor a mayor)</option>
-          <option value="price-DESC">Precio (Mayor a menor)</option>
-        </Select>
-        <div className="flex items-center justify-center h-full pb-2">
-          <div className="flex items-center gap-3">
-            <Switch
-              id="is-free-filter"
-              checked={filters.isFree === true}
-              onChange={(e) =>
-                handleFilterChange(
-                  'isFree',
-                  e.target.checked ? true : undefined
-                )
-              }
-            />
-            <Label htmlFor="is-free-filter">Mostrar solo gratuitos</Label>
+
+          <div className="flex items-center h-full pb-2">
+            <div className="flex items-center gap-3">
+              <Switch
+                id="is-free-filter"
+                checked={filters.isFree === true}
+                onChange={(e) =>
+                  handleFilterChange(
+                    'isFree',
+                    e.target.checked ? true : undefined
+                  )
+                }
+              />
+              <Label htmlFor="is-free-filter">Solo cursos gratuitos</Label>
+            </div>
           </div>
         </div>
       </div>
