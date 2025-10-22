@@ -1,125 +1,168 @@
-import { Mail, MessageCircle, Clock } from 'lucide-react';
+import { useState } from 'react';
+import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
+import Button from '../components/ui/Button';
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Implementar envío de formulario
+    alert('Gracias por contactarnos. Te responderemos pronto.');
+    setFormData({ name: '', email: '', subject: '', message: '' });
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="container mx-auto px-4 py-16">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Mail className="w-8 h-8 text-blue-600" />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-            Contáctanos
-          </h1>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            ¿Tienes alguna pregunta o sugerencia? Nos encantaría escucharte.
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 py-12">
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
+        <h1 className="text-4xl font-bold text-slate-800 mb-4 text-center">
+          Contáctanos
+        </h1>
+        <p className="text-slate-600 text-center mb-12">
+          ¿Tienes alguna pregunta? Estamos aquí para ayudarte
+        </p>
 
-        <div className="max-w-4xl mx-auto">
-          {/* Main Contact Card */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12 mb-12">
-            <div className="grid md:grid-cols-3 gap-8">
-              {/* Email Contact */}
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Mail className="w-8 h-8 text-blue-600" />
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Formulario de Contacto */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Envíanos un Mensaje</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Nombre Completo
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  />
                 </div>
-                <h3 className="font-semibold text-slate-900 mb-2 text-lg">Email</h3>
-                <a
-                  href="mailto:contacto.upskill@gmail.com"
-                  className="text-blue-600 hover:text-blue-700 transition-colors font-medium"
-                >
-                  contacto.upskill@gmail.com
-                </a>
-              </div>
-
-              {/* Response Time */}
-              <div className="text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Clock className="w-8 h-8 text-green-600" />
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  />
                 </div>
-                <h3 className="font-semibold text-slate-900 mb-2 text-lg">Tiempo de Respuesta</h3>
-                <p className="text-slate-600">24-48 horas hábiles</p>
-              </div>
-
-              {/* Support */}
-              <div className="text-center">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MessageCircle className="w-8 h-8 text-purple-600" />
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Asunto
+                  </label>
+                  <input
+                    type="text"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  />
                 </div>
-                <h3 className="font-semibold text-slate-900 mb-2 text-lg">Soporte</h3>
-                <p className="text-slate-600">Lunes a Viernes</p>
-              </div>
-            </div>
-          </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Mensaje
+                  </label>
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                    rows={5}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                  />
+                </div>
+                <Button type="submit" className="w-full">
+                  <Send className="w-4 h-4 mr-2" />
+                  Enviar Mensaje
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
 
-          {/* Company Information */}
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">
-                Sobre UpSkill
-              </h2>
-              <p className="text-slate-700 leading-relaxed mb-4">
-                Somos una plataforma de educación online dedicada a democratizar el acceso 
-                al conocimiento y ayudar a profesionales y estudiantes a desarrollar nuevas 
-                habilidades.
-              </p>
-              <p className="text-slate-700 leading-relaxed">
-                Conectamos a estudiantes con profesores expertos en una experiencia de 
-                aprendizaje flexible, personalizada y orientada a resultados.
-              </p>
-            </div>
+          {/* Información de Contacto */}
+          <div className="space-y-6">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-purple-100 rounded-lg">
+                    <Mail className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-slate-800 mb-1">Email</h3>
+                    <p className="text-slate-600">contacto@plataforma.com</p>
+                    <p className="text-slate-600">soporte@plataforma.com</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">
-                ¿En qué podemos ayudarte?
-              </h2>
-              <ul className="space-y-3 text-slate-700">
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">•</span>
-                  <span>Consultas sobre cursos y contenidos</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">•</span>
-                  <span>Problemas técnicos con la plataforma</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">•</span>
-                  <span>Información sobre pagos e inscripciones</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">•</span>
-                  <span>Solicitudes para convertirse en profesor</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">•</span>
-                  <span>Sugerencias y comentarios</span>
-                </li>
-              </ul>
-            </div>
-          </div>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-purple-100 rounded-lg">
+                    <Phone className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-slate-800 mb-1">Teléfono</h3>
+                    <p className="text-slate-600">+54 11 1234-5678</p>
+                    <p className="text-sm text-slate-500 mt-1">
+                      Lunes a Viernes: 9:00 - 18:00
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-          {/* FAQ Link */}
-          <div className="bg-white rounded-2xl shadow-md p-8 text-center">
-            <h3 className="text-xl font-semibold text-slate-900 mb-3">
-              Preguntas Frecuentes
-            </h3>
-            <p className="text-slate-600 mb-6">
-              Antes de contactarnos, te invitamos a revisar nuestra sección de preguntas 
-              frecuentes donde podrás encontrar respuestas rápidas a las consultas más comunes.
-            </p>
-            <a
-              href="/faq"
-              className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold"
-            >
-              Ver Preguntas Frecuentes
-              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </a>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-purple-100 rounded-lg">
+                    <MapPin className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-slate-800 mb-1">Ubicación</h3>
+                    <p className="text-slate-600">
+                      Buenos Aires, Argentina
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+              <CardContent className="p-6">
+                <h3 className="font-semibold text-purple-900 mb-2">
+                  Horario de Atención
+                </h3>
+                <div className="space-y-1 text-sm text-purple-800">
+                  <p>Lunes - Viernes: 9:00 - 18:00</p>
+                  <p>Sábados: 10:00 - 14:00</p>
+                  <p>Domingos: Cerrado</p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

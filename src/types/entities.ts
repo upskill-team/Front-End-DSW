@@ -127,6 +127,22 @@ export interface Question {
   options?: MultipleChoiceOption[]; // Opciones para preguntas de opción múltiple
 }
 
+// Versión de Question SIN respuestas correctas para estudiantes
+export interface QuestionForStudent {
+  id: string;
+  text: string;
+  type: QuestionAnswerType;
+  points: number;
+  options?: StudentMultipleChoiceOption[]; // Sin campo isCorrect
+}
+
+// Opción de múltiple opción SIN la respuesta correcta
+export interface StudentMultipleChoiceOption {
+  id: string;
+  text: string;
+  // NO incluye isCorrect
+}
+
 export interface Material {
   // ⚠️ Material es embeddable - NO tiene id propio
   title: string;
@@ -379,7 +395,13 @@ export interface SaveAnswersResponse {
 
 export interface StartAttemptResponse {
   id: string;
-  assessment: string;
+  assessment: {
+    id: string;
+    title: string;
+    durationMinutes?: number | null;
+    passingScore: number;
+    questions: QuestionForStudent[]; // ⚠️ IMPORTANTE: SIN respuestas correctas
+  };
   student: string;
   startedAt: string;
   submittedAt: null;
