@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import CardList from '../../components/ui/CardList.tsx';
 import CoursePreviewCard from '../../components/ui/CoursePreviewCard.tsx';
@@ -80,12 +80,6 @@ const CourseListPage = () => {
       return prevParams;
     }, { replace: true }); 
   };
-
-  // UseEffect to update URL search params when filters change
-  useEffect(() => {
-    handleFilterChange('q', debouncedSearchTerm);
-  });
-
 
   return (
     <div className="container mx-auto max-w-7xl">
