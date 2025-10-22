@@ -1,4 +1,4 @@
-import { Award, BookOpen, Download, Globe, Play, Smartphone, Users } from "lucide-react";
+import { BookOpen, Globe, Play, Smartphone, Users } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useCourseById } from "../../hooks/useCourses.ts";
 import Badge from "../../components/ui/Badge.tsx";
@@ -201,12 +201,12 @@ function CourseDetails() {
                 </div>
 
                 {
-                  course?.institution?(
+                  course?.professor?.institution ? (
                     <div className="ml-6">
                       <p className="text-sm text-slate-600">Institución</p>
-                      <Link to={`/courses?institutionId=${course.institution.institutionId || ''}`} className="font-semibold text-slate-800 hover:text-blue-600 transition-colors">{course.institution?.name}</Link>
+                      <Link to={`/courses?institutionId=${course.professor.institution.id || ''}`} className="font-semibold text-slate-800 hover:text-blue-600 transition-colors">{course.professor.institution?.name}</Link>
                     </div>
-                  ):null
+                  ) : null
                 }
               </div>
             </div>
@@ -286,20 +286,12 @@ function CourseDetails() {
                       <span>{course.units?.length || 0} lecciones</span>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <Download className="w-5 h-5 text-slate-500" />
-                      <span>Recursos descargables</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
                       <Smartphone className="w-5 h-5 text-slate-500" />
                       <span>Acceso en móvil y TV</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Globe className="w-5 h-5 text-slate-500" />
                       <span>Acceso de por vida</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <Award className="w-5 h-5 text-slate-500" />
-                      <span>Certificado de finalización</span>
                     </div>
                   </div>
                 </div>

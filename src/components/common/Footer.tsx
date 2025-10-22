@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import { BookOpen, Mail, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -14,7 +14,7 @@ export function Footer() {
               <span className="text-xl font-poppins font-bold">UpSkill</span>
             </Link>
             <p className="text-slate-300 text-sm leading-relaxed">
-              La plataforma líder en educación online. Aprende nuevas habilidades, obtén certificaciones y avanza en tu carrera.
+              La plataforma líder en educación online. Aprende nuevas habilidades y avanza en tu carrera.
             </p>
           </div>
 
@@ -31,15 +31,9 @@ export function Footer() {
           <div className="space-y-4 text-center md:text-left">
             <h3 className="font-semibold text-lg">Contacto</h3>
             <div className="space-y-3 text-sm flex flex-col items-center md:items-start">
-              <a href="mailto:info@educursos.com" className="flex items-center space-x-2 text-slate-300 hover:text-white">
-                <Mail className="w-4 h-4" /><span>info@upskill.com</span>
+              <a href="mailto:contacto.upskill@gmail.com" className="flex items-center space-x-2 text-slate-300 hover:text-white transition-colors">
+                <Mail className="w-4 h-4" /><span>contacto.upskill@gmail.com</span>
               </a>
-              <a href="tel:+15551234567" className="flex items-center space-x-2 text-slate-300 hover:text-white">
-                <Phone className="w-4 h-4" /><span>+1 (555) 123-4567</span>
-              </a>
-              <div className="flex items-start space-x-2">
-                <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" /><span className="text-slate-300">Learning City, LC 12345</span>
-              </div>
             </div>
           </div>
 

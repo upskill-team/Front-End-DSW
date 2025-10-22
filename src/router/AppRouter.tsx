@@ -24,6 +24,9 @@ import ProfessorAssessmentAttempts from '../pages/Professor/ProfessorAssessmentA
 import AnalyticsPage from '../pages/Admin/AnalyticsPage.tsx';
 import CourseTypesPage from '../pages/Admin/CourseTypesPage.tsx';
 import ProfilePage from '../pages/User/ProfilePage.tsx';
+import AboutPage from '../pages/AboutPage.tsx';
+import FAQPage from '../pages/FAQPage.tsx';
+import ContactPage from '../pages/ContactPage.tsx';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
 import ProtectedRoute from './ProtectedRoute';
 import ScrollToTop from '../components/layouts/ScrollToTop';
@@ -50,6 +53,9 @@ const AppRouter = () => {
         {/* ============= MAIN LAYOUT ============= */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/faq" element={<FAQPage />} />
+          <Route path="/contact" element={<ContactPage />} />
 
           <Route path="/courses" element={<CourseListPage />} />
           
