@@ -35,12 +35,14 @@ import {
   Key,
   Camera,
   GraduationCap,
+  FileClock,
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useUpdateProfile } from "../../hooks/useUserMutations";
 import { isAxiosError } from "axios";
 import RoleBadge from "../../components/ui/RoleBadge";
 import ProfessorProfileTab from "./ProfessorProfileTab";
+import StudentAppealsHistory from "../../components/student/StudentAppealsHistory";
 
 const ProfileSchema = v.object({
   name: v.pipe(v.string(), v.minLength(1, "El nombre es requerido.")),
@@ -136,6 +138,13 @@ export default function ProfilePage() {
   if (!user) return <p>No se pudo cargar la información del usuario.</p>;
 
   const isProfessor = user.role === "professor";
+  const isAdmin = user.role === "admin";
+
+  const getGridColsClass = () => {
+    if (isProfessor) return "grid-cols-4";
+    if (isAdmin) return "grid-cols-2";
+    return "grid-cols-3";
+  };
 
   return (
     <div className="container mx-auto max-w-4xl">
@@ -150,24 +159,33 @@ export default function ProfilePage() {
 
       <Tabs defaultValue="personal" className="space-y-6">
         <TabsList
-          className={`grid w-full ${
-            isProfessor ? "grid-cols-3" : "grid-cols-2"
-          } bg-white/80 backdrop-blur-sm`}
+          className={`grid w-full ${getGridColsClass()} bg-white/80 backdrop-blur-sm h-auto p-1 gap-1`}
         >
           <TabsTrigger value="personal">
             <User className="w-4 h-4" />
             <span className="hidden sm:inline-block sm:ml-2">
-              Información Personal
+              Personal
             </span>
           </TabsTrigger>
+          
           {isProfessor && (
             <TabsTrigger value="instructor">
               <GraduationCap className="w-4 h-4" />
               <span className="hidden sm:inline-block sm:ml-2">
-                Perfil de Instructor
+                Instructor
               </span>
             </TabsTrigger>
           )}
+
+          {!isAdmin && (
+            <TabsTrigger value="appeals">
+              <FileClock className="w-4 h-4" />
+              <span className="hidden sm:inline-block sm:ml-2">
+                Solicitudes
+              </span>
+            </TabsTrigger>
+          )}
+
           <TabsTrigger value="security">
             <Shield className="w-4 h-4" />
             <span className="hidden sm:inline-block sm:ml-2">Seguridad</span>
@@ -215,7 +233,7 @@ export default function ProfilePage() {
                       </AvatarFallback>
                     </Avatar>
                     {isEditing && (
-                      <div className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white pointer-events-none">
+                      <div className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center text-white pointer-events-none">
                         <Camera className="w-4 h-4" />
                       </div>
                     )}
@@ -337,6 +355,26 @@ export default function ProfilePage() {
             <ProfessorProfileTab />
           </TabsContent>
         )}
+
+        {!isAdmin && (
+          <TabsContent value="appeals">
+            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <FileClock className="w-5 h-5 text-blue-600" />
+                  <span>Historial de Solicitudes</span>
+                </CardTitle>
+                <CardDescription>
+                  Tus aplicaciones para convertirte en profesor y su estado actual.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <StudentAppealsHistory />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
+
         <TabsContent value="security">
           <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
             <CardHeader>

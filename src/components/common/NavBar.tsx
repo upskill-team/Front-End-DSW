@@ -204,6 +204,9 @@ export function NavBar() {
               )}
               
               <div className="pt-4 border-t mt-4 space-y-2">
+                  <MobileNavLink to="/profile" onClick={() => setIsMobileMenuOpen(false)}>
+                      <UserIcon className="w-5 h-5 mr-3 text-slate-500" /> Mi Perfil
+                  </MobileNavLink>
                   {user?.role === 'student' && (
                     <Button variant="outline" size="md" fullWidth className="border-green-300 text-green-700 hover:bg-green-50" onClick={handleApplyClick}>
                         <GraduationCap className="w-4 h-4 mr-2" />
