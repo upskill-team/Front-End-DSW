@@ -43,8 +43,14 @@ const updateAppealState = async (
   return response.data.data;
 };
 
+const getMyAppeals = async (): Promise<Appeal[]> => {
+  const response = await apiClient.get<ApiResponse<Appeal[]>>('/appeals/me');
+  return response.data.data;
+};
+
 export const appealService = {
   createAppeal,
   findAllAppeals,
   updateAppealState,
+  getMyAppeals,
 };
