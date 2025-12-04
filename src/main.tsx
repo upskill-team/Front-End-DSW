@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import App from './App.tsx';
 import './index.css';
 import { toast } from 'react-hot-toast';
+import { AxiosError } from 'axios';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -14,8 +15,9 @@ const queryClient = new QueryClient({
     },
   },
   mutationCache: new MutationCache({
-    onError: (error: any) => {
-      if (error.response?.status >= 500) {
+    onError: (error: unknown) => {
+      const axiosError = error as AxiosError;
+      if (axiosError.response?.status && axiosError.response.status >= 500) {
         toast.error('Error del servidor. Intenta más tarde.');
       }
     },
