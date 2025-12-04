@@ -20,6 +20,7 @@ import type {
   UpdateAssessmentRequest,
   Question,
 } from '../../types/entities';
+import { toast } from 'react-hot-toast';
 
 export default function ProfessorAssessmentEditorPage() {
   const navigate = useNavigate();
@@ -110,7 +111,7 @@ export default function ProfessorAssessmentEditorPage() {
         };
 
         await updateMutation.mutateAsync({ id: assessmentId, data: updateData });
-        alert('Evaluación actualizada exitosamente');
+        toast.success('Evaluación actualizada')
       } else {
         const createData: CreateAssessmentRequest = {
           title: formData.title,
@@ -134,13 +135,13 @@ export default function ProfessorAssessmentEditorPage() {
         };
 
         await createMutation.mutateAsync(createData);
-        alert('Evaluación creada exitosamente');
+        toast.success('Evaluación creada exitosamente')
       }
 
       navigate('/professor/dashboard/assessments');
     } catch (error) {
       console.error('Error saving assessment:', error);
-      alert('Error al guardar la evaluación');
+      toast.error('Error al guardar la evaluación')
     }
   };
 

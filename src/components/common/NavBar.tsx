@@ -24,6 +24,7 @@ import { useAuth } from '../../hooks/useAuth';
 import Button from '../ui/Button';
 import { AdminControls } from './navBar/AdminControls.tsx';
 import { ProfessorControls } from './navBar/ProfessorControls.tsx';
+import { toast } from 'react-hot-toast';
 
 const MobileNavLink = ({ to, onClick, children }: { to: string; onClick: () => void; children: React.ReactNode }) => (
     <Link to={to} onClick={onClick} className="flex items-center w-full p-3 text-base font-medium text-slate-700 rounded-lg hover:bg-slate-100">
@@ -54,13 +55,15 @@ export function NavBar() {
 
   const handleApplyClick = () => {
     if (!isAuthenticated) {
-      alert('Debes iniciar sesión para poder aplicar.');
+      toast('Debes iniciar sesión para poder aplicar.', {
+        icon: '🔒',
+      });
       navigate('/login');
     } else {
       navigate('/professor/apply');
     }
     setIsMobileMenuOpen(false);
-  };
+  }
 
   const handleLinkClick = (path: string) => {
     setIsMobileMenuOpen(false);
