@@ -8,6 +8,7 @@ import './index.css';
 import { toast } from 'react-hot-toast';
 import { AxiosError } from 'axios';
 
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -18,6 +19,7 @@ const queryClient = new QueryClient({
     onError: (error: unknown) => {
       const axiosError = error as AxiosError;
       if (axiosError.response?.status && axiosError.response.status >= 500) {
+
         toast.error('Error del servidor. Intenta más tarde.');
       }
     },
