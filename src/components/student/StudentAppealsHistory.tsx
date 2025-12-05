@@ -97,7 +97,6 @@ export default function StudentAppealsHistory() {
               </p>
             </DialogHeader>
 
-            {/* Contenedor compacto sin scroll global */}
             <div className="space-y-4 py-2">
               <div className="flex justify-center">
                 <StatusBadge status={selectedAppeal.state} />
@@ -111,7 +110,6 @@ export default function StudentAppealsHistory() {
 
                 <div>
                   <h5 className="text-[10px] font-bold text-slate-500 uppercase mb-1 tracking-wide">Experiencia y Motivación</h5>
-                  {/* Scroll EXCLUSIVO para el texto largo */}
                   <div className="text-slate-700 whitespace-pre-wrap leading-relaxed bg-white p-3 rounded border border-slate-200 break-words max-h-32 overflow-y-auto shadow-inner">
                     {selectedAppeal.experienceMotivation}
                   </div>
