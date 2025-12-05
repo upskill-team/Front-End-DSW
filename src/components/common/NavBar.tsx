@@ -25,6 +25,7 @@ import Button from '../ui/Button';
 import { AdminControls } from './navBar/AdminControls.tsx';
 import { ProfessorControls } from './navBar/ProfessorControls.tsx';
 import { toast } from 'react-hot-toast';
+import { useMyAppeals } from '../../hooks/useAppeals';
 
 const MobileNavLink = ({ to, onClick, children }: { to: string; onClick: () => void; children: React.ReactNode }) => (
     <Link to={to} onClick={onClick} className="flex items-center w-full p-3 text-base font-medium text-slate-700 rounded-lg hover:bg-slate-100">
@@ -37,6 +38,7 @@ export function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { data: appeals } = useMyAppeals();
 
   const activeLinkClasses = 'bg-gradient-to-r from-blue-500 to-green-500 text-white';
   const inactiveLinkClasses = 'text-slate-700 hover:bg-blue-50 hover:text-blue-600';
@@ -60,7 +62,13 @@ export function NavBar() {
       });
       navigate('/login');
     } else {
-      navigate('/professor/apply');
+      const hasPendingAppeal = appeals?.some(appeal => appeal.state === 'pending');
+      
+      if (hasPendingAppeal) {
+        navigate('/professor/applications');
+      } else {
+        navigate('/professor/apply');
+      }
     }
     setIsMobileMenuOpen(false);
   }
