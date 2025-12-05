@@ -16,6 +16,8 @@ import {
 } from '../../hooks/useAssessments';
 import { useAuth } from '../../hooks/useAuth';
 import type { QuestionForStudent } from '../../types/entities';
+import { isAxiosError } from 'axios';
+import { toast } from 'react-hot-toast';
 
 export default function TakeAssessmentPage() {
   const { courseId, assessmentId } = useParams<{
@@ -78,9 +80,7 @@ export default function TakeAssessmentPage() {
   const handleStartAttempt = async () => {
     const studentId = user?.studentProfile?.id;
     if (!studentId || !assessmentId) {
-      alert(
-        'No se pudo identificar tu perfil de estudiante. Intenta recargar la página.'
-      );
+      toast.error('No se pudo iniciar el intento: falta información del estudiante o de la evaluación.');
       return;
     }
 
@@ -109,7 +109,28 @@ export default function TakeAssessmentPage() {
       }
     } catch (error) {
       console.error('Error starting attempt:', error);
-      alert(`No se pudo iniciar el intento: ${(error as Error).message}`);
+      
+      if (isAxiosError(error)) {
+        const errorMsg = error.response?.data?.errors;
+        
+        if (typeof errorMsg === 'string' && 
+           (errorMsg.includes('no longer available') || errorMsg.includes('not yet available'))) {
+          
+          toast.error('El tiempo para realizar esta evaluación ha finalizado.', {
+            duration: 5000,
+          });
+          
+          navigate(`/courses/${courseId}/assessments`);
+          return;
+        }
+        
+        if (typeof errorMsg === 'string') {
+             toast.error(errorMsg);
+             return;
+        }
+      }
+
+      toast.error('No se pudo iniciar la evaluación. Inténtalo de nuevo.');
     }
   };
 

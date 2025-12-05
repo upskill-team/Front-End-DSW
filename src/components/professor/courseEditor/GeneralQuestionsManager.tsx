@@ -5,6 +5,7 @@ import { Card } from '../../ui/Card';
 import QuestionForm from '../../common/QuestionForm';
 import { HelpCircle, Plus, X, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import type { Question } from '../../../types/entities';
+import { toast } from 'react-hot-toast';
 
 interface GeneralQuestionsManagerProps {
   courseId: string;
@@ -34,11 +35,11 @@ export default function GeneralQuestionsManager({
           payload: question.payload,
         },
       });
-      alert('Pregunta general creada exitosamente');
+      toast.success('Pregunta general creada exitosamente');
       setShowCreateForm(false);
     } catch (error) {
       console.error('Error creating general question:', error);
-      alert('Error al crear la pregunta');
+      toast.error('Error al crear la pregunta');
     }
   };
 
@@ -84,7 +85,8 @@ export default function GeneralQuestionsManager({
                 unitNumber={null}
                 onSave={handleSave}
                 onCancel={() => setShowCreateForm(false)}
-                saveButtonText="Crear Pregunta"
+                saveButtonText="Crear Pregunta" 
+                isLoading={false}
               />
             </div>
           )}

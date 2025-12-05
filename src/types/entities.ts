@@ -400,7 +400,7 @@ export interface StartAttemptResponse {
     title: string;
     durationMinutes?: number | null;
     passingScore: number;
-    questions: QuestionForStudent[]; // ⚠️ IMPORTANTE: SIN respuestas correctas
+    questions: QuestionForStudent[];
   };
   student: string;
   startedAt: string;

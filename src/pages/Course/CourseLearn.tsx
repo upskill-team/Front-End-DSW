@@ -14,6 +14,7 @@ import Button from '../../components/ui/Button';
 import ErrorBoundary from '../../components/ui/ErrorBoundary';
 import { CheckCircle2, BookOpen, ArrowLeft } from 'lucide-react';
 import type { Unit } from '../../types/entities';
+import toast from 'react-hot-toast';
 
 export default function CourseLearn() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -59,10 +60,10 @@ export default function CourseLearn() {
   const handleToggleCompleteUnit = () => {
     if (!currentUnit || !enrollment) return;
     const isCompleted = completedUnits.includes(currentUnit.unitNumber);
-    
     if (isCompleted) {
-        uncompleteUnit({ enrollmentId: enrollment.id, unitNumber: currentUnit.unitNumber });
+      uncompleteUnit({ enrollmentId: enrollment.id, unitNumber: currentUnit.unitNumber });
     } else {
+        toast.success("Unidad completada con éxito!")
         completeUnit({ enrollmentId: enrollment.id, unitNumber: currentUnit.unitNumber });
     }
   };
