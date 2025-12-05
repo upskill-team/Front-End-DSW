@@ -130,6 +130,9 @@ export const useStartAttempt = () => {
   >({
     mutationFn: ({ assessmentId, studentId }) =>
       assessmentService.startAttempt(assessmentId, studentId),
+    meta: {
+      ignoreGlobalError: true,
+    },
     onSuccess: (_attempt, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['assessment-attempts', variables.assessmentId],
