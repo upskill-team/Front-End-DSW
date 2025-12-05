@@ -13,6 +13,7 @@ import PaymentSuccess from '../pages/Payment/PaymentSuccess.tsx';
 import AdminDashboard from '../pages/Admin/AdminDashboard';
 import ProfessorDashboard from '../pages/Professor/ProfessorDashboard';
 import ProfessorAppeal from '../pages/Professor/ProfessorAppeal.tsx';
+import ProfessorAppealStatusPage from '../pages/Professor/ProfessorAppealStatusPage.tsx';
 import ProfessorAppealsPage from '../pages/Admin/ProfessorAppealsPage.tsx';
 import ProfessorCoursesPage from '../pages/Professor/ProfessorCoursesPage.tsx';
 import ProfessorAnalyticsPage from '../pages/Professor/ProfessorAnalyticsPage.tsx';
@@ -165,6 +166,15 @@ const AppRouter = () => {
                 <ProfessorAppeal />
               </ProtectedRoute>
             }
+          />
+
+          <Route 
+            path="/professor/applications" 
+            element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <ProfessorAppealStatusPage />
+              </ProtectedRoute>
+            } 
           />
 
           {/* --- Protegidas: Admin --- */}

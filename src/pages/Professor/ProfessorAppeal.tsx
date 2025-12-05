@@ -1,5 +1,5 @@
-import React, { useState } from "react"
-import { Link } from "react-router-dom"
+import React, { useState, useEffect } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import { useForm } from 'react-hook-form'
 import { valibotResolver } from '@hookform/resolvers/valibot'
 import * as v from 'valibot'
@@ -10,8 +10,10 @@ import Textarea from "../../components/ui/TextArea"
 import Label from "../../components/ui/Label"
 import { BookOpen, ArrowLeft, GraduationCap, Upload } from "lucide-react"
 import { useCreateAppeal } from '../../hooks/useCreateAppeal'
+import { useMyAppeals } from "../../hooks/useAppeals"
 import { isAxiosError } from 'axios'
 import { toast } from 'react-hot-toast'
+import { useQueryClient } from "@tanstack/react-query"
 
 const AppealSchema = v.object({
   expertise: v.pipe(
@@ -27,6 +29,19 @@ const AppealSchema = v.object({
 type AppealFormData = v.InferInput<typeof AppealSchema>
 
 export default function ProfessorApplication() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { data: appeals, isLoading: isLoadingAppeals } = useMyAppeals();
+
+  useEffect(() => {
+    if (!isLoadingAppeals && appeals) {
+      const hasPending = appeals.some(a => a.state === 'pending');
+      if (hasPending) {
+        navigate('/professor/applications');
+      }
+    }
+  }, [appeals, isLoadingAppeals, navigate]);
+
   const { register, handleSubmit, formState: { errors }, reset } = useForm<AppealFormData>({
     resolver: valibotResolver(AppealSchema),
   })
@@ -50,9 +65,11 @@ export default function ProfessorApplication() {
 
     createAppeal(formData, {
       onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['appeals', 'me'] });
         reset()
         setDocumentFile(null)
         toast.success("Solicitud enviada correctamente")
+        navigate('/professor/applications');
       },
       onError: (error) => {
         if (isAxiosError(error)) {
@@ -80,6 +97,10 @@ export default function ProfessorApplication() {
       return serverMessage || 'Ocurrió un error al conectar con el servidor.'
     }
     return 'Ocurrió un error inesperado.'
+  }
+
+  if (isLoadingAppeals) {
+    return <div className="flex justify-center items-center h-screen">Cargando...</div>;
   }
 
   return (
