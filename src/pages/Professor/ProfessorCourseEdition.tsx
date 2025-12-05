@@ -28,6 +28,7 @@ import type { Block } from '@blocknote/core';
 import type { Unit, UnitEditorData, Question } from '../../types/entities';
 import { QuestionType } from '../../types/entities';
 import { useUpdateCourse } from '../../hooks/useCourses'
+import { toast } from 'react-hot-toast'
 
 export default function ProfessorCourseEditorPage() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -349,7 +350,7 @@ export default function ProfessorCourseEditorPage() {
   const handleDeleteQuestion = (questionId: string) => {
     if (!courseId || !selectedUnitId) return;
 
-    if (confirm('¿Estás seguro de que quieres eliminar esta pregunta?')) {
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta pregunta?')) {
       deleteQuestionMutation.mutate(
         {
           courseId,
@@ -357,12 +358,8 @@ export default function ProfessorCourseEditorPage() {
           questionId,
         },
         {
-          onSuccess: () => {
-            console.log('Pregunta eliminada exitosamente');
-          },
-          onError: (error) => {
-            alert(`Error al eliminar pregunta: ${error.message}`);
-          },
+          onSuccess: () => toast.success('Pregunta eliminada exitosamente'),
+          onError: () => toast.error('No se pudo eliminar la pregunta')
         }
       );
     }
@@ -382,6 +379,10 @@ export default function ProfessorCourseEditorPage() {
       {
         onSuccess: () => {
           handleCloseUnitModal();
+          toast.success('Unidad actualizada exitosamente');
+        },
+        onError: () => {
+          toast.error('No se pudo actualizar la unidad');
         },
       }
     );
@@ -583,11 +584,11 @@ export default function ProfessorCourseEditorPage() {
           setNewImageFile(null);
           setSaveError(null);
           setLastSavedAt(new Date());
-          alert('Configuración guardada exitosamente.');
+          toast.success('Configuración guardada exitosamente')
         },
         onError: (error) => {
           setSaveError(error.message || 'Error al guardar configuración');
-          alert('Error al guardar la configuración del curso');
+          toast.error('Error al guardar la configuración del curso')
         },
       }
     );
@@ -603,7 +604,7 @@ export default function ProfessorCourseEditorPage() {
   const handleEditUnit = (unit: Unit) => {
     setEditingUnit(unit);
     setNewUnitName(unit.name);
-    setNewUnitDescription(unit.description || '');; // Backend no tiene description
+    setNewUnitDescription(unit.description || ''); // Backend no tiene description
     setIsUnitModalOpen(true);
   };
 

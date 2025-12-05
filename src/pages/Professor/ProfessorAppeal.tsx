@@ -11,6 +11,7 @@ import Label from "../../components/ui/Label"
 import { BookOpen, ArrowLeft, GraduationCap, Upload } from "lucide-react"
 import { useCreateAppeal } from '../../hooks/useCreateAppeal'
 import { isAxiosError } from 'axios'
+import { toast } from 'react-hot-toast'
 
 const AppealSchema = v.object({
   expertise: v.pipe(
@@ -51,8 +52,34 @@ export default function ProfessorApplication() {
       onSuccess: () => {
         reset()
         setDocumentFile(null)
+        toast.success("Solicitud enviada correctamente")
+      },
+      onError: (error) => {
+        if (isAxiosError(error)) {
+          
+          if (error.response?.status === 500) {
+            toast.error("Ya tienes una solicitud pendiente de revisión.");
+            return;
+          }
+        }
+
+        toast.error("No se pudo enviar la solicitud. Intenta nuevamente.");
       }
     })
+  }
+
+  const getApiErrorMessage = () => {
+    if (!apiError) return null
+
+    if (isAxiosError(apiError)) {
+      const serverMessage = apiError.response?.data?.errors
+
+      if (serverMessage === 'User already has an active appeal.') {
+        return 'Ya tienes una solicitud activa. Por favor, espera a que sea revisada.'
+      }
+      return serverMessage || 'Ocurrió un error al conectar con el servidor.'
+    }
+    return 'Ocurrió un error inesperado.'
   }
 
   return (
@@ -160,9 +187,9 @@ export default function ProfessorApplication() {
                   {isPending ? "Enviando..." : "Enviar solicitud"}
                 </Button>
 
-              {(apiError) && (
+              {apiError && (
                 <div className="text-center text-sm text-red-600 mt-4">
-                  <p>{isAxiosError(apiError) ? apiError.response?.data?.errors : 'Ocurrió un error.'}</p>
+                  <p>{getApiErrorMessage()}</p>
                 </div>
               )}
 

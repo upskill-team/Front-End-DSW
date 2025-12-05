@@ -8,6 +8,7 @@ import { useAuth } from "../../hooks/useAuth.ts";
 import { useCreatePreference } from '../../hooks/usePayment.ts';
 import { formatCurrency } from '../../lib/currency';
 import { AxiosError } from "axios";
+import { toast } from "react-hot-toast";
 
 function CourseDetails() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -25,7 +26,7 @@ function CourseDetails() {
 
   const handleEnroll = () => {
     if (!isAuthenticated || !user) {
-      alert('Debes iniciar sesión para inscribirte.');
+      toast.error('Debes iniciar sesión para inscribirte.');
       navigate('/login');
       return;
     }
@@ -37,14 +38,14 @@ function CourseDetails() {
         courseId: course.id,
       }, {
         onSuccess: () => {
-          alert('¡Inscripción exitosa!');
+          toast.success('¡Inscripción exitosa!');
           navigate(`/courses/learn/${course.id}`);
         },
         onError: (err) => {
           if (err instanceof AxiosError && err.response?.data) {
-            alert(err.response.data);
+             toast.error(typeof err.response.data === 'string' ? err.response.data : 'Error al inscribirse');
           } else {
-            alert('Ocurrió un error al intentar inscribirte.');
+             toast.error('Ocurrió un error al intentar inscribirte.');
           }
         }
       });
