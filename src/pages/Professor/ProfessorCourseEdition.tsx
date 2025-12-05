@@ -379,6 +379,10 @@ export default function ProfessorCourseEditorPage() {
       {
         onSuccess: () => {
           handleCloseUnitModal();
+          toast.success('Unidad actualizada exitosamente');
+        },
+        onError: () => {
+          toast.error('No se pudo actualizar la unidad');
         },
       }
     );
@@ -600,7 +604,7 @@ export default function ProfessorCourseEditorPage() {
   const handleEditUnit = (unit: Unit) => {
     setEditingUnit(unit);
     setNewUnitName(unit.name);
-    setNewUnitDescription(unit.description || '');; // Backend no tiene description
+    setNewUnitDescription(unit.description || ''); // Backend no tiene description
     setIsUnitModalOpen(true);
   };
 

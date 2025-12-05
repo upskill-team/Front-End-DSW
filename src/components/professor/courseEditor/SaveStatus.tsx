@@ -1,4 +1,6 @@
 import { CheckCircle, AlertCircle, Loader2, WifiOff } from 'lucide-react';
+import { useEffect } from 'react';
+import { toast } from 'react-hot-toast';
 
 interface SaveStatusProps {
   hasUnsavedChanges?: boolean;
@@ -13,6 +15,12 @@ export default function SaveStatus({
   lastSavedAt,
   error,
 }: SaveStatusProps) {
+  useEffect(() => {
+    if (lastSavedAt && !isLoading && !error && !hasUnsavedChanges) {
+      toast.success('Cambios guardados correctamente');
+    }
+  }, [lastSavedAt, isLoading, error, hasUnsavedChanges]);
+
   if (error) {
     return (
       <div className="flex items-center gap-2 px-3 py-1 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm">

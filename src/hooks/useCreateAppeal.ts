@@ -6,6 +6,9 @@ export const useCreateAppeal = () => {
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (formData: FormData) => appealService.createAppeal(formData),
+    meta: {
+      ignoreGlobalError: true
+    },
     onSuccess: () => {
       navigate('/');
     },
