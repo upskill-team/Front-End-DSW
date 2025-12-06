@@ -15,6 +15,7 @@ import {
 } from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import { useContact } from '../hooks/useContact';
+import { toast } from 'react-hot-toast';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -36,13 +37,15 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     try {
       const response = await contactMutation.mutateAsync(formData);
       setTicketId(response.ticketId);
       setFormData({ name: '', email: '', subject: '', message: '' });
+      toast.success('Gracias por contactarnos. Te responderemos pronto.');
     } catch (error) {
       // Error is handled by mutation error state
+      toast.error('Error al enviar el mensaje');
       console.error('Error sending contact message:', error);
     }
   };
@@ -70,9 +73,6 @@ export default function ContactPage() {
                   <h3 className="text-lg font-semibold text-slate-800 mb-2">
                     Mensaje Enviado Exitosamente
                   </h3>
-                  <p className="text-slate-600 mb-4">
-                    Gracias por contactarnos. Te responderemos pronto.
-                  </p>
                   <div className="bg-white/70 rounded-lg p-4 mb-4">
                     <p className="text-sm text-slate-600 mb-1">
                       Número de Ticket
