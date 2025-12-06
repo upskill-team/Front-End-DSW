@@ -43,10 +43,16 @@ const ForgotPasswordPage = () => {
       {isSuccess ? (
         <div className="text-center space-y-4">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
+          <h3 className="text-lg font-semibold text-slate-800">
+            Solicitud procesada
+          </h3>
           <p className="text-slate-600">
             Si una cuenta con el correo{' '}
             <span className="font-semibold">{getValues('mail')}</span> existe,
-            hemos enviado un enlace.
+            hemos enviado un enlace de recuperación.
+          </p>
+          <p className="text-sm text-slate-500">
+            Revisa tu bandeja de entrada y sigue las instrucciones.
           </p>
           <Link
             to="/login"
