@@ -1,14 +1,17 @@
-import { BookOpen, Globe, Play, Smartphone, Users } from "lucide-react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { useCourseById } from "../../hooks/useCourses.ts";
-import Badge from "../../components/ui/Badge.tsx";
-import Button from "../../components/ui/Button.tsx";
-import { useEnrollInCourse, useExistingEnrollment } from "../../hooks/useEnrollment.ts";
-import { useAuth } from "../../hooks/useAuth.ts";
+import { BookOpen, Globe, Play, Smartphone, Users } from 'lucide-react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useCourseById } from '../../hooks/useCourses.ts';
+import Badge from '../../components/ui/Badge.tsx';
+import Button from '../../components/ui/Button.tsx';
+import {
+  useEnrollInCourse,
+  useExistingEnrollment,
+} from '../../hooks/useEnrollment.ts';
+import { useAuth } from '../../hooks/useAuth.ts';
 import { useCreatePreference } from '../../hooks/usePayment.ts';
 import { formatCurrency } from '../../lib/currency';
-import { AxiosError } from "axios";
-import { toast } from "react-hot-toast";
+import { AxiosError } from 'axios';
+import { toast } from 'react-hot-toast';
 
 function CourseDetails() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -33,22 +36,29 @@ function CourseDetails() {
     if (!course) return;
 
     if (course.isFree) {
-      enroll({
-        studentId: user.id,
-        courseId: course.id,
-      }, {
-        onSuccess: () => {
-          toast.success('¡Inscripción exitosa!');
-          navigate(`/courses/learn/${course.id}`);
+      enroll(
+        {
+          studentId: user.id,
+          courseId: course.id,
         },
-        onError: (err) => {
-          if (err instanceof AxiosError && err.response?.data) {
-             toast.error(typeof err.response.data === 'string' ? err.response.data : 'Error al inscribirse');
-          } else {
-             toast.error('Ocurrió un error al intentar inscribirte.');
-          }
+        {
+          onSuccess: () => {
+            toast.success('¡Inscripción completada!');
+            navigate(`/courses/learn/${course.id}`);
+          },
+          onError: (err) => {
+            if (err instanceof AxiosError && err.response?.data) {
+              toast.error(
+                typeof err.response.data === 'string'
+                  ? err.response.data
+                  : 'Error al inscribirse'
+              );
+            } else {
+              toast.error('Ocurrió un error al intentar inscribirte.');
+            }
+          },
         }
-      });
+      );
     } else {
       createPreference(course.id);
     }
@@ -77,26 +87,26 @@ function CourseDetails() {
     }
 
     if (!isAuthenticated) {
-    return (
-      <Button
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-lg font-semibold"
-        onClick={() => navigate('/login')}
-      >
-        Inscribirse ahora
-      </Button>
-    );
-  }
+      return (
+        <Button
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-lg font-semibold"
+          onClick={() => navigate('/login')}
+        >
+          Inscribirse ahora
+        </Button>
+      );
+    }
 
-  if (user?.role === 'professor' && user.professorProfile?.id === course?.professor.id) {
-    return (
-      <Button
-        className="w-full h-12 text-lg font-semibold"
-        disabled
-      >
-        Este es tu curso
-      </Button>
-    );
-  }
+    if (
+      user?.role === 'professor' &&
+      user.professorProfile?.id === course?.professor.id
+    ) {
+      return (
+        <Button className="w-full h-12 text-lg font-semibold" disabled>
+          Este es tu curso
+        </Button>
+      );
+    }
 
     return (
       <Button
@@ -142,15 +152,13 @@ function CourseDetails() {
           </Link>
           <span>/</span>
           {course.courseType?.id ? (
-            <Link 
-   
-              to={`/courses?courseTypeId=${course.courseType.id || ''}`} 
+            <Link
+              to={`/courses?courseTypeId=${course.courseType.id || ''}`}
               className="hover:text-blue-600"
             >
               {course.courseType.name}
             </Link>
           ) : (
-      
             <span>{course.courseType?.name || 'Sin categoría'}</span>
           )}
           <span>/</span>
@@ -195,20 +203,28 @@ function CourseDetails() {
                 />
                 <div>
                   <p className="text-sm text-slate-600">Creado por</p>
-                  <Link to={`/courses?professorId=${course.professor.id || ''}`}  className="font-semibold text-slate-800 hover:text-blue-600 transition-colors">
+                  <Link
+                    to={`/courses?professorId=${course.professor.id || ''}`}
+                    className="font-semibold text-slate-800 hover:text-blue-600 transition-colors"
+                  >
                     {course.professor?.user?.name}{' '}
                     {course.professor?.user?.surname}
                   </Link>
                 </div>
 
-                {
-                  course?.professor?.institution ? (
-                    <div className="ml-6">
-                      <p className="text-sm text-slate-600">Institución</p>
-                      <Link to={`/courses?institutionId=${course.professor.institution.id || ''}`} className="font-semibold text-slate-800 hover:text-blue-600 transition-colors">{course.professor.institution?.name}</Link>
-                    </div>
-                  ) : null
-                }
+                {course?.professor?.institution ? (
+                  <div className="ml-6">
+                    <p className="text-sm text-slate-600">Institución</p>
+                    <Link
+                      to={`/courses?institutionId=${
+                        course.professor.institution.id || ''
+                      }`}
+                      className="font-semibold text-slate-800 hover:text-blue-600 transition-colors"
+                    >
+                      {course.professor.institution?.name}
+                    </Link>
+                  </div>
+                ) : null}
               </div>
             </div>
 
@@ -227,12 +243,14 @@ function CourseDetails() {
                         <Play className="w-4 h-4 text-blue-600" />
                       </div>
                       <div>
-                        <p className="font-medium text-slate-800">{seccion.name}</p>
-                        {
-                          seccion.description?(
-                            <p className="text-sm text-slate-600">{seccion.description}</p>
-                          ):null
-                        }
+                        <p className="font-medium text-slate-800">
+                          {seccion.name}
+                        </p>
+                        {seccion.description ? (
+                          <p className="text-sm text-slate-600">
+                            {seccion.description}
+                          </p>
+                        ) : null}
                         <p className="text-sm text-slate-600">
                           {seccion.materials?.length > 0 && (
                             <span>{seccion.materials.length} Recursos</span>
