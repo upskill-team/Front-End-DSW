@@ -21,7 +21,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/Avatar.tsx';
 import RoleBadge from '../ui/RoleBadge.tsx';
 import { useAuth } from '../../hooks/useAuth';
-import Button from '../ui/Button';
+import Button from '../ui/Button/Button';
 import { AdminControls } from './navBar/AdminControls.tsx';
 import { ProfessorControls } from './navBar/ProfessorControls.tsx';
 import { toast } from 'react-hot-toast';

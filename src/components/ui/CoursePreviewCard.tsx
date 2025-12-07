@@ -8,7 +8,7 @@ import {
   CardDescription,
 } from './Card';
 import Badge from './Badge';
-import Button from './Button';
+import Button from './Button/Button';
 import type { Course, CourseType } from '../../types/entities';
 import { cn } from '../../lib/utils';
 import { Link } from 'react-router-dom';

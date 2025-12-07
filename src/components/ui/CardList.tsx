@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Users, BookOpen } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import Button from './Button';
+import Button from './Button/Button';
 import Badge from './Badge';
 import { Card, CardContent, CardTitle, CardDescription } from './Card';
 import { Link } from 'react-router-dom';

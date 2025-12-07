@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useExistingEnrollment } from '../../hooks/useEnrollment';
 import { useAuth } from '../../hooks/useAuth';
 import { CheckCircle, Loader } from 'lucide-react';
-import Button from '../../components/ui/Button.tsx';
+import Button from '../../components/ui/Button/Button.tsx';
 import { AxiosError } from 'axios';
 
 export default function PaymentSuccess() {

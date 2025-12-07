@@ -10,7 +10,7 @@ import UnitSidebar from '../../components/student/UnitSidebar';
 import UnitContentViewer from '../../components/student/UnitContentViewer';
 import MaterialsList from '../../components/student/MaterialsList';
 import QuestionsList from '../../components/student/QuestionsList';
-import Button from '../../components/ui/Button';
+import Button from '../../components/ui/Button/Button';
 import ErrorBoundary from '../../components/ui/ErrorBoundary';
 import { CheckCircle2, BookOpen, ArrowLeft } from 'lucide-react';
 import type { Unit } from '../../types/entities';

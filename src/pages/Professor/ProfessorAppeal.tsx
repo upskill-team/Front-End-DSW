@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { useForm } from 'react-hook-form'
 import { valibotResolver } from '@hookform/resolvers/valibot'
 import * as v from 'valibot'
-import Button from "../../components/ui/Button"
+import Button from "../../components/ui/Button/Button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/Card"
 import Input from "../../components/ui/Input"
 import Textarea from "../../components/ui/TextArea"

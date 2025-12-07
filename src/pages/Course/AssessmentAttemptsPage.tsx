@@ -9,7 +9,7 @@ import {
   Award,
   BarChart3,
 } from 'lucide-react';
-import Button from '../../components/ui/Button';
+import Button from '../../components/ui/Button/Button';
 import Badge from '../../components/ui/Badge';
 import { Card, CardContent } from '../../components/ui/Card';
 import {

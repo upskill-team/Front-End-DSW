@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/Card';
-import Button from '../../ui/Button';
+import Button from '../../ui/Button/Button';
 import { Users, UserMinus, AlertCircle, Crown, Inbox, Check, X } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '../../ui/Avatar';
 import type { Institution } from '../../../types/entities';

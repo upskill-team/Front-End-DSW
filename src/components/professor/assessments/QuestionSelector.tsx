@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useProfessorCourses } from '../../../hooks/useCourses';
 import { questionService } from '../../../api/services/question.service';
 import { useCreateQuestion, useCreateGeneralQuestion } from '../../../hooks/useQuestions';
-import Button from '../../ui/Button';
+import Button from '../../ui/Button/Button';
 import { Card } from '../../ui/Card';
 import Input from '../../ui/Input';
 import QuestionForm from '../../common/QuestionForm';

@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { valibotResolver } from '@hookform/resolvers/valibot';
 import * as v from 'valibot';
 import Modal from '../../../ui/Modal';
-import Button from '../../../ui/Button';
+import Button from '../../../ui/Button/Button';
 import Input from '../../../ui/Input';
 import Textarea from '../../../ui/TextArea';
 import { Plus, X } from 'lucide-react';

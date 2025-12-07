@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import Modal from '../../../ui/Modal';
-import Button from '../../../ui/Button';
+import Button from '../../../ui/Button/Button';
 import Input from '../../../ui/Input';
 import { Building2, Search, Users, AlertCircle, Send } from 'lucide-react';
 import type { Institution } from '../../../../types/entities';

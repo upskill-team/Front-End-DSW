@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
+import Button from '../../components/ui/Button/Button';
 import { Building2, GraduationCap, Plus, LogOut, AlertCircle, Crown, Hourglass, XCircle, Edit } from 'lucide-react';
 import { useProfessorProfile } from '../../hooks/useProfessor';
 import { useInstitutions, useManagedInstitution, useLeaveInstitution } from '../../hooks/useInstitutionMutations';

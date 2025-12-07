@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { X, XIcon } from 'lucide-react';
-import Button from './Button';
+import Button from './Button/Button';
 
 interface DialogProps {
   open: boolean;
