@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import StatusBadge from '../StatusBadge';
+import StatusBadge from './StatusBadge';
 
 describe('StatusBadge Component', () => {
   it('Should render correct text and color for "pending" status', () => {

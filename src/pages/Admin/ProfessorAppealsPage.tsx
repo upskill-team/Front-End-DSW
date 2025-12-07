@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '../../components/ui/Card';
 import { Dialog, DialogHeader, DialogTitle } from '../../components/ui/Dialog';
-import StatusBadge from '../../components/ui/StatusBadge';
+import StatusBadge from '../../components/ui/StatusBadge/StatusBadge';
 import DocumentViewer from '../../components/ui/DocumentViewer';
 import {
   Check,

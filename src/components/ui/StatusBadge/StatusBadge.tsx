@@ -1,10 +1,13 @@
-import Badge from './Badge/Badge';
+import Badge from '../Badge/Badge';
 import { Clock, CheckCircle, XCircle } from 'lucide-react';
 
 interface StatusBadgeProps {
   status: 'pending' | 'accepted' | 'rejected' | string;
 }
-
+/**
+ * StatusBadge Component
+ * implements a badge that displays different styles based on the status prop.
+ */
 const StatusBadge = ({ status }: StatusBadgeProps) => {
   switch (status) {
     case 'pending':
