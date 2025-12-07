@@ -5,7 +5,7 @@ import * as v from 'valibot';
 import { User, Mail, Lock } from 'lucide-react';
 import { useRegister } from '../../hooks/useAuthMutations';
 import Button from '../../components/ui/Button/Button';
-import Input from '../../components/ui/Input';
+import Input from '../../components/ui/Input/Input';
 import AuthCard from '../../components/layouts/AuthCard';
 import { isAxiosError } from 'axios';
 

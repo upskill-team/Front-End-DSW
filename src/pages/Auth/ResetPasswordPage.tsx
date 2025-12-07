@@ -6,7 +6,7 @@ import { valibotResolver } from '@hookform/resolvers/valibot'
 import { Lock } from 'lucide-react'
 import { useResetPassword } from '../../hooks/useAuthMutations'
 import Button from '../../components/ui/Button/Button'
-import Input from '../../components/ui/Input'
+import Input from '../../components/ui/Input/Input'
 import AuthCard from '../../components/layouts/AuthCard'
 import { isAxiosError } from 'axios'
 

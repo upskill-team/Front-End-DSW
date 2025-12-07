@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import CardList from './CardList';
 import { BrowserRouter } from 'react-router-dom';
-
+import type { Course } from '../../../types/entities';
 const meta = {
   title: 'Components/ui/CardList',
   component: CardList,
@@ -36,11 +36,11 @@ export const Default: Story = {
       courseType: { name: "Desarrollo Web" },
       professor: { user: { name: "Carlos", surname: "Gómez" } },
       studentsCount: 1250,
-      students: [], 
-      units: Array(12).fill({}), 
+      students: [],
+      units: Array(12).fill({}),
       createdAt: new Date(),
       updatedAt: new Date(),
-    } as any, //
+    } as unknown as Course, //
   },
 };
 
@@ -61,6 +61,6 @@ export const FreeCourse: Story = {
       units: Array(5).fill({}),
       createdAt: new Date(),
       updatedAt: new Date(),
-    } as any,
+    } as unknown as Course,
   },
 };

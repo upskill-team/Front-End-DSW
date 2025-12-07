@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import StatusBadge  from './StatusBadge'; // Ajusta la ruta
 
 const meta = {
@@ -7,7 +7,7 @@ const meta = {
 
   argTypes: {
     status: {
-      control: 'select',
+      control: 'radio',
       options: ['pending', 'accepted', 'rejected', 'unknown'],
       description: 'Current status to display the corresponding badge'
     },

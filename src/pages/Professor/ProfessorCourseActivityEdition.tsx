@@ -7,8 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../components/ui/Dialog.tsx";
-import Textarea from "../../components/ui/TextArea.tsx";
-import Input from "../../components/ui/Input.tsx";
+import Textarea from "../../components/ui/TextArea/TextArea.tsx";
+import Input from "../../components/ui/Input/Input.tsx";
 import Label from "../../components/ui/Label.tsx";
 
 interface IActivity {
