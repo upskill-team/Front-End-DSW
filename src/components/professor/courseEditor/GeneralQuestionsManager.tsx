@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAllCourseQuestions, useCreateGeneralQuestion } from '../../../hooks/useQuestions';
-import Button from '../../ui/Button';
+import Button from '../../ui/Button/Button';
 import { Card } from '../../ui/Card';
 import QuestionForm from '../../common/QuestionForm';
 import { HelpCircle, Plus, X, ChevronDown, ChevronUp, Check } from 'lucide-react';

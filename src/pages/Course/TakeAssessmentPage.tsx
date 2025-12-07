@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Clock, AlertCircle, CheckCircle, Send } from 'lucide-react';
-import Button from '../../components/ui/Button';
+import Button from '../../components/ui/Button/Button';
 import {
   Card,
   CardContent,

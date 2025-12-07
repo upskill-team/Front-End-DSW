@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
+import Button from '../../components/ui/Button/Button';
 import { Dialog, DialogHeader, DialogTitle } from '../../components/ui/Dialog';
 import Input from '../../components/ui/Input';
 import Textarea from '../../components/ui/TextArea';

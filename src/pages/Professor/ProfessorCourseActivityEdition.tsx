@@ -1,5 +1,5 @@
 import { /*Plus,*/ XIcon } from "lucide-react";
-import Button from "../../components/ui/Button.tsx";
+import Button from "../../components/ui/Button/Button.tsx";
 import {
   Dialog,
   //DialogContent,

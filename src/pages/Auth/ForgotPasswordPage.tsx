@@ -4,7 +4,7 @@ import { valibotResolver } from '@hookform/resolvers/valibot';
 import { Link } from 'react-router-dom';
 import { Mail, CheckCircle } from 'lucide-react';
 import { useForgotPassword } from '../../hooks/useAuthMutations.ts';
-import Button from '../../components/ui/Button';
+import Button from '../../components/ui/Button/Button';
 import Input from '../../components/ui/Input';
 import AuthCard from '../../components/layouts/AuthCard';
 import { isAxiosError } from 'axios';

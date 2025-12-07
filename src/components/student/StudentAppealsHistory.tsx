@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card } from '../ui/Card';
 import StatusBadge from '../ui/StatusBadge';
-import Button from '../ui/Button';
+import Button from '../ui/Button/Button';
 import { Dialog, DialogHeader, DialogTitle } from '../ui/Dialog';
 import { FileText, Calendar, Eye, GraduationCap, ExternalLink } from 'lucide-react';
 import { useMyAppeals } from '../../hooks/useAppeals';

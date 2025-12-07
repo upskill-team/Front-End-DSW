@@ -10,7 +10,7 @@ import Input from '../../components/ui/Input.tsx';
 import Select from '../../components/ui/Select.tsx';
 import Switch from '../../components/ui/Switch.tsx';
 import Label from '../../components/ui/Label.tsx';
-import Button from '../../components/ui/Button.tsx';
+import Button from '../../components/ui/Button/Button.tsx';
 import { Search, LayoutGrid, List } from 'lucide-react';
 import { useDebounce } from '../../hooks/useDebounce.ts';
 import { useProfessors } from '../../hooks/useProfessor.ts';

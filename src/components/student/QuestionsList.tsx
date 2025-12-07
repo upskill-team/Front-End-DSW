@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { questionService } from '../../api/services/question.service';
 import type { Question } from '../../types/entities';
 import { useState } from 'react';
-import Button from '../ui/Button';
+import Button from '../ui/Button/Button';
 import { cn } from '../../lib/utils';
 
 interface QuestionsListProps {

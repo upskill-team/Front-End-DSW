@@ -1,7 +1,7 @@
 import { Dialog, DialogHeader, DialogTitle } from '../../../ui/Dialog';
 import Input from '../../../ui/Input';
 import Textarea from '../../../ui/TextArea';
-import Button from '../../../ui/Button';
+import Button from '../../../ui/Button/Button';
 import type { Unit } from '../../../../types/entities';
 
 interface UnitModalProps {

@@ -4,7 +4,7 @@ import Label from '../../../ui/Label';
 import Textarea from '../../../ui/TextArea';
 import Select from '../../../ui/Select';
 import Switch from '../../../ui/Switch';
-import Button from '../../../ui/Button';
+import Button from '../../../ui/Button/Button';
 
 interface CourseConfig {
   name: string;

@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom';
 import { X } from 'lucide-react';
-import Button from './Button.tsx';
+import Button from './Button/Button.tsx';
 
 interface DocumentViewerProps {
   url: string;

@@ -3,7 +3,7 @@ import { useStudentEnrollments } from '../../hooks/useEnrollment';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Clock, Award, TrendingUp, AlertCircle } from 'lucide-react';
 import { Card, CardContent } from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
+import Button from '../../components/ui/Button/Button';
 import Badge from '../../components/ui/Badge';
 import StatusBadge from '../../components/ui/StatusBadge';
 

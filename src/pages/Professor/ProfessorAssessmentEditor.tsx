@@ -6,7 +6,7 @@ import {
   useCreateAssessment,
   useUpdateAssessment,
 } from '../../hooks/useAssessments';
-import Button from '../../components/ui/Button';
+import Button from '../../components/ui/Button/Button';
 import { Card } from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import TextArea from '../../components/ui/TextArea';

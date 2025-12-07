@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Search, Users } from 'lucide-react';
 import RobotModel from './RobotModel';
-import Button from '../ui/Button';
+import Button from '../ui/Button/Button';
 import { useStudentCount } from '../../hooks/useStudent.ts'
 
 export default function HeroSection() {

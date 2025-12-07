@@ -10,7 +10,7 @@ import {
   Target,
   TrendingUp,
 } from 'lucide-react';
-import Button from '../../components/ui/Button';
+import Button from '../../components/ui/Button/Button';
 import Badge from '../../components/ui/Badge';
 import {
   Card,

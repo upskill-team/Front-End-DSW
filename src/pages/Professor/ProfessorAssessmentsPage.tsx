@@ -5,7 +5,7 @@ import {
   useAssessmentsForProfessor,
   useDeleteAssessment,
 } from '../../hooks/useAssessments';
-import Button from '../../components/ui/Button';
+import Button from '../../components/ui/Button/Button';
 import { Card } from '../../components/ui/Card';
 import Select from '../../components/ui/Select';
 import {
