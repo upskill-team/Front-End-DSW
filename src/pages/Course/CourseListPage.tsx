@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import CardList from '../../components/ui/CardList.tsx';
+import CardList from '../../components/ui/CardList/CardList.tsx';
 import CoursePreviewCard from '../../components/ui/CoursePreviewCard.tsx';
 import type { SearchCoursesParams } from '../../types/shared.ts';
 import { useSearchCourses } from '../../hooks/useCourses.ts';

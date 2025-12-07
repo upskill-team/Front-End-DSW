@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../../lib/utils';
 
 /**
  * An object containing the Tailwind CSS classes for the different badge variants.
