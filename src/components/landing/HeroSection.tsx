@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Search, Users } from 'lucide-react';
-import RobotModel from './RobotModel';
+import { lazy, Suspense } from 'react';
 import Button from '../ui/Button/Button';
 import { useStudentCount } from '../../hooks/useStudent.ts'
+
+const RobotModel = lazy(() => import('./RobotModel.tsx'))
 
 export default function HeroSection() {
 
@@ -55,9 +57,9 @@ export default function HeroSection() {
             </div>
           </div>
 
-          <div className="relative w-full h-[280px] sm:h-[350px] lg:h-[500px]">
+          <Suspense fallback={<div className="relative w-full h-[280px] sm:h-[350px] lg:h-[500px]" />}>
             <RobotModel />
-          </div>
+          </Suspense>
         </div>
       </div>
     </section>

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, Mail, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import { BookOpen, Mail, Facebook, X, Instagram, Youtube } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -41,7 +41,7 @@ export function Footer() {
             <h3 className="font-semibold text-lg">Síguenos</h3>
             <div className="flex space-x-3 justify-center md:justify-start">
               <a href="#" aria-label="Facebook" className="w-9 h-9 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors"><Facebook className="w-5 h-5" /></a>
-              <a href="#" aria-label="Twitter" className="w-9 h-9 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-sky-500 transition-colors"><Twitter className="w-5 h-5" /></a>
+              <a href="#" aria-label="X" className="w-9 h-9 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-black transition-colors"><X className="w-5 h-5" /></a>
               <a href="#" aria-label="Instagram" className="w-9 h-9 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-pink-600 transition-colors"><Instagram className="w-5 h-5" /></a>
               <a href="#" aria-label="YouTube" className="w-9 h-9 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-red-600 transition-colors"><Youtube className="w-5 h-5" /></a>
             </div>
