@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMyAppeals } from '../../hooks/useAppeals';
 import { Card } from '../../components/ui/Card';
-import StatusBadge from '../../components/ui/StatusBadge';
+import StatusBadge from '../../components/ui/StatusBadge/StatusBadge';
 import Button from '../../components/ui/Button/Button';
 import { Dialog, DialogHeader, DialogTitle } from '../../components/ui/Dialog';
 import DocumentViewer from '../../components/ui/DocumentViewer';

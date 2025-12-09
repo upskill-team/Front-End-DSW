@@ -1,5 +1,5 @@
 import React from 'react';
-import Input, { type InputProps } from './Input';
+import Input, { type InputProps } from './Input/Input';
 
 interface ProfileFieldProps extends InputProps {
   isEditing: boolean;

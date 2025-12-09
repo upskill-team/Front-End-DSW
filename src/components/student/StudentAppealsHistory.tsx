@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card } from '../ui/Card';
-import StatusBadge from '../ui/StatusBadge';
+import StatusBadge from '../ui/StatusBadge/StatusBadge';
 import Button from '../ui/Button/Button';
 import { Dialog, DialogHeader, DialogTitle } from '../ui/Dialog';
 import { FileText, Calendar, Eye, GraduationCap, ExternalLink } from 'lucide-react';

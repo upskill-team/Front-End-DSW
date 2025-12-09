@@ -8,7 +8,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import Button from '../../components/ui/Button/Button';
-import Badge from '../../components/ui/Badge';
+import Badge from '../../components/ui/Badge/Badge';
 import {
   Card,
   CardContent,

@@ -1,7 +1,7 @@
 import { BookOpen, Globe, Play, Smartphone, Users } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useCourseById } from '../../hooks/useCourses.ts';
-import Badge from '../../components/ui/Badge.tsx';
+import Badge from '../../components/ui/Badge/Badge.tsx';
 import Button from '../../components/ui/Button/Button.tsx';
 import {
   useEnrollInCourse,

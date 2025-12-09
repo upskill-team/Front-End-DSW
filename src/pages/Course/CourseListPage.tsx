@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import CardList from '../../components/ui/CardList.tsx';
+import CardList from '../../components/ui/CardList/CardList.tsx';
 import CoursePreviewCard from '../../components/ui/CoursePreviewCard.tsx';
 import type { SearchCoursesParams } from '../../types/shared.ts';
 import { useSearchCourses } from '../../hooks/useCourses.ts';
 import { useCourseTypes } from '../../hooks/useCourseTypes.ts';
 import { useInstitutions } from '../../hooks/useInstitutionMutations.ts';
-import Input from '../../components/ui/Input.tsx';
+import Input from '../../components/ui/Input/Input.tsx';
 import Select from '../../components/ui/Select.tsx';
 import Switch from '../../components/ui/Switch.tsx';
 import Label from '../../components/ui/Label.tsx';

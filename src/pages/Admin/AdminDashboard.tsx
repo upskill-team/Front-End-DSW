@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '../../components/ui/Card';
-import StatusBadge from '../../components/ui/StatusBadge';
+import StatusBadge from '../../components/ui/StatusBadge/StatusBadge';
 import {
   Users,
   BookOpen,

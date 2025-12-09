@@ -1,6 +1,6 @@
 import { Dialog, DialogHeader, DialogTitle } from '../../../ui/Dialog';
-import Input from '../../../ui/Input';
-import Textarea from '../../../ui/TextArea';
+import Input from '../../../ui/Input/Input';
+import Textarea from '../../../ui/TextArea/TextArea';
 import Button from '../../../ui/Button/Button';
 import type { Unit } from '../../../../types/entities';
 

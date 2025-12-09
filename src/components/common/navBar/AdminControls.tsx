@@ -7,7 +7,7 @@ import {
 import { Link } from 'react-router-dom';
 import type { Location } from 'react-router-dom';
 import { useAppealsCount } from '../../../hooks/useAppealsCount';
-import Badge from '../../ui/Badge';
+import Badge from '../../ui/Badge/Badge';
 
 interface AdminControlsProps {
   handleLinkClick: (path: string) => void;

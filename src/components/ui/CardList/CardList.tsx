@@ -1,18 +1,29 @@
 import * as React from 'react';
 import { Users, BookOpen } from 'lucide-react';
-import { cn } from '../../lib/utils';
-import Button from './Button/Button';
-import Badge from './Badge';
-import { Card, CardContent, CardTitle, CardDescription } from './Card';
+import { cn } from '../../../lib/utils';
+import Button from '../Button/Button';
+import Badge from '../Badge/Badge';
+import { Card, CardContent, CardTitle, CardDescription } from '../Card';
 import { Link } from 'react-router-dom';
-import type { Course } from '../../types/entities';
-import { formatCurrency } from '../../lib/currency';
+import type { Course } from '../../../types/entities';
+import { formatCurrency } from '../../../lib/currency';
 
 export interface CourseCardListProps extends React.HTMLAttributes<HTMLDivElement> {
+    /**
+   * The complete course object containing the information to be displayed (title, price, instructor, image, etc.).
+   */
   course: Course;
+    /**
+   * Optional function that runs when secondary actions are clicked (if any exist).
+   */
   onViewMore?: () => void;
 }
-
+/**
+ * Horizontal card component used to display a summary of a course in lists.
+ * 
+ * Displays the image, title, short description, instructor, price, and basic statistics.
+ * It is interactive and redirects to the course details.
+ */
 const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
   ({ course, className, ...props }, ref) => {
 

@@ -1,7 +1,7 @@
 import React, { forwardRef, useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { cn } from '../../lib/utils';
-import Button from './Button/Button';
+import { cn } from '../../../lib/utils';
+import Button from '../Button/Button';
 
 /**
  * Props for the Input component.

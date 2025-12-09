@@ -4,7 +4,7 @@ import { questionService } from '../../../api/services/question.service';
 import { useCreateQuestion, useCreateGeneralQuestion } from '../../../hooks/useQuestions';
 import Button from '../../ui/Button/Button';
 import { Card } from '../../ui/Card';
-import Input from '../../ui/Input';
+import Input from '../../ui/Input/Input';
 import QuestionForm from '../../common/QuestionForm';
 import { X, Search, Check, Plus, ChevronDown, ChevronUp } from 'lucide-react';
 import type { Question } from '../../../types/entities';
