@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import type { User } from '../types/entities.ts';
 import { userService } from '../api/services/user.service.ts';
+import { authService } from '../api/services/auth.service.ts';
 import { AuthContext } from './AuthContext';
 import apiClient, { TOKEN_STORAGE_KEY } from '../api/apiClient';
 
@@ -34,18 +35,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // When this runs for the first time, we look for a saved token and try to log in with it.
-  useEffect(() => {
-    const validateTokenOnLoad = async () => {
-      const token = localStorage.getItem(TOKEN_STORAGE_KEY);
-      if (token) {
-        await fetchProfileAndSetUser();
-      }
-      setIsLoading(false);
-    };
-    validateTokenOnLoad();
-  }, [fetchProfileAndSetUser]);
-
   // Login function: saves the token, sets it in the header, and gets the profile.
   const login = useCallback(
     async (token: string) => {
@@ -56,16 +45,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     [fetchProfileAndSetUser]
   );
 
-  // Logout function: removes the token and header, and clears the user.
-  const logout = useCallback(() => {
+  // Logout function: Clears server cookie, local storage, and state.
+  const logout = useCallback(async () => {
     try {
-      // Clear all React Query caches to avoid stale data
+      // 1. Call backend to clear the HttpOnly cookie
+      await authService.logout();
+    } catch (error) {
+      console.error('Server logout failed (likely already expired)', error);
+    } finally {
+      // 2. Clear all React Query caches to avoid stale data
       queryClient.clear();
 
-      // Remove JWT token from localStorage using the correct key
+      // 3. Remove JWT token from localStorage
       localStorage.removeItem(TOKEN_STORAGE_KEY);
 
-      // Also remove any other common auth-related keys (defensive cleanup)
+      // Clean up defensive keys if any
       const authKeys = [
         'jwt_token',
         'token',
@@ -79,27 +73,54 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       });
 
-      // Clear Authorization header from future requests
+      // 4. Clear Authorization header from future requests
       delete apiClient.defaults.headers.common['Authorization'];
 
-      // Clear user state
+      // 5. Reset state
       setUser(null);
       setIsLoading(false);
-
-      console.log('Logout completado exitosamente');
-    } catch (error) {
-      console.error('Error durante logout:', error);
-      // Force cleanup even if something fails
-      localStorage.clear();
-      setUser(null);
-      setIsLoading(false);
+      console.log('Logout local completado');
     }
   }, [queryClient]);
 
-  // We keep these values ready so the app doesn't reload too much.
+  // Initialization logic: Check for token OR try silent refresh via cookie
+  useEffect(() => {
+    const initAuth = async () => {
+      const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+      
+      if (token) {
+        // Case A: Token exists in LocalStorage
+        apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        await fetchProfileAndSetUser();
+      } else {
+        // Case B: No token in LS, try Silent Refresh via Cookie
+        try {
+          // This call sends the HttpOnly cookie. If valid, returns new AccessToken.
+          const { data } = await apiClient.post('/auth/refresh');
+          const newToken = data.data.token;
+          
+          if (newToken) {
+            console.log('Session restored via Refresh Token');
+            // We use the internal login logic but avoid the double fetch if possible,
+            // though reusing 'login' is safer to ensure consistency.
+            await login(newToken);
+          }
+        } catch {
+          // No session found (401), user is anonymous
+          // console.log('No active session found');
+        }
+      }
+      
+      setIsLoading(false);
+    };
+    
+    initAuth();
+  }, [fetchProfileAndSetUser, login]);
+
+  // Provide the context to child components.
   const value = useMemo(
     () => ({
-      isAuthenticated: !!user, // We know if someone is logged in if there's a user object.
+      isAuthenticated: !!user,
       user,
       isLoading,
       login,
@@ -108,6 +129,5 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     [user, isLoading, login, logout]
   );
 
-  // Provide the context to child components.
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

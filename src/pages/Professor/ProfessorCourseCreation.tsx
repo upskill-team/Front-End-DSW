@@ -44,7 +44,6 @@ export default function ProfessorCourseCreation() {
   const { data: courseTypesData, isLoading: isLoadingTypes } = useCourseTypes({});
   const courseTypes = courseTypesData?.courseTypes || [];
   
-
   const {
     data: managedInstitution = null,
     isLoading: isLoadingInstitution
@@ -66,7 +65,6 @@ export default function ProfessorCourseCreation() {
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-
   const watchedValues = watch();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,8 +85,13 @@ export default function ProfessorCourseCreation() {
     dataToSend.append('description', formData.description);
     dataToSend.append('courseTypeId', formData.courseTypeId);
     dataToSend.append('isFree', String(formData.isFree));
-    dataToSend.append('price', String(formData.isFree ? 0 : formData.price || 0)); 
-    dataToSend.append('useInstitution',formData.useInstitution ? true: false);
+    
+    const priceValue = formData.price || 0;
+    const priceInCents = formData.isFree ? 0 : Math.round(priceValue * 100);
+    
+    dataToSend.append('priceInCents', String(priceInCents));
+    
+    dataToSend.append('useInstitution', formData.useInstitution ? 'true' : 'false');
 
     const imageInput = document.getElementById('course-image') as HTMLInputElement;
     if (imageInput.files && imageInput.files[0]) {
@@ -170,7 +173,7 @@ export default function ProfessorCourseCreation() {
                 managedInstitution ? (
                 <div className="space-y-4 rounded-lg border p-4">
                   <div className="flex items-center justify-between">
-                  <Label htmlFor="is-free">¿Asociar a su intitucion?</Label>
+                  <Label htmlFor="useInstitution">¿Asociar a su intitucion?</Label>
                     <Switch
                     id="useInstitution"
                     {...register("useInstitution")}
