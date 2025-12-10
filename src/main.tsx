@@ -36,13 +36,8 @@ const queryClient = new QueryClient({
       const axiosError = error as AxiosError<ApiErrorResponse>;
 
       const status = axiosError.response?.status;
-      const backendMessage = axiosError.response?.data?.message;
       const backendErrors = axiosError.response?.data?.errors;
 
-      if (backendMessage) {
-        toast.error(backendMessage);
-        return;
-      }
       if (typeof backendErrors === 'string') {
         toast.error(backendErrors);
         return;

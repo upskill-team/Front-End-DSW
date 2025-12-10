@@ -212,16 +212,16 @@ function CourseDetails() {
                   </Link>
                 </div>
 
-                {course?.professor?.institution ? (
+                {course.institution?.institutionId ? (
                   <div className="ml-6">
                     <p className="text-sm text-slate-600">Institución</p>
                     <Link
                       to={`/courses?institutionId=${
-                        course.professor.institution.id || ''
+                        course.institution?.institutionId
                       }`}
                       className="font-semibold text-slate-800 hover:text-blue-600 transition-colors"
                     >
-                      {course.professor.institution?.name}
+                      {course.institution?.name}
                     </Link>
                   </div>
                 ) : null}

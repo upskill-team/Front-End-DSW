@@ -3,6 +3,7 @@ import { appealService } from '../api/services/appeal.service';
 import type { SearchAppealsParams, PaginatedAppealsResponse } from '../types/shared.ts';
 import type { Appeal } from '../types/entities.ts';
 import type { AxiosError } from 'axios';
+import { useAuth } from './useAuth.ts';
 
 export const useAppeals = (params: SearchAppealsParams = {}) => {
   return useQuery<PaginatedAppealsResponse, AxiosError>({
@@ -25,8 +26,11 @@ export const useUpdateAppealState = () => {
 };
 
 export const useMyAppeals = () => {
+  const { isAuthenticated } = useAuth();
+
   return useQuery<Appeal[], AxiosError>({
     queryKey: ['appeals', 'me'],
     queryFn: appealService.getMyAppeals,
+    enabled: isAuthenticated,
   });
 };
