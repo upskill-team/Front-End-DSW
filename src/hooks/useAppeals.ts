@@ -6,9 +6,12 @@ import type { AxiosError } from 'axios';
 import { useAuth } from './useAuth.ts';
 
 export const useAppeals = (params: SearchAppealsParams = {}) => {
+  const { isAuthenticated } = useAuth();
+
   return useQuery<PaginatedAppealsResponse, AxiosError>({
     queryKey: ['appeals', params],
     queryFn: () => appealService.findAllAppeals(params),
+    enabled: isAuthenticated,
   });
 }
 
@@ -32,5 +35,6 @@ export const useMyAppeals = () => {
     queryKey: ['appeals', 'me'],
     queryFn: appealService.getMyAppeals,
     enabled: isAuthenticated,
+    retry: false,
   });
 };

@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import type { User } from '../types/entities.ts';
 import { userService } from '../api/services/user.service.ts';
+import { authService } from '../api/services/auth.service.ts';
 import { AuthContext } from './AuthContext';
 import apiClient, { TOKEN_STORAGE_KEY } from '../api/apiClient';
 
@@ -14,39 +15,17 @@ export interface AuthContextType {
   logout: () => void;
 }
 
-// This provider handles authentication and user state globally.
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // State for the authenticated user and to know if we're loading data.
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const queryClient = useQueryClient();
 
-  // Function to get the user's profile and update the global state.
   const fetchProfileAndSetUser = useCallback(async () => {
-    try {
-      const userData = await userService.getProfile();
-      setUser(userData);
-    } catch (error) {
-      // If it fails, we remove the token and log out the user.
-      console.error('Failed to fetch profile, logging out.', error);
-      localStorage.removeItem(TOKEN_STORAGE_KEY);
-      setUser(null);
-    }
+    const userData = await userService.getProfile();
+    setUser(userData);
+    return userData;
   }, []);
 
-  // When this runs for the first time, we look for a saved token and try to log in with it.
-  useEffect(() => {
-    const validateTokenOnLoad = async () => {
-      const token = localStorage.getItem(TOKEN_STORAGE_KEY);
-      if (token) {
-        await fetchProfileAndSetUser();
-      }
-      setIsLoading(false);
-    };
-    validateTokenOnLoad();
-  }, [fetchProfileAndSetUser]);
-
-  // Login function: saves the token, sets it in the header, and gets the profile.
   const login = useCallback(
     async (token: string) => {
       localStorage.setItem(TOKEN_STORAGE_KEY, token);
@@ -56,50 +35,69 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     [fetchProfileAndSetUser]
   );
 
-  // Logout function: removes the token and header, and clears the user.
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
     try {
-      // Clear all React Query caches to avoid stale data
-      queryClient.clear();
-
-      // Remove JWT token from localStorage using the correct key
-      localStorage.removeItem(TOKEN_STORAGE_KEY);
-
-      // Also remove any other common auth-related keys (defensive cleanup)
-      const authKeys = [
-        'jwt_token',
-        'token',
-        'authToken',
-        'access_token',
-        'refresh_token',
-      ];
-      authKeys.forEach((key) => {
-        if (localStorage.getItem(key)) {
-          localStorage.removeItem(key);
-        }
-      });
-
-      // Clear Authorization header from future requests
-      delete apiClient.defaults.headers.common['Authorization'];
-
-      // Clear user state
-      setUser(null);
-      setIsLoading(false);
-
-      console.log('Logout completado exitosamente');
+      await authService.logout();
     } catch (error) {
-      console.error('Error durante logout:', error);
-      // Force cleanup even if something fails
-      localStorage.clear();
+      console.error('Error logout servidor:', error);
+    } finally {
+      queryClient.clear();
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+      
+      ['jwt_token', 'token', 'authToken'].forEach((k) => localStorage.removeItem(k));
+
+      delete apiClient.defaults.headers.common['Authorization'];
       setUser(null);
       setIsLoading(false);
     }
   }, [queryClient]);
 
-  // We keep these values ready so the app doesn't reload too much.
+  useEffect(() => {
+    const initAuth = async () => {
+      const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+
+      const trySilentRefresh = async () => {
+        try {
+          const { data } = await apiClient.post('/auth/refresh');
+          const newToken = data.data.token;
+          if (newToken) {
+            await login(newToken);
+            return true;
+          }
+        } catch {
+          return false;
+        }
+        return false;
+      };
+
+      if (token) {
+        apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        try {
+          await fetchProfileAndSetUser();
+        } catch {
+          console.warn("Token local inválido o expirado. Intentando renovar sesión...");
+          
+          const success = await trySilentRefresh();
+          
+          if (!success) {
+            console.error("No se pudo restaurar la sesión.");
+            localStorage.removeItem(TOKEN_STORAGE_KEY);
+            setUser(null);
+          }
+        }
+      } else {
+        await trySilentRefresh();
+      }
+      
+      setIsLoading(false);
+    };
+    
+    initAuth();
+  }, [fetchProfileAndSetUser, login]);
+
   const value = useMemo(
     () => ({
-      isAuthenticated: !!user, // We know if someone is logged in if there's a user object.
+      isAuthenticated: !!user,
       user,
       isLoading,
       login,
@@ -108,6 +106,5 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     [user, isLoading, login, logout]
   );
 
-  // Provide the context to child components.
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -48,7 +48,7 @@ const register = async (payload: RegisterPayload): Promise<User> => {
 // Gets the current user's profile
 const getProfile = async (): Promise<User> => {
   try {
-    const response = await apiClient.get<ApiResponse<User>>('/auth/profile');
+    const response = await apiClient.get<ApiResponse<User>>('/users/me');
     return response.data.data;
   } catch (error) {
     console.error('Failed to get user profile', error);
@@ -66,10 +66,16 @@ const resetPassword = async (token: string, password_plaintext: string): Promise
   await apiClient.post('/auth/reset-password', { token, password_plaintext });
 };
 
+// Logout: Calls backend to clear HttpOnly cookie
+const logout = async (): Promise<void> => {
+  await apiClient.post('/auth/logout');
+};
+
 export const authService = {
   login,
   register,
   getProfile,
   forgotPassword,
   resetPassword,
+  logout,
 };
