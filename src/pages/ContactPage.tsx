@@ -99,7 +99,7 @@ export default function ContactPage() {
                           Error al Enviar el Mensaje
                         </h4>
                         <p className="text-sm text-red-700">
-                          {contactMutation.error?.response?.data?.message ||
+                          {contactMutation.error?.response?.data?.errors ||
                             'Ocurrió un error al enviar tu mensaje. Por favor, intenta nuevamente.'}
                         </p>
                       </div>

@@ -1,5 +1,3 @@
-// src/api/services/enrollment.service.ts
-
 import type { Enrollment, EnrollmentState } from '../../types/entities';
 import type { ApiResponse } from '../../types/shared';
 import apiClient from '../apiClient';

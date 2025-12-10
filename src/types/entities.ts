@@ -34,6 +34,7 @@ export interface Course {
   id: string;
   name: string;
   description: string;
+  institution?: Institution;
   imageUrl: string;
   courseType: CourseType;
   professor: Professor;
@@ -54,7 +55,7 @@ export interface CourseType {
 }
 
 export interface Institution {
-  id: string;
+  institutionId: string;
   name: string;
   description: string;
   normalizedName: string;

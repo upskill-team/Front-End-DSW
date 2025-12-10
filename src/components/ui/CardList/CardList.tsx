@@ -13,10 +13,6 @@ export interface CourseCardListProps extends React.HTMLAttributes<HTMLDivElement
    * The complete course object containing the information to be displayed (title, price, instructor, image, etc.).
    */
   course: Course;
-    /**
-   * Optional function that runs when secondary actions are clicked (if any exist).
-   */
-  onViewMore?: () => void;
 }
 /**
  * Horizontal card component used to display a summary of a course in lists.

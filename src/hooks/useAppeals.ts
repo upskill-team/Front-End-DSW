@@ -3,7 +3,7 @@ import { appealService } from '../api/services/appeal.service';
 import type { SearchAppealsParams, PaginatedAppealsResponse } from '../types/shared.ts';
 import type { Appeal } from '../types/entities.ts';
 import type { AxiosError } from 'axios';
-import { useAuth } from './useAuth';
+import { useAuth } from './useAuth.ts';
 
 export const useAppeals = (params: SearchAppealsParams = {}) => {
   const { isAuthenticated } = useAuth();
