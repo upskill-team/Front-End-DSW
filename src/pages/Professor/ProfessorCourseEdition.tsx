@@ -18,7 +18,7 @@ import {
 import CourseHeader from '../../components/professor/courseEditor/CourseHeader';
 import CourseSidebar from '../../components/professor/courseEditor/CourseSidebar';
 import UnitContent from '../../components/professor/courseEditor/UnitContent';
-import { toAmount, toCents } from '../../lib/currency';
+import { toAmount } from '../../lib/currency';
 import CourseConfigModal from '../../components/professor/courseEditor/modals/CourseConfigModal';
 import UnitModal from '../../components/professor/courseEditor/modals/UnitModal';
 import QuestionEditor from '../../components/professor/courseEditor/QuestionEditor';
@@ -27,10 +27,10 @@ import GeneralQuestionsManager from '../../components/professor/courseEditor/Gen
 import type { Block } from '@blocknote/core';
 import type { Unit, UnitEditorData, Question } from '../../types/entities';
 import { QuestionType } from '../../types/entities';
-import { useUpdateCourse } from '../../hooks/useCourses'
-import { toast } from 'react-hot-toast'
+import { useUpdateCourse } from '../../hooks/useCourses';
+import { toast } from 'react-hot-toast';
 
-export default function ProfessorCourseEditorPage() {
+export default function ProfessorCourseEdition() {
   const { courseId } = useParams<{ courseId: string }>();
 
   // Hooks para datos del backend
@@ -45,7 +45,6 @@ export default function ProfessorCourseEditorPage() {
   const createQuestionMutation = useCreateQuestion();
   const updateQuestionMutation = useUpdateQuestion();
   const deleteQuestionMutation = useDeleteQuestion();
-  
 
   // Estados principales
   const [courseConfig, setCourseConfig] = useState({
@@ -53,7 +52,7 @@ export default function ProfessorCourseEditorPage() {
     description: '',
     status: 'en-desarrollo',
     isFree: false,
-    price: 0, // En pesos para el formulario (UX)
+    price: 0,
   });
   const [units, setUnits] = useState<UnitEditorData[]>([]);
   const [selectedUnitId, setSelectedUnitId] = useState<number | null>(null);
@@ -67,7 +66,7 @@ export default function ProfessorCourseEditorPage() {
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
 
   // Refs para el debouncing mejorado
-  const saveTimeoutRef = useRef<number | null>(null);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastChangeRef = useRef<Date>(new Date());
   const previousUnitRef = useRef<number | null>(null);
 
@@ -88,7 +87,7 @@ export default function ProfessorCourseEditorPage() {
 
   // Estados para formularios
   const [tempConfig, setTempConfig] = useState(courseConfig);
-  const { mutate: updateCourse } = useUpdateCourse(); // <-- Usa el hook correcto
+  const { mutate: updateCourse } = useUpdateCourse();
   const [newImageFile, setNewImageFile] = useState<File | null>(null);
   const [editingUnit, setEditingUnit] = useState<Unit | null>(null);
   const [newUnitName, setNewUnitName] = useState('');
@@ -157,7 +156,6 @@ export default function ProfessorCourseEditorPage() {
     if (currentUnit && currentUnit.hasUnsavedChanges) {
       performSave(selectedUnitId, currentUnit.detail);
     } else {
-      // Si no hay cambios pendientes, actualiza el timestamp para mostrar feedback positivo
       setLastSavedAt(new Date());
       setSaveError(null);
     }
@@ -174,10 +172,11 @@ export default function ProfessorCourseEditorPage() {
           status: currentCourse.status || 'en-desarrollo',
           isFree: currentCourse.isFree,
           // Convertir centavos a pesos para mostrar en el formulario
-          price: currentCourse.priceInCents ? toAmount(currentCourse.priceInCents) : 0,
+          price: currentCourse.priceInCents
+            ? toAmount(currentCourse.priceInCents)
+            : 0,
         });
 
-        // Convertir unidades del backend a formato del editor
         const unitsFromBackend: UnitEditorData[] = (
           currentCourse.units || []
         ).map((unitBackend) => ({
@@ -187,24 +186,22 @@ export default function ProfessorCourseEditorPage() {
           detail: unitBackend.detail,
           questions: unitBackend.questions,
           materials: unitBackend.materials,
-          // Las preguntas ahora se manejan directamente desde questions[]
         }));
 
         setUnits(unitsFromBackend);
 
-        if (unitsFromBackend.length > 0) {
+        if (unitsFromBackend.length > 0 && selectedUnitId === null) {
           setSelectedUnitId(unitsFromBackend[0].unitNumber);
         }
       }
     }
-  }, [courses, courseId]);
+  }, [courses, courseId, selectedUnitId]); // selectedUnitId agregado a dependencias
 
   // Efecto para auto-guardar cuando cambias de unidad
   useEffect(() => {
     const currentUnitId = selectedUnitId;
     const previousUnitId = previousUnitRef.current;
 
-    // Si cambió de unidad y hay una unidad anterior con cambios no guardados
     if (previousUnitId && previousUnitId !== currentUnitId && courseId) {
       const previousUnit = units.find((u) => u.unitNumber === previousUnitId);
 
@@ -212,8 +209,6 @@ export default function ProfessorCourseEditorPage() {
         performSave(previousUnitId, previousUnit.detail);
       }
     }
-
-    // Actualizar referencia de unidad anterior
     previousUnitRef.current = currentUnitId;
   }, [selectedUnitId, courseId, units, performSave]);
 
@@ -223,17 +218,12 @@ export default function ProfessorCourseEditorPage() {
       const hasUnsavedChanges = units.some((unit) => unit.hasUnsavedChanges);
 
       if (hasUnsavedChanges) {
-        // Intentar guardar rápidamente
         const unitWithChanges = units.find((unit) => unit.hasUnsavedChanges);
         if (unitWithChanges && courseId) {
           performSave(unitWithChanges.unitNumber, unitWithChanges.detail);
         }
-
-        // Mostrar advertencia al usuario
         event.preventDefault();
-        event.returnValue =
-          '¿Estás seguro de que quieres salir? Hay cambios sin guardar.';
-        return event.returnValue;
+        event.returnValue = '';
       }
     };
 
@@ -241,14 +231,13 @@ export default function ProfessorCourseEditorPage() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [units, courseId, performSave]);
 
-  // Handlers para unidades
+  // ... (Handlers para unidades, preguntas, materiales igual que antes) ...
   const handleCreateUnit = () => {
     if (!courseId || !courses) return;
 
     const currentCourse = courses.find((course) => course.id === courseId);
     if (!currentCourse) return;
 
-    // Calcular el siguiente unitNumber
     const maxUnitNumber = Math.max(
       0,
       ...(currentCourse.units || []).map((u) => u.unitNumber)
@@ -272,15 +261,13 @@ export default function ProfessorCourseEditorPage() {
     );
   };
 
-  // Handler para preguntas (crear o editar)
   const handleSaveQuestion = (questionToSave: Question) => {
     if (!courseId || !selectedUnitId) return;
 
-    // Usamos 'questionToSave' directamente, en lugar del estado 'newQuestion'.
     const questionData = {
       questionText: questionToSave.questionText,
       questionType: questionToSave.questionType,
-      payload: questionToSave.payload, // ¡Aquí viajan los datos correctos!
+      payload: questionToSave.payload,
     };
 
     const isEditing = !!questionToSave.id;
@@ -321,7 +308,7 @@ export default function ProfessorCourseEditorPage() {
         }
       );
     }
-  }
+  };
 
   const resetQuestionForm = () => {
     setNewQuestion({
@@ -334,23 +321,22 @@ export default function ProfessorCourseEditorPage() {
     });
   };
 
-  // Handler para editar pregunta
   const handleEditQuestion = (question: Question) => {
     setNewQuestion({ ...question });
     setIsQuestionModalOpen(true);
   };
 
-  // Handler para cerrar el modal de pregunta
   const handleCloseQuestionModal = () => {
     setIsQuestionModalOpen(false);
     resetQuestionForm();
   };
 
-  // Handler para borrar pregunta
   const handleDeleteQuestion = (questionId: string) => {
     if (!courseId || !selectedUnitId) return;
 
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta pregunta?')) {
+    if (
+      window.confirm('¿Estás seguro de que quieres eliminar esta pregunta?')
+    ) {
       deleteQuestionMutation.mutate(
         {
           courseId,
@@ -359,7 +345,7 @@ export default function ProfessorCourseEditorPage() {
         },
         {
           onSuccess: () => toast.success('Pregunta eliminada exitosamente'),
-          onError: () => toast.error('No se pudo eliminar la pregunta')
+          onError: () => toast.error('No se pudo eliminar la pregunta'),
         }
       );
     }
@@ -371,7 +357,7 @@ export default function ProfessorCourseEditorPage() {
     const data = {
       name: newUnitName,
       description: newUnitDescription,
-      detail: editingUnit.detail, // Mantener el detalle actual
+      detail: editingUnit.detail,
     };
 
     updateUnitMutation.mutate(
@@ -399,7 +385,9 @@ export default function ProfessorCourseEditorPage() {
       deleteUnitMutation.mutate({ courseId, unitNumber });
 
       if (selectedUnitId === unitNumber) {
-        const remainingUnits = units.filter((u) => u.unitNumber !== unitNumber);
+        const remainingUnits = units.filter(
+          (u) => u.unitNumber !== unitNumber
+        );
         setSelectedUnitId(
           remainingUnits.length > 0 ? remainingUnits[0].unitNumber : null
         );
@@ -413,7 +401,6 @@ export default function ProfessorCourseEditorPage() {
     const newDetailJson = JSON.stringify(newBlocks);
     lastChangeRef.current = new Date();
 
-    // Actualizar estado local inmediatamente (optimistic update)
     setUnits((currentUnits) =>
       currentUnits.map((unit) =>
         unit.unitNumber === selectedUnitId
@@ -427,18 +414,15 @@ export default function ProfessorCourseEditorPage() {
       )
     );
 
-    // Limpiar timeout anterior
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
     }
 
-    // Debounce mejorado: guardar después de 5 segundos de inactividad
     saveTimeoutRef.current = setTimeout(() => {
       performSave(selectedUnitId, newDetailJson);
     }, 5000);
   };
 
-  // Handlers para materiales
   const handleUploadMaterial = () => {
     if (!courseId || !selectedUnitId || stagedMaterials.length === 0) return;
 
@@ -465,7 +449,6 @@ export default function ProfessorCourseEditorPage() {
     );
 
     if (isConfirmed) {
-      // Convertir ID a índice si es necesario
       const materialIndex =
         typeof materialId === 'number'
           ? materialId
@@ -479,7 +462,6 @@ export default function ProfessorCourseEditorPage() {
     }
   };
 
-  // Handlers para drag & drop
   const handleDragStart = (_e: React.DragEvent, unit: UnitEditorData) => {
     setDraggedUnit(unit);
   };
@@ -506,21 +488,17 @@ export default function ProfessorCourseEditorPage() {
       (u) => u.unitNumber === targetUnit.unitNumber
     );
 
-    // Crear nuevo array reordenado
     const newUnits = [...units];
     const [removed] = newUnits.splice(draggedIndex, 1);
     newUnits.splice(targetIndex, 0, removed);
 
-    // Reasignar unitNumbers basados en la posición (1, 2, 3, etc.)
     const unitsWithNewNumbers = newUnits.map((unit, index) => ({
       ...unit,
       unitNumber: index + 1,
     }));
 
-    // Actualizar estado local inmediatamente
     setUnits(unitsWithNewNumbers);
 
-    // Crear array de reordenamiento para el backend
     const reorderData = {
       units: unitsWithNewNumbers.map((unit, index) => ({
         unitNumber:
@@ -530,12 +508,10 @@ export default function ProfessorCourseEditorPage() {
       })),
     };
 
-    // Llamar al backend para persistir el reordenamiento
     reorderUnitsMutation.mutate(
       { courseId, data: reorderData },
       {
         onError: () => {
-          // Si falla, revertir cambios
           setUnits(units);
         },
       }
@@ -544,7 +520,6 @@ export default function ProfessorCourseEditorPage() {
     setDraggedUnit(null);
   };
 
-  // Handlers para modales
   const handleOpenConfigModal = () => {
     setTempConfig({ ...courseConfig });
     setIsConfigModalOpen(true);
@@ -554,13 +529,15 @@ export default function ProfessorCourseEditorPage() {
     if (!courseId) return;
 
     const formData = new FormData();
+    const priceValue = Number(tempConfig.price) || 0;
+    const priceInCents = tempConfig.isFree ? 0 : Math.round(priceValue * 100);
 
     const configData = {
       name: tempConfig.name,
       description: tempConfig.description,
       status: tempConfig.status,
       isFree: tempConfig.isFree,
-      priceInCents: tempConfig.isFree ? 0 : toCents(tempConfig.price),
+      priceInCents: priceInCents,
     };
 
     formData.append('courseData', JSON.stringify(configData));
@@ -578,17 +555,19 @@ export default function ProfessorCourseEditorPage() {
             description: updatedCourse.description,
             status: updatedCourse.status,
             isFree: updatedCourse.isFree,
-            price: updatedCourse.priceInCents ? toAmount(updatedCourse.priceInCents) : 0,
+            price: updatedCourse.priceInCents
+              ? toAmount(updatedCourse.priceInCents)
+              : 0,
           });
           setIsConfigModalOpen(false);
           setNewImageFile(null);
           setSaveError(null);
           setLastSavedAt(new Date());
-          toast.success('Configuración guardada exitosamente')
+          toast.success('Configuración guardada exitosamente');
         },
         onError: (error) => {
           setSaveError(error.message || 'Error al guardar configuración');
-          toast.error('Error al guardar la configuración del curso')
+          toast.error('Error al guardar la configuración del curso');
         },
       }
     );
@@ -604,7 +583,7 @@ export default function ProfessorCourseEditorPage() {
   const handleEditUnit = (unit: Unit) => {
     setEditingUnit(unit);
     setNewUnitName(unit.name);
-    setNewUnitDescription(unit.description || ''); // Backend no tiene description
+    setNewUnitDescription(unit.description || '');
     setIsUnitModalOpen(true);
   };
 
@@ -623,20 +602,16 @@ export default function ProfessorCourseEditorPage() {
     }
   };
 
-  // Handlers para archivo de imagen
   const handleImageChange = (file: File | null) => {
     setNewImageFile(file);
   };
 
-  // Handler para guardado global (legacy - mantener por compatibilidad)
   const handleGlobalSave = handleManualSave;
 
-  // Loading state
   if (isLoadingCourses) {
     return <p>Cargando información del curso...</p>;
   }
 
-  // Error state
   if (!isLoadingCourses && !courses?.find((c) => c.id === courseId)) {
     return (
       <div>
@@ -664,7 +639,6 @@ export default function ProfessorCourseEditorPage() {
       />
 
       <div className="grid lg:grid-cols-4 gap-6">
-        {/* Sidebar - Unidades */}
         <div className="lg:col-span-1">
           <CourseSidebar
             units={units}
@@ -680,7 +654,6 @@ export default function ProfessorCourseEditorPage() {
           />
         </div>
 
-        {/* Contenido Principal */}
         <div className="lg:col-span-3">
           <UnitContent
             selectedUnit={selectedUnit || null}
@@ -698,7 +671,6 @@ export default function ProfessorCourseEditorPage() {
         </div>
       </div>
 
-      {/* Modales */}
       <CourseConfigModal
         isOpen={isConfigModalOpen}
         onClose={() => setIsConfigModalOpen(false)}
@@ -739,7 +711,7 @@ export default function ProfessorCourseEditorPage() {
             const newMaterials = Array.from(files).map((file) => ({
               id: Date.now() + Math.random(),
               name: file.name.replace(/\.[^/.]+$/, ''),
-              url: '', // Se llenará después de subir
+              url: '',
               file: file,
             }));
             setStagedMaterials((prev) => [...prev, ...newMaterials]);
