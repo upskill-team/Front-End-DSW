@@ -2,23 +2,10 @@ import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@ta
 import { enrollService } from '../api/services/enrollment.service';
 import type { Enrollment } from '../types/entities';
 import type { AxiosError } from 'axios';
-import apiClient from '../api/apiClient'
 
 type EnrollInCoursePayload = {
   studentId: string;
   courseId: string;
-};
-
-type UpdateEnrollmentPayload = {
-  enrollmentId: string;
-  data: Parameters<typeof enrollService.update>[1];
-};
-
-export const useEnrollments = () => {
-  return useQuery<Enrollment[], AxiosError>({
-    queryKey: ['enrollments'],
-    queryFn: enrollService.findAll,
-  });
 };
 
 export const useExistingEnrollment = (
@@ -37,15 +24,6 @@ export const useExistingEnrollment = (
       return failureCount < 3;
     },
     ...options,
-  });
-};
-
-
-export const useEnrollmentById = (enrollmentId: string | undefined) => {
-  return useQuery<Enrollment, AxiosError>({
-    queryKey: ['enrollment', enrollmentId],
-    queryFn: () => enrollService.findById(enrollmentId!),
-    enabled: !!enrollmentId,
   });
 };
 
@@ -85,37 +63,7 @@ export const useEnrollInCourse = () => {
   };
 };
 
-export const useUpdateEnrollment = () => {
-  const mutation = useMutation<
-    Enrollment,
-    AxiosError,
-    UpdateEnrollmentPayload
-  >({
-    mutationFn: ({ enrollmentId, data }) => enrollService.update(enrollmentId, data),
-  });
 
-  return {
-    updateEnrollment: mutation.mutate,
-    updateEnrollmentAsync: mutation.mutateAsync,
-    isPending: mutation.isPending,
-  };
-};
-
-export const useDeleteEnrollment = () => {
-  const mutation = useMutation<
-    void,
-    AxiosError,
-    string
-  >({
-    mutationFn: (enrollmentId: string) => enrollService.remove(enrollmentId),
-  });
-
-  return {
-    deleteEnrollment: mutation.mutate,
-    deleteEnrollmentAsync: mutation.mutateAsync,
-    isPending: mutation.isPending,
-  };
-};
 
 /**
  * Hook para marcar una unidad como completada.
@@ -211,16 +159,3 @@ export const useUncompleteUnit = () => {
   };
 };
 
-/**
- * Hook to fetch the 5 most recent enrollments for the current professor.
- */
-export const useProfessorRecentEnrollments = () => {
-  return useQuery<Enrollment[], AxiosError>({
-    queryKey: ['professor', 'recentEnrollments'],
-    queryFn: async () => {
-      const response = await apiClient.get('/professors/me/recent-enrollments');
-      return response.data.data;
-    },
-    staleTime: 1000 * 60 * 5, 
-  })
-}

@@ -5,7 +5,6 @@ import type {
   Assessment,
   AssessmentSummary,
   AssessmentWithMetadata,
-  PendingAssessment,
   CreateAssessmentRequest,
   UpdateAssessmentRequest,
   AssessmentAttempt,
@@ -60,16 +59,7 @@ export const useAttemptDetails = (attemptId: string | undefined) => {
   });
 };
 
-/**
- * Endpoint #8: Evaluaciones pendientes del estudiante
- */
-export const usePendingAssessments = (studentId: string | undefined) => {
-  return useQuery<PendingAssessment[], Error>({
-    queryKey: ['pending-assessments', studentId],
-    queryFn: () => assessmentService.getPendingAssessments(studentId!),
-    enabled: !!studentId,
-  });
-};
+
 
 export const useCreateAssessment = () => {
   const queryClient = useQueryClient();
