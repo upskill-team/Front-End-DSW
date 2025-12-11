@@ -65,16 +65,6 @@ export const useUpdateCourse = () => {
   });
 };
 
-export const useDeleteCourse = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (courseId: string) => courseService.remove(courseId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['professorCourses'] });
-    },
-  });
-};
 
 /**
  * Hook para buscar, filtrar y paginar cursos.
