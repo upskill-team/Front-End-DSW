@@ -1,0 +1,43 @@
+name: Create Pull Request to Develop
+
+on:
+  push:
+    branches:
+      - 'feature/**' # Se activa con pushes a ramas que empiezan con 'feature/'
+      - 'bugfix/**' # También puedes añadir otros prefijos como 'bugfix/'
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # El título del PR usará el mensaje del último commit
+          title: 'PR para ${{ github.ref_name }}'
+          # El cuerpo del PR, puedes personalizarlo como quieras
+          body: |
+            **Pull Request Automático**
+
+            Esta PR fue generada automáticamente desde la rama: `${{ github.ref_name }}`.
+
+            **Autor:** @${{ github.actor }}
+
+            Por favor, revisa los cambios antes de fusionar en `develop`.
+          # La rama base para la fusión será 'develop'
+          base: develop
+          # La rama que contiene los cambios es la que activó el workflow
+          branch: ${{ github.ref_name }}
+          # Asigna la PR a la persona que hizo el push
+          assignees: ${{ github.actor }}
+          # Pide revisión a otros miembros del equipo (cambia los usernames)
+          reviewers: |
+            Frasquito3
+            carlex74
+            LucaTvl
+            NiconiKimg
+          # Añade etiquetas para una mejor organización
+          labels: |
+            automated-pr
+            needs-review
