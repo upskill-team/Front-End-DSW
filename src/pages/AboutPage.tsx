@@ -1,0 +1,53 @@
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
+
+export default function AboutPage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 py-12">
+      <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
+        <h1 className="text-4xl font-bold text-slate-800 mb-8 text-center">
+          Acerca de Nosotros
+        </h1>
+
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Nuestra Misión</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-slate-700">
+              Somos una plataforma educativa dedicada a democratizar el acceso a la educación de calidad.
+              Nuestro objetivo es conectar a estudiantes con profesores expertos en diversas áreas del conocimiento.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Nuestra Visión</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-slate-700">
+              Aspiramos a ser la plataforma de aprendizaje en línea líder, donde cada persona pueda
+              desarrollar sus habilidades y alcanzar su máximo potencial a través de cursos accesibles
+              y de alta calidad.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>¿Qué ofrecemos?</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc list-inside space-y-2 text-slate-700">
+              <li>Cursos en diversas áreas del conocimiento</li>
+              <li>Profesores calificados y expertos en sus campos</li>
+              <li>Evaluaciones y seguimiento de progreso</li>
+              <li>Certificados de finalización</li>
+              <li>Comunidad de aprendizaje activa</li>
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,740 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
+import { useProfessorCourses } from '../../hooks/useCourses';
+import {
+  useCreateUnit,
+  useUpdateUnit,
+  useDeleteUnit,
+  useReorderUnits,
+} from '../../hooks/useUnits';
+import { useUploadMaterial, useDeleteMaterial } from '../../hooks/useMaterials';
+import { useQuickSave } from '../../hooks/useQuickSave';
+import {
+  useQuestions,
+  useCreateQuestion,
+  useUpdateQuestion,
+  useDeleteQuestion,
+} from '../../hooks/useQuestions';
+import CourseHeader from '../../components/professor/courseEditor/CourseHeader';
+import CourseSidebar from '../../components/professor/courseEditor/CourseSidebar';
+import UnitContent from '../../components/professor/courseEditor/UnitContent';
+import { toAmount } from '../../lib/currency';
+import CourseConfigModal from '../../components/professor/courseEditor/modals/CourseConfigModal';
+import UnitModal from '../../components/professor/courseEditor/modals/UnitModal';
+import QuestionEditor from '../../components/professor/courseEditor/QuestionEditor';
+import UnitModalUpload from '../../components/landing/professorCourseEdition/UnitModalUpload';
+import GeneralQuestionsManager from '../../components/professor/courseEditor/GeneralQuestionsManager';
+import type { Block } from '@blocknote/core';
+import type { Unit, UnitEditorData, Question } from '../../types/entities';
+import { QuestionType } from '../../types/entities';
+import { useUpdateCourse } from '../../hooks/useCourses';
+import { toast } from 'react-hot-toast';
+
+export default function ProfessorCourseEdition() {
+  const { courseId } = useParams<{ courseId: string }>();
+
+  // Hooks para datos del backend
+  const { data: courses, isLoading: isLoadingCourses } = useProfessorCourses();
+  const createUnitMutation = useCreateUnit();
+  const updateUnitMutation = useUpdateUnit();
+  const deleteUnitMutation = useDeleteUnit();
+  const reorderUnitsMutation = useReorderUnits();
+  const uploadMaterialMutation = useUploadMaterial();
+  const deleteMaterialMutation = useDeleteMaterial();
+  const quickSaveMutation = useQuickSave();
+  const createQuestionMutation = useCreateQuestion();
+  const updateQuestionMutation = useUpdateQuestion();
+  const deleteQuestionMutation = useDeleteQuestion();
+
+  // Estados principales
+  const [courseConfig, setCourseConfig] = useState({
+    name: '',
+    description: '',
+    status: 'en-desarrollo',
+    isFree: false,
+    price: 0,
+  });
+  const [units, setUnits] = useState<UnitEditorData[]>([]);
+  const [selectedUnitId, setSelectedUnitId] = useState<number | null>(null);
+  const [editable, setEditable] = useState(false);
+
+  // Hook para preguntas de la unidad seleccionada
+  const { data: questions = [] } = useQuestions(courseId || '', selectedUnitId);
+
+  // Estados para feedback de guardado
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+
+  // Refs para el debouncing mejorado
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastChangeRef = useRef<Date>(new Date());
+  const previousUnitRef = useRef<number | null>(null);
+
+  // Estados para modales
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+  const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
+  const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
+  const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
+  const [isGeneralQuestionsOpen, setIsGeneralQuestionsOpen] = useState(false);
+  const [newQuestion, setNewQuestion] = useState<Question>({
+    questionText: '',
+    questionType: QuestionType.MultipleChoiceOption,
+    payload: {
+      options: ['', '', '', ''],
+      correctAnswer: 0,
+    },
+  });
+
+  // Estados para formularios
+  const [tempConfig, setTempConfig] = useState(courseConfig);
+  const { mutate: updateCourse } = useUpdateCourse();
+  const [newImageFile, setNewImageFile] = useState<File | null>(null);
+  const [editingUnit, setEditingUnit] = useState<Unit | null>(null);
+  const [newUnitName, setNewUnitName] = useState('');
+  const [newUnitDescription, setNewUnitDescription] = useState('');
+  const [stagedMaterials, setStagedMaterials] = useState<
+    { id: number | string; name: string; file?: File; url?: string }[]
+  >([]);
+
+  // Estados para drag & drop
+  const [draggedUnit, setDraggedUnit] = useState<UnitEditorData | null>(null);
+
+  const selectedUnit = units.find((u) => u.unitNumber === selectedUnitId);
+
+  // Función para realizar el guardado
+  const performSave = useCallback(
+    (unitId: number, detailJson: string) => {
+      if (!courseId) return;
+
+      quickSaveMutation.mutate(
+        {
+          courseId,
+          data: {
+            type: 'unit-content',
+            data: {
+              unitNumber: unitId,
+              detail: detailJson,
+            },
+          },
+        },
+        {
+          onSuccess: () => {
+            setUnits((currentUnits) =>
+              currentUnits.map((unit) =>
+                unit.unitNumber === unitId
+                  ? { ...unit, hasUnsavedChanges: false }
+                  : unit
+              )
+            );
+            setSaveError(null);
+            setLastSavedAt(new Date());
+          },
+          onError: (error) => {
+            setUnits((currentUnits) =>
+              currentUnits.map((unit) =>
+                unit.unitNumber === unitId
+                  ? { ...unit, hasUnsavedChanges: true }
+                  : unit
+              )
+            );
+            setSaveError(error.message || 'Error desconocido');
+          },
+        }
+      );
+    },
+    [courseId, quickSaveMutation]
+  );
+
+  // Función para guardado manual
+  const handleManualSave = useCallback(() => {
+    if (!selectedUnitId || !courseId) {
+      setSaveError('No hay unidad seleccionada para guardar');
+      return;
+    }
+
+    const currentUnit = units.find((u) => u.unitNumber === selectedUnitId);
+    if (currentUnit && currentUnit.hasUnsavedChanges) {
+      performSave(selectedUnitId, currentUnit.detail);
+    } else {
+      setLastSavedAt(new Date());
+      setSaveError(null);
+    }
+  }, [selectedUnitId, courseId, units, performSave]);
+
+  // Cargar datos del curso desde el backend
+  useEffect(() => {
+    if (courses && courseId) {
+      const currentCourse = courses.find((course) => course.id === courseId);
+      if (currentCourse) {
+        setCourseConfig({
+          name: currentCourse.name,
+          description: currentCourse.description,
+          status: currentCourse.status || 'en-desarrollo',
+          isFree: currentCourse.isFree,
+          // Convertir centavos a pesos para mostrar en el formulario
+          price: currentCourse.priceInCents
+            ? toAmount(currentCourse.priceInCents)
+            : 0,
+        });
+
+        const unitsFromBackend: UnitEditorData[] = (
+          currentCourse.units || []
+        ).map((unitBackend) => ({
+          unitNumber: unitBackend.unitNumber,
+          name: unitBackend.name,
+          description: unitBackend.description,
+          detail: unitBackend.detail,
+          questions: unitBackend.questions,
+          materials: unitBackend.materials,
+        }));
+
+        setUnits(unitsFromBackend);
+
+        if (unitsFromBackend.length > 0 && selectedUnitId === null) {
+          setSelectedUnitId(unitsFromBackend[0].unitNumber);
+        }
+      }
+    }
+  }, [courses, courseId, selectedUnitId]); // selectedUnitId agregado a dependencias
+
+  // Efecto para auto-guardar cuando cambias de unidad
+  useEffect(() => {
+    const currentUnitId = selectedUnitId;
+    const previousUnitId = previousUnitRef.current;
+
+    if (previousUnitId && previousUnitId !== currentUnitId && courseId) {
+      const previousUnit = units.find((u) => u.unitNumber === previousUnitId);
+
+      if (previousUnit && previousUnit.hasUnsavedChanges) {
+        performSave(previousUnitId, previousUnit.detail);
+      }
+    }
+    previousUnitRef.current = currentUnitId;
+  }, [selectedUnitId, courseId, units, performSave]);
+
+  // Efecto para auto-guardar antes de salir de la página
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      const hasUnsavedChanges = units.some((unit) => unit.hasUnsavedChanges);
+
+      if (hasUnsavedChanges) {
+        const unitWithChanges = units.find((unit) => unit.hasUnsavedChanges);
+        if (unitWithChanges && courseId) {
+          performSave(unitWithChanges.unitNumber, unitWithChanges.detail);
+        }
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [units, courseId, performSave]);
+
+  // ... (Handlers para unidades, preguntas, materiales igual que antes) ...
+  const handleCreateUnit = () => {
+    if (!courseId || !courses) return;
+
+    const currentCourse = courses.find((course) => course.id === courseId);
+    if (!currentCourse) return;
+
+    const maxUnitNumber = Math.max(
+      0,
+      ...(currentCourse.units || []).map((u) => u.unitNumber)
+    );
+    const nextUnitNumber = maxUnitNumber + 1;
+
+    const data = {
+      name: newUnitName,
+      description: newUnitDescription,
+      detail: `<h1>${newUnitName}</h1><p>${newUnitDescription}</p>`,
+      unitNumber: nextUnitNumber,
+    };
+
+    createUnitMutation.mutate(
+      { courseId, data },
+      {
+        onSuccess: () => {
+          handleCloseUnitModal();
+        },
+      }
+    );
+  };
+
+  const handleSaveQuestion = (questionToSave: Question) => {
+    if (!courseId || !selectedUnitId) return;
+
+    const questionData = {
+      questionText: questionToSave.questionText,
+      questionType: questionToSave.questionType,
+      payload: questionToSave.payload,
+    };
+
+    const isEditing = !!questionToSave.id;
+
+    if (isEditing) {
+      updateQuestionMutation.mutate(
+        {
+          courseId,
+          unitNumber: selectedUnitId,
+          questionId: questionToSave.id!,
+          data: questionData,
+        },
+        {
+          onSuccess: () => {
+            setIsQuestionModalOpen(false);
+            resetQuestionForm();
+          },
+          onError: (error) => {
+            alert(`Error al actualizar pregunta: ${error.message}`);
+          },
+        }
+      );
+    } else {
+      createQuestionMutation.mutate(
+        {
+          courseId,
+          unitNumber: selectedUnitId,
+          data: questionData,
+        },
+        {
+          onSuccess: () => {
+            setIsQuestionModalOpen(false);
+            resetQuestionForm();
+          },
+          onError: (error) => {
+            alert(`Error al crear pregunta: ${error.message}`);
+          },
+        }
+      );
+    }
+  };
+
+  const resetQuestionForm = () => {
+    setNewQuestion({
+      questionText: '',
+      questionType: QuestionType.MultipleChoiceOption,
+      payload: {
+        options: ['', '', '', ''],
+        correctAnswer: 0,
+      },
+    });
+  };
+
+  const handleEditQuestion = (question: Question) => {
+    setNewQuestion({ ...question });
+    setIsQuestionModalOpen(true);
+  };
+
+  const handleCloseQuestionModal = () => {
+    setIsQuestionModalOpen(false);
+    resetQuestionForm();
+  };
+
+  const handleDeleteQuestion = (questionId: string) => {
+    if (!courseId || !selectedUnitId) return;
+
+    if (
+      window.confirm('¿Estás seguro de que quieres eliminar esta pregunta?')
+    ) {
+      deleteQuestionMutation.mutate(
+        {
+          courseId,
+          unitNumber: selectedUnitId,
+          questionId,
+        },
+        {
+          onSuccess: () => toast.success('Pregunta eliminada exitosamente'),
+          onError: () => toast.error('No se pudo eliminar la pregunta'),
+        }
+      );
+    }
+  };
+
+  const handleUpdateUnit = () => {
+    if (!courseId || !editingUnit) return;
+
+    const data = {
+      name: newUnitName,
+      description: newUnitDescription,
+      detail: editingUnit.detail,
+    };
+
+    updateUnitMutation.mutate(
+      { courseId, unitNumber: editingUnit.unitNumber, data },
+      {
+        onSuccess: () => {
+          handleCloseUnitModal();
+          toast.success('Unidad actualizada exitosamente');
+        },
+        onError: () => {
+          toast.error('No se pudo actualizar la unidad');
+        },
+      }
+    );
+  };
+
+  const handleDeleteUnit = (unitNumber: number) => {
+    if (!courseId) return;
+
+    const isConfirmed = window.confirm(
+      '¿Estás seguro de que quieres eliminar esta unidad? Esta acción no se puede deshacer.'
+    );
+
+    if (isConfirmed) {
+      deleteUnitMutation.mutate({ courseId, unitNumber });
+
+      if (selectedUnitId === unitNumber) {
+        const remainingUnits = units.filter(
+          (u) => u.unitNumber !== unitNumber
+        );
+        setSelectedUnitId(
+          remainingUnits.length > 0 ? remainingUnits[0].unitNumber : null
+        );
+      }
+    }
+  };
+
+  const handleUnitDetailChange = (newBlocks: Block[]) => {
+    if (!selectedUnitId || !courseId) return;
+
+    const newDetailJson = JSON.stringify(newBlocks);
+    lastChangeRef.current = new Date();
+
+    setUnits((currentUnits) =>
+      currentUnits.map((unit) =>
+        unit.unitNumber === selectedUnitId
+          ? {
+              ...unit,
+              detail: newDetailJson,
+              hasUnsavedChanges: true,
+              isLoading: false,
+            }
+          : unit
+      )
+    );
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(() => {
+      performSave(selectedUnitId, newDetailJson);
+    }, 5000);
+  };
+
+  const handleUploadMaterial = () => {
+    if (!courseId || !selectedUnitId || stagedMaterials.length === 0) return;
+
+    stagedMaterials.forEach((material) => {
+      if (material.file) {
+        uploadMaterialMutation.mutate({
+          courseId,
+          unitNumber: selectedUnitId,
+          file: material.file,
+          title: material.name,
+        });
+      }
+    });
+
+    setStagedMaterials([]);
+    setIsMaterialModalOpen(false);
+  };
+
+  const handleDeleteMaterial = (materialId: string | number) => {
+    if (!courseId || !selectedUnitId) return;
+
+    const isConfirmed = window.confirm(
+      '¿Estás seguro de que quieres eliminar este material?'
+    );
+
+    if (isConfirmed) {
+      const materialIndex =
+        typeof materialId === 'number'
+          ? materialId
+          : parseInt(materialId as string, 10);
+
+      deleteMaterialMutation.mutate({
+        courseId,
+        unitNumber: selectedUnitId,
+        materialIndex,
+      });
+    }
+  };
+
+  const handleDragStart = (_e: React.DragEvent, unit: UnitEditorData) => {
+    setDraggedUnit(unit);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, targetUnit: UnitEditorData) => {
+    e.preventDefault();
+    if (
+      !draggedUnit ||
+      !courseId ||
+      draggedUnit.unitNumber === targetUnit.unitNumber
+    ) {
+      setDraggedUnit(null);
+      return;
+    }
+
+    const draggedIndex = units.findIndex(
+      (u) => u.unitNumber === draggedUnit.unitNumber
+    );
+    const targetIndex = units.findIndex(
+      (u) => u.unitNumber === targetUnit.unitNumber
+    );
+
+    const newUnits = [...units];
+    const [removed] = newUnits.splice(draggedIndex, 1);
+    newUnits.splice(targetIndex, 0, removed);
+
+    const unitsWithNewNumbers = newUnits.map((unit, index) => ({
+      ...unit,
+      unitNumber: index + 1,
+    }));
+
+    setUnits(unitsWithNewNumbers);
+
+    const reorderData = {
+      units: unitsWithNewNumbers.map((unit, index) => ({
+        unitNumber:
+          units.find((u) => u.name === unit.name)?.unitNumber ||
+          unit.unitNumber,
+        newOrder: index + 1,
+      })),
+    };
+
+    reorderUnitsMutation.mutate(
+      { courseId, data: reorderData },
+      {
+        onError: () => {
+          setUnits(units);
+        },
+      }
+    );
+
+    setDraggedUnit(null);
+  };
+
+  const handleOpenConfigModal = () => {
+    setTempConfig({ ...courseConfig });
+    setIsConfigModalOpen(true);
+  };
+
+  const handleSaveConfig = () => {
+    if (!courseId) return;
+
+    const formData = new FormData();
+    const priceValue = Number(tempConfig.price) || 0;
+    const priceInCents = tempConfig.isFree ? 0 : Math.round(priceValue * 100);
+
+    const configData = {
+      name: tempConfig.name,
+      description: tempConfig.description,
+      status: tempConfig.status,
+      isFree: tempConfig.isFree,
+      priceInCents: priceInCents,
+    };
+
+    formData.append('courseData', JSON.stringify(configData));
+
+    if (newImageFile) {
+      formData.append('image', newImageFile);
+    }
+
+    updateCourse(
+      { courseId, data: formData },
+      {
+        onSuccess: (updatedCourse) => {
+          setCourseConfig({
+            name: updatedCourse.name,
+            description: updatedCourse.description,
+            status: updatedCourse.status,
+            isFree: updatedCourse.isFree,
+            price: updatedCourse.priceInCents
+              ? toAmount(updatedCourse.priceInCents)
+              : 0,
+          });
+          setIsConfigModalOpen(false);
+          setNewImageFile(null);
+          setSaveError(null);
+          setLastSavedAt(new Date());
+          toast.success('Configuración guardada exitosamente');
+        },
+        onError: (error) => {
+          setSaveError(error.message || 'Error al guardar configuración');
+          toast.error('Error al guardar la configuración del curso');
+        },
+      }
+    );
+  };
+
+  const handleOpenCreateUnitModal = () => {
+    setEditingUnit(null);
+    setNewUnitName('');
+    setNewUnitDescription('');
+    setIsUnitModalOpen(true);
+  };
+
+  const handleEditUnit = (unit: Unit) => {
+    setEditingUnit(unit);
+    setNewUnitName(unit.name);
+    setNewUnitDescription(unit.description || '');
+    setIsUnitModalOpen(true);
+  };
+
+  const handleCloseUnitModal = () => {
+    setIsUnitModalOpen(false);
+    setEditingUnit(null);
+    setNewUnitName('');
+    setNewUnitDescription('');
+  };
+
+  const handleSaveUnit = () => {
+    if (editingUnit) {
+      handleUpdateUnit();
+    } else {
+      handleCreateUnit();
+    }
+  };
+
+  const handleImageChange = (file: File | null) => {
+    setNewImageFile(file);
+  };
+
+  const handleGlobalSave = handleManualSave;
+
+  if (isLoadingCourses) {
+    return <p>Cargando información del curso...</p>;
+  }
+
+  if (!isLoadingCourses && !courses?.find((c) => c.id === courseId)) {
+    return (
+      <div>
+        <h1 className="text-2xl font-bold">Curso no encontrado</h1>
+        <p>
+          El curso que intentas editar no existe o no tienes permiso para verlo.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto max-w-7xl">
+      <CourseHeader
+        courseId={courseId}
+        courseName={courseConfig.name}
+        onSave={handleGlobalSave}
+        onToggleEdit={() => setEditable(!editable)}
+        isSaving={quickSaveMutation.isPending}
+        hasUnsavedChanges={units.some((unit) => unit.hasUnsavedChanges)}
+        saveError={saveError}
+        isEditMode={editable}
+        lastSavedAt={lastSavedAt || undefined}
+        onOpenGeneralQuestions={() => setIsGeneralQuestionsOpen(true)}
+      />
+
+      <div className="grid lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-1">
+          <CourseSidebar
+            units={units}
+            selectedUnitId={selectedUnitId}
+            onUnitSelect={setSelectedUnitId}
+            onCreateUnit={handleOpenCreateUnitModal}
+            onEditUnit={handleEditUnit}
+            onDeleteUnit={handleDeleteUnit}
+            onOpenConfig={handleOpenConfigModal}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+          />
+        </div>
+
+        <div className="lg:col-span-3">
+          <UnitContent
+            selectedUnit={selectedUnit || null}
+            questions={questions}
+            materials={selectedUnit?.materials || []}
+            editable={editable}
+            onUnitDetailChange={handleUnitDetailChange}
+            onCreateQuestion={() => setIsQuestionModalOpen(true)}
+            onEditQuestion={handleEditQuestion}
+            onDeleteQuestion={handleDeleteQuestion}
+            onUploadMaterial={() => setIsMaterialModalOpen(true)}
+            onDeleteMaterial={handleDeleteMaterial}
+            onCreateUnit={handleOpenCreateUnitModal}
+          />
+        </div>
+      </div>
+
+      <CourseConfigModal
+        isOpen={isConfigModalOpen}
+        onClose={() => setIsConfigModalOpen(false)}
+        config={tempConfig}
+        onConfigChange={setTempConfig}
+        onSave={handleSaveConfig}
+        onImageChange={handleImageChange}
+      />
+
+      <UnitModal
+        isOpen={isUnitModalOpen}
+        onClose={handleCloseUnitModal}
+        editingUnit={editingUnit}
+        unitName={newUnitName}
+        unitDescription={newUnitDescription}
+        onNameChange={setNewUnitName}
+        onDescriptionChange={setNewUnitDescription}
+        onSave={handleSaveUnit}
+      />
+
+      <QuestionEditor
+        isOpen={isQuestionModalOpen}
+        onClose={handleCloseQuestionModal}
+        question={newQuestion}
+        onChange={setNewQuestion}
+        onSave={handleSaveQuestion}
+        readonly={!editable}
+      />
+
+      <UnitModalUpload
+        isMaterialModalOpen={isMaterialModalOpen}
+        setIsMaterialModalOpen={setIsMaterialModalOpen}
+        stagedMaterials={stagedMaterials}
+        setStagedMaterials={setStagedMaterials}
+        handleFileSelect={(e) => {
+          const files = e.target.files;
+          if (files) {
+            const newMaterials = Array.from(files).map((file) => ({
+              id: Date.now() + Math.random(),
+              name: file.name.replace(/\.[^/.]+$/, ''),
+              url: '',
+              file: file,
+            }));
+            setStagedMaterials((prev) => [...prev, ...newMaterials]);
+          }
+        }}
+        handleRemoveStagedFile={(id) => {
+          setStagedMaterials((prev) => prev.filter((m) => m.id !== id));
+        }}
+        handleTitleChange={(id, newTitle) => {
+          setStagedMaterials((prev) =>
+            prev.map((m) => (m.id === id ? { ...m, name: newTitle } : m))
+          );
+        }}
+        handleAddMaterials={handleUploadMaterial}
+      />
+
+      {courseId && (
+        <GeneralQuestionsManager
+          courseId={courseId}
+          isOpen={isGeneralQuestionsOpen}
+          onClose={() => setIsGeneralQuestionsOpen(false)}
+        />
+      )}
+    </div>
+  );
+}
