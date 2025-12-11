@@ -11,6 +11,6 @@ type Story = StoryObj<typeof meta>;
  
 export const Primary: Story = {
   args: {
-    label: "Badge"
+    children: 'Badge',
   },
 };

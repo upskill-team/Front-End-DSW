@@ -336,6 +336,7 @@ function CreateQuestionForm({
         onSave={handleSave}
         onCancel={onCancel}
         saveButtonText="Crear Pregunta"
+        isLoading ={false}
       />
     </div>
   );

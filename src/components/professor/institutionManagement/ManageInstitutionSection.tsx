@@ -13,7 +13,7 @@ interface ManageInstitutionSectionProps {
 
 export default function ManageInstitutionSection({ institution }: ManageInstitutionSectionProps) {
   const { mutate: removeProfessor, isPending: isRemoving } = useRemoveProfessor();
-  const { data: pendingRequests = [], isLoading: isLoadingRequests } = useGetPendingRequests(institution.id);
+  const { data: pendingRequests = [], isLoading: isLoadingRequests } = useGetPendingRequests(institution.institutionId);
   const { mutate: processRequest, isPending: isProcessingRequest } = useProcessJoinRequest();
   const [processingId, setProcessingId] = useState<string | null>(null);
 
@@ -34,7 +34,7 @@ export default function ManageInstitutionSection({ institution }: ManageInstitut
 
   const handleRemoveProfessor = (professorId: string, professorName: string) => {
     if (confirm(`¿Estás seguro de que quieres remover a ${professorName} de la institución?`)) {
-      removeProfessor({ institutionId: institution.id, professorId }, {
+      removeProfessor({ institutionId: institution.institutionId, professorId }, {
         onSuccess: () => {
           // Silencioso en caso de éxito
         },
