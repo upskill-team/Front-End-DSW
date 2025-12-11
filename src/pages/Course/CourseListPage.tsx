@@ -148,7 +148,7 @@ const CourseListPage = () => {
           >
             <option value="">Todas las instituciones</option>
             {institutions?.map((inst) => (
-              <option key={inst.id} value={inst.id}>
+              <option key={inst.institutionId} value={inst.institutionId}>
                 {inst.name}
               </option>
             ))}
