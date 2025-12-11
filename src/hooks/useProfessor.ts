@@ -4,13 +4,13 @@ import type { Professor } from '../types/entities';
 import type { AxiosError } from 'axios';
 import type { ApiResponse } from '../types/shared.ts';
 
-export interface MonthlyEarning {
+interface MonthlyEarning {
   month: string; // Formato: "2025-10"
   earningsInCents: number;
   salesCount: number;
 }
 
-export interface ProfessorAnalyticsData {
+interface ProfessorAnalyticsData {
   totalStudents: number;
   publishedCourses: number;
   totalEarningsInCents: number;

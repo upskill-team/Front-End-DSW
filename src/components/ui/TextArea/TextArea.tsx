@@ -6,7 +6,7 @@ import { cn } from '../../../lib/utils';
  * @interface TextareaProps
  * @extends React.TextareaHTMLAttributes<HTMLTextAreaElement>
  */
-export interface TextareaProps
+interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   /**
    * The text label displayed above the textarea.

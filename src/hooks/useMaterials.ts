@@ -44,11 +44,4 @@ export const useDeleteMaterial = () => {
   });
 };
 
-/**
- * Hook legado para subida simple de material (mantener compatibilidad).
- */
-export const useUploadMaterialLegacy = () => {
-  return useMutation({
-    mutationFn: (file: File) => materialService.uploadLegacy(file),
-  });
-};
+

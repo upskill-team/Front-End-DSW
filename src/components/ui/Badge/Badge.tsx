@@ -20,7 +20,7 @@ const badgeVariants = {
  * @extends React.HTMLAttributes<HTMLDivElement>
  * @property {'default' | 'secondary' | 'destructive' | 'outline'} [variant='default'] - The visual style of the badge.
  */
-export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: keyof typeof badgeVariants;
 }
 
