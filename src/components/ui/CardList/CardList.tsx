@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import type { Course } from '../../../types/entities';
 import { formatCurrency } from '../../../lib/currency';
 
-export interface CourseCardListProps extends React.HTMLAttributes<HTMLDivElement> {
+interface CourseCardListProps extends React.HTMLAttributes<HTMLDivElement> {
     /**
    * The complete course object containing the information to be displayed (title, price, instructor, image, etc.).
    */

@@ -40,7 +40,7 @@ interface IndividualPropsPreview extends BasePreviewCardProps {
   courseType?: Pick<CourseType, 'id' | 'name'>;
 }
 
-export type CoursePreviewCardProps = CourseObjectProps | IndividualPropsPreview;
+type CoursePreviewCardProps = CourseObjectProps | IndividualPropsPreview;
 
 const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProps>(
   ({ course, name, description, imageUrl, isFree, price, courseType, hideButton = false, hideInstructor = false, className, ...props }, ref) => {

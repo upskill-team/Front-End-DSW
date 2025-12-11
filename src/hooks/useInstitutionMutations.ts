@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { institutionService, type CreateInstitutionData, type AddProfessorRequest } from '../api/services/institution.service';
+import { institutionService, type CreateInstitutionData} from '../api/services/institution.service';
 
 /**
  * Hook to fetch all active institutions
@@ -11,16 +11,6 @@ export const useInstitutions = () => {
   });
 };
 
-/**
- * Hook to fetch a single institution
- */
-export const useInstitution = (id: string) => {
-  return useQuery({
-    queryKey: ['institutions', id],
-    queryFn: () => institutionService.getOne(id),
-    enabled: !!id,
-  });
-};
 
 /**
  * Hook to fetch the managed institution of the current professor
@@ -63,21 +53,6 @@ export const useLeaveInstitution = () => {
   });
 };
 
-/**
- * Hook to add a professor to an institution (manager only)
- */
-export const useAddProfessor = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ institutionId, data }: { institutionId: string; data: AddProfessorRequest }) =>
-      institutionService.addProfessor(institutionId, data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['institutions', variables.institutionId] });
-      queryClient.invalidateQueries({ queryKey: ['institutions', 'managed'] });
-    },
-  });
-};
 
 /**
  * Hook to remove a professor from an institution

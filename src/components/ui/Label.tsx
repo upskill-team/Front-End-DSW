@@ -6,7 +6,7 @@ import { cn } from '../../lib/utils';
  * @description Type alias for the standard HTML label attributes.
  * @see React.LabelHTMLAttributes<HTMLLabelElement>
  */
-export type LabelProps = React.LabelHTMLAttributes<HTMLLabelElement>;
+type LabelProps = React.LabelHTMLAttributes<HTMLLabelElement>;
 
 /**
  * A foundational component for form elements that displays a label.

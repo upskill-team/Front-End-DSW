@@ -6,7 +6,7 @@ import { cn } from '../../lib/utils';
  * @interface SelectProps
  * @extends React.SelectHTMLAttributes<HTMLSelectElement>
  */
-export interface SelectProps
+interface SelectProps
   extends React.SelectHTMLAttributes<HTMLSelectElement> {
   /**
    * The text label displayed above the select field.
