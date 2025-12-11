@@ -15,7 +15,7 @@ const iconMap = {
 type IconKey = keyof typeof iconMap;
 
 const meta = {
-  title: 'Components/ui/Input/Input',
+  title: 'Components/ui/Input',
   component: Input,
   tags: ['autodocs'],
   parameters: {

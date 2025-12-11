@@ -13,6 +13,10 @@ interface CourseCardListProps extends React.HTMLAttributes<HTMLDivElement> {
    * The complete course object containing the information to be displayed (title, price, instructor, image, etc.).
    */
   course: Course;
+  /**
+   * Optional callback function when the "View more" button is clicked.
+   */
+  onViewMore?: () => void | Promise<void>;
 }
 /**
  * Horizontal card component used to display a summary of a course in lists.
@@ -21,7 +25,7 @@ interface CourseCardListProps extends React.HTMLAttributes<HTMLDivElement> {
  * It is interactive and redirects to the course details.
  */
 const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
-  ({ course, className, ...props }, ref) => {
+  ({ course, className, onViewMore, ...props }, ref) => {
 
     const instructorName = course.professor?.user 
       ? `${course.professor.user.name} ${course.professor.user.surname}`
@@ -105,6 +109,12 @@ const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
                       variant="primary"
                       size="sm"
                       className="w-full lg:w-auto"
+                      onClick={(e) => {
+                        if (onViewMore) {
+                          e.preventDefault(); 
+                          onViewMore();
+                        }
+                      }}
                     >
                       Ver más
                     </Button>

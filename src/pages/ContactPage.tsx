@@ -16,6 +16,12 @@ import {
 import Button from '../components/ui/Button/Button';
 import { useContact } from '../hooks/useContact';
 import { toast } from 'react-hot-toast';
+import { isAxiosError } from 'axios';
+
+interface ApiErrorData {
+  message?: string;
+  errors?: string | Record<string, unknown>;
+}
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -61,7 +67,6 @@ export default function ContactPage() {
         </p>
 
         <div className="grid md:grid-cols-2 gap-8">
-          {/* Formulario de Contacto */}
           <Card>
             <CardHeader>
               <CardTitle>Envíanos un Mensaje</CardTitle>
@@ -99,7 +104,7 @@ export default function ContactPage() {
                           Error al Enviar el Mensaje
                         </h4>
                         <p className="text-sm text-red-700">
-                          {contactMutation.error?.response?.data?.errors ||
+                          {(isAxiosError(contactMutation.error) && (contactMutation.error.response?.data as ApiErrorData)?.message) ||
                             'Ocurrió un error al enviar tu mensaje. Por favor, intenta nuevamente.'}
                         </p>
                       </div>
@@ -204,7 +209,6 @@ export default function ContactPage() {
             </CardContent>
           </Card>
 
-          {/* Información de Contacto */}
           <div className="space-y-6">
             <Card>
               <CardContent className="p-6">

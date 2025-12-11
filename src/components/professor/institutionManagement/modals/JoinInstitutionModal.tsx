@@ -42,7 +42,7 @@ export default function JoinInstitutionModal({
   const handleConfirmRequest = () => {
     if (!selectedInstitution) return;
 
-    createJoinRequest(selectedInstitution.id, {
+    createJoinRequest(selectedInstitution.institutionId, {
       onSuccess: () => {
         handleClose();
       },
@@ -133,7 +133,7 @@ export default function JoinInstitutionModal({
             </div>
           ) : (
             (filteredInstitutions || []).map((institution) => (
-              <div key={institution.id} className="border border-slate-200 rounded-lg p-4 hover:border-blue-300 hover:bg-blue-50/50 transition-colors">
+              <div key={institution.institutionId} className="border border-slate-200 rounded-lg p-4 hover:border-blue-300 hover:bg-blue-50/50 transition-colors">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3 flex-1 min-w-0">
                     <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
