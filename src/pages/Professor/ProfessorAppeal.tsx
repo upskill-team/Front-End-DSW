@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { valibotResolver } from '@hookform/resolvers/valibot'
 import * as v from 'valibot'
 import Button from "../../components/ui/Button/Button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/Card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/Card/Card"
 import Input from "../../components/ui/Input/Input"
 import Textarea from "../../components/ui/TextArea/TextArea"
 import Label from "../../components/ui/Label/Label"

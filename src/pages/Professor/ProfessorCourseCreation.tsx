@@ -3,7 +3,7 @@ import type React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Upload } from "lucide-react";
 import Button from "../../components/ui/Button/Button.tsx";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card/Card.tsx";
 import Input from "../../components/ui/Input/Input.tsx";
 import Textarea from "../../components/ui/TextArea/TextArea.tsx";
 import CoursePreviewCard from "../../components/ui/CoursePreviewCard/CoursePreviewCard.tsx";

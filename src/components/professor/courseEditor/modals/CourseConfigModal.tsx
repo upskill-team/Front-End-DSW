@@ -1,4 +1,4 @@
-import { Dialog, DialogHeader, DialogTitle } from '../../../ui/Dialog';
+import { Dialog, DialogHeader, DialogTitle } from '../../../ui/Dialog/Dialog';
 import Input from '../../../ui/Input/Input';
 import Label from '../../../ui/Label/Label';
 import Textarea from '../../../ui/TextArea/TextArea';

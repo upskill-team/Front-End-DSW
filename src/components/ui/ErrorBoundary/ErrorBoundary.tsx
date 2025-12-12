@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import type { ReactNode, ErrorInfo } from 'react';
-import Button from './Button/Button';
+import Button from '../Button/Button';
 import { AlertTriangle } from 'lucide-react';
 
 interface ErrorBoundaryProps {
@@ -15,8 +15,8 @@ interface ErrorBoundaryState {
 }
 
 /**
- * Error Boundary para capturar errores en componentes hijos.
- * Muestra un UI de fallback cuando ocurre un error.
+ * Error Boundary to capture errors in child components.
+ * Displays a fallback UI when an error occurs.
  */
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {

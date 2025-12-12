@@ -7,7 +7,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '../../components/ui/Card';
+} from '../../components/ui/Card/Card';
 import {
   useAssessment,
   useStartAttempt,

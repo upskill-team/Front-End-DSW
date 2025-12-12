@@ -1,5 +1,5 @@
 import { FileText, X, Upload } from "lucide-react";
-import { Dialog, DialogHeader, DialogTitle } from "../../ui/Dialog.tsx";
+import { Dialog, DialogHeader, DialogTitle } from "../../ui/Dialog/Dialog.tsx";
 import Button from "../../ui/Button/Button.tsx";
 import Input from "../../ui/Input/Input.tsx";
 

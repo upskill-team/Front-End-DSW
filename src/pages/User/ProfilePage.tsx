@@ -9,7 +9,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../../components/ui/Card";
+} from "../../components/ui/Card/Card";
 import Button from "../../components/ui/Button/Button";
 import ProfileField from "../../components/ui/ProfileField/ProfileField";
 import {
@@ -17,12 +17,12 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "../../components/ui/Tabs";
+} from "../../components/ui/Tabs/Tabs";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "../../components/ui/Avatar";
+} from "../../components/ui/Avatar/Avatar";
 import {
   User,
   Mail,

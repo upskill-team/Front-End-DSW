@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/Card/Card';
 import Button from '../../ui/Button/Button';
 import { Plus, Settings, GripVertical, Edit, Trash2 } from 'lucide-react';
 import type { UnitEditorData } from '../../../types/entities';
