@@ -12,7 +12,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '../components/ui/Card';
+} from '../components/ui/Card/Card';
 import Button from '../components/ui/Button/Button';
 import { useContact } from '../hooks/useContact';
 import { toast } from 'react-hot-toast';

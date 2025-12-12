@@ -1,11 +1,17 @@
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../../lib/utils';
 
 interface DropdownMenuContextProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+
+/**
+ * A dropdown menu component that provides context for its trigger and content.
+ * @param {Object} props - The properties for the component.
+ * @param {React.ReactNode} props.children - The child components of the dropdown menu.
+ */
 const DropdownMenuContext = createContext<DropdownMenuContextProps | null>(null);
 
 export const DropdownMenu = ({ children }: { children: React.ReactNode }) => {

@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-} from '../Card';
+} from '../Card/Card';
 import Badge from '../Badge/Badge';
 import Button from '../Button/Button';
 import type { Course, CourseType } from '../../../types/entities';

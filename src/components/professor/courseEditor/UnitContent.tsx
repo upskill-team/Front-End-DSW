@@ -5,7 +5,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../../ui/Card';
+} from '../../ui/Card/Card';
 import Button from '../../ui/Button/Button';
 import {
   BookOpen,

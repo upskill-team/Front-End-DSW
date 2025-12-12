@@ -7,7 +7,7 @@ import {
   useAttemptDetails,
 } from '../../hooks/useAssessments';
 import Button from '../../components/ui/Button/Button';
-import { Card } from '../../components/ui/Card';
+import { Card } from '../../components/ui/Card/Card';
 import {
   ArrowLeft,
   Users,

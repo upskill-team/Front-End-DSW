@@ -8,9 +8,9 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '../../components/ui/Card';
+} from '../../components/ui/Card/Card';
 import Button from '../../components/ui/Button/Button';
-import { Dialog, DialogHeader, DialogTitle } from '../../components/ui/Dialog';
+import { Dialog, DialogHeader, DialogTitle } from '../../components/ui/Dialog/Dialog';
 import Input from '../../components/ui/Input/Input';
 import Textarea from '../../components/ui/TextArea/TextArea';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';

@@ -17,8 +17,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../ui/DropdownMenu';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/Avatar.tsx';
+} from '../ui/DropdownMenu/DropdownMenu';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/Avatar/Avatar.tsx';
 import RoleBadge from '../ui/RoleBadge/RoleBadge.tsx';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../ui/Button/Button';
