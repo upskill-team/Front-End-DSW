@@ -1,11 +1,16 @@
 import React from 'react';
-import Input, { type InputProps } from './Input/Input';
+import Input, { type InputProps } from '../Input/Input';
 
 interface ProfileFieldProps extends InputProps {
   isEditing: boolean;
   icon: React.ReactNode;
 }
 
+/**
+ * A component that displays a profile field which can be either in view mode or edit mode.
+ *
+ * @param {ProfileFieldProps} props - The properties to configure the ProfileField component.
+ */
 const ProfileField = React.forwardRef<HTMLInputElement, ProfileFieldProps>(
   ({ isEditing, icon, label, value, ...props }, ref) => {
     if (isEditing) {

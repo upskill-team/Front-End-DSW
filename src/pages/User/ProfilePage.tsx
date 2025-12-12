@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "../../components/ui/Card";
 import Button from "../../components/ui/Button/Button";
-import ProfileField from "../../components/ui/ProfileField";
+import ProfileField from "../../components/ui/ProfileField/ProfileField";
 import {
   Tabs,
   TabsContent,
