@@ -1,5 +1,5 @@
 import { HelpCircle, CheckCircle2, XCircle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card/Card';
 import { useQuery } from '@tanstack/react-query';
 import { questionService } from '../../api/services/question.service';
 import type { Question } from '../../types/entities';

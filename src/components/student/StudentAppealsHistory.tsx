@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Card } from '../ui/Card';
+import { Card } from '../ui/Card/Card';
 import StatusBadge from '../ui/StatusBadge/StatusBadge';
 import Button from '../ui/Button/Button';
-import { Dialog, DialogHeader, DialogTitle } from '../ui/Dialog';
+import { Dialog, DialogHeader, DialogTitle } from '../ui/Dialog/Dialog';
 import { FileText, Calendar, Eye, GraduationCap, ExternalLink } from 'lucide-react';
 import { useMyAppeals } from '../../hooks/useAppeals';
 import type { Appeal } from '../../types/entities';
-import DocumentViewer from '../ui/DocumentViewer';
+import DocumentViewer from '../ui/DocumentViewer/DocumentViewer';
 
 export default function StudentAppealsHistory() {
   const { data: appeals, isLoading, isError } = useMyAppeals();

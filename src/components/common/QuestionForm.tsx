@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Button from '../ui/Button/Button';
-import { Card } from '../ui/Card';
+import { Card } from '../ui/Card/Card';
 import Input from '../ui/Input/Input';
 import TextArea from '../ui/TextArea/TextArea';
 import { Plus, Trash2, Check } from 'lucide-react';

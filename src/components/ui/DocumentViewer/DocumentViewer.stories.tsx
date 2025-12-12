@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import DocumentViewer from '../DocumentViewer';
+import DocumentViewer from './DocumentViewer';
 
 const meta = {
   title: 'Components/ui/DocumentViewer',

@@ -13,7 +13,7 @@ import {
   Card,
   CardContent,
   CardHeader,
-} from '../../components/ui/Card';
+} from '../../components/ui/Card/Card';
 import { useAttemptDetails } from '../../hooks/useAssessments';
 import { cn } from '../../lib/utils'; // <-- Importar la utilidad cn
 

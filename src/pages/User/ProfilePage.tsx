@@ -9,20 +9,20 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../../components/ui/Card";
+} from "../../components/ui/Card/Card";
 import Button from "../../components/ui/Button/Button";
-import ProfileField from "../../components/ui/ProfileField";
+import ProfileField from "../../components/ui/ProfileField/ProfileField";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "../../components/ui/Tabs";
+} from "../../components/ui/Tabs/Tabs";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "../../components/ui/Avatar";
+} from "../../components/ui/Avatar/Avatar";
 import {
   User,
   Mail,
@@ -40,7 +40,7 @@ import {
 import { useAuth } from "../../hooks/useAuth";
 import { useUpdateProfile } from "../../hooks/useUserMutations";
 import { isAxiosError } from "axios";
-import RoleBadge from "../../components/ui/RoleBadge";
+import RoleBadge from "../../components/ui/RoleBadge/RoleBadge";
 import ProfessorProfileTab from "./ProfessorProfileTab";
 import StudentAppealsHistory from "../../components/student/StudentAppealsHistory";
 

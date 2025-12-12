@@ -6,10 +6,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../../components/ui/Card';
-import { Dialog, DialogHeader, DialogTitle } from '../../components/ui/Dialog';
+} from '../../components/ui/Card/Card';
+import { Dialog, DialogHeader, DialogTitle } from '../../components/ui/Dialog/Dialog';
 import StatusBadge from '../../components/ui/StatusBadge/StatusBadge';
-import DocumentViewer from '../../components/ui/DocumentViewer';
+import DocumentViewer from '../../components/ui/DocumentViewer/DocumentViewer.tsx';
 import {
   Check,
   X,

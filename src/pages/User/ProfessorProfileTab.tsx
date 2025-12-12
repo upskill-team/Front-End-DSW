@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card/Card';
 import Button from '../../components/ui/Button/Button';
 import { Building2, GraduationCap, Plus, LogOut, AlertCircle, Crown, Hourglass, XCircle, Edit } from 'lucide-react';
 import { useProfessorProfile } from '../../hooks/useProfessor';

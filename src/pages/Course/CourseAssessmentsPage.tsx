@@ -17,7 +17,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '../../components/ui/Card';
+} from '../../components/ui/Card/Card';
 import { useAssessmentsByCourse } from '../../hooks/useAssessments';
 import { useAuth } from '../../hooks/useAuth';
 import { useExistingEnrollment } from '../../hooks/useEnrollment';

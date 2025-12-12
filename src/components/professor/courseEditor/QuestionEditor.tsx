@@ -2,7 +2,7 @@ import {
   Dialog,
   DialogHeader,
   DialogTitle,
-} from '../../ui/Dialog.tsx';
+} from '../../ui/Dialog/Dialog.tsx';
 import QuestionForm from '../../common/QuestionForm';
 import type { Question } from '../../../types/entities.ts';
 import { useState } from 'react';

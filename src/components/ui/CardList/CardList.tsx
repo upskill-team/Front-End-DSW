@@ -3,7 +3,7 @@ import { Users, BookOpen } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import Button from '../Button/Button';
 import Badge from '../Badge/Badge';
-import { Card, CardContent, CardTitle, CardDescription } from '../Card';
+import { Card, CardContent, CardTitle, CardDescription } from '../Card/Card';
 import { Link } from 'react-router-dom';
 import type { Course } from '../../../types/entities';
 import { formatCurrency } from '../../../lib/currency';

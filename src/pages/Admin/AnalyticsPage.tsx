@@ -4,7 +4,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-} from '../../components/ui/Card';
+} from '../../components/ui/Card/Card';
 import {
   BarChart,
   Bar,

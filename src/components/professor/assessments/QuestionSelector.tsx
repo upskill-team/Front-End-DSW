@@ -3,7 +3,7 @@ import { useProfessorCourses } from '../../../hooks/useCourses';
 import { questionService } from '../../../api/services/question.service';
 import { useCreateQuestion, useCreateGeneralQuestion } from '../../../hooks/useQuestions';
 import Button from '../../ui/Button/Button';
-import { Card } from '../../ui/Card';
+import { Card } from '../../ui/Card/Card';
 import Input from '../../ui/Input/Input';
 import QuestionForm from '../../common/QuestionForm';
 import { X, Search, Check, Plus, ChevronDown, ChevronUp } from 'lucide-react';

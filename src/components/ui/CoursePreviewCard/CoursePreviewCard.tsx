@@ -6,13 +6,13 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-} from './Card';
-import Badge from './Badge/Badge';
-import Button from './Button/Button';
-import type { Course, CourseType } from '../../types/entities';
-import { cn } from '../../lib/utils';
+} from '../Card/Card';
+import Badge from '../Badge/Badge';
+import Button from '../Button/Button';
+import type { Course, CourseType } from '../../../types/entities';
+import { cn } from '../../../lib/utils';
 import { Link } from 'react-router-dom';
-import { formatCurrency } from '../../lib/currency';
+import { formatCurrency } from '../../../lib/currency';
 
 interface BasePreviewCardProps extends React.HTMLAttributes<HTMLDivElement> {
   hideButton?: boolean;
@@ -42,6 +42,9 @@ interface IndividualPropsPreview extends BasePreviewCardProps {
 
 type CoursePreviewCardProps = CourseObjectProps | IndividualPropsPreview;
 
+/**
+ *This component displays a preview card for a course. It can accept either a full
+ */
 const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProps>(
   ({ course, name, description, imageUrl, isFree, price, courseType, hideButton = false, hideInstructor = false, className, ...props }, ref) => {
     

@@ -1,5 +1,5 @@
 import React, { useState, createContext, useContext } from 'react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../../lib/utils';
 
 interface TabsContextProps {
   activeTab: string;
@@ -8,6 +8,13 @@ interface TabsContextProps {
 
 const TabsContext = createContext<TabsContextProps | null>(null);
 
+
+/**
+ * A Tabs component that manages tab state and provides context to its children.
+ * @param {Object} props - The properties for the component.
+ * @param {string} props.defaultValue - The default active tab value.
+ * @param {React.ReactNode} props.children - The child components of the Tabs.
+ */
 export const Tabs = ({ defaultValue, children, className }: { defaultValue: string; children: React.ReactNode; className?: string }) => {
   const [activeTab, setActiveTab] = useState(defaultValue);
   return (

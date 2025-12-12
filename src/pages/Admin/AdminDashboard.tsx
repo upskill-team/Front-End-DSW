@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../../components/ui/Card';
+} from '../../components/ui/Card/Card';
 import StatusBadge from '../../components/ui/StatusBadge/StatusBadge';
 import {
   Users,

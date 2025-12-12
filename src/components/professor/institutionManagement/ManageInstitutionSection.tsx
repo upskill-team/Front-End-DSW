@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/Card/Card';
 import Button from '../../ui/Button/Button';
 import { Users, UserMinus, AlertCircle, Crown, Inbox, Check, X } from 'lucide-react';
-import { Avatar, AvatarImage, AvatarFallback } from '../../ui/Avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '../../ui/Avatar/Avatar';
 import type { Institution } from '../../../types/entities';
 import { useRemoveProfessor } from '../../../hooks/useInstitutionMutations';
 import { useGetPendingRequests, useProcessJoinRequest } from '../../../hooks/useJoinRequests';

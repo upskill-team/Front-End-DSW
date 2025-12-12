@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { Card, CardContent } from '../components/ui/Card';
+import { Card, CardContent } from '../components/ui/Card/Card';
 
 const faqs = [
   {
