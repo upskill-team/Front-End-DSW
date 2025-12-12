@@ -2,7 +2,7 @@ import { Dialog, DialogHeader, DialogTitle } from '../../../ui/Dialog';
 import Input from '../../../ui/Input/Input';
 import Label from '../../../ui/Label';
 import Textarea from '../../../ui/TextArea/TextArea';
-import Select from '../../../ui/Select';
+import Select from '../../../ui/Select/Select';
 import Switch from '../../../ui/Swtich/Switch';
 import Button from '../../../ui/Button/Button';
 

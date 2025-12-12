@@ -9,7 +9,7 @@ import Textarea from "../../components/ui/TextArea/TextArea.tsx";
 import CoursePreviewCard from "../../components/ui/CoursePreviewCard.tsx";
 import Switch from "../../components/ui/Swtich/Switch.tsx";
 import Label from "../../components/ui/Label.tsx";
-import Select from "../../components/ui/Select.tsx";
+import Select from "../../components/ui/Select/Select.tsx";
 import { useCourseTypes } from "../../hooks/useCourseTypes.ts";
 import { useCreateCourse } from "../../hooks/useCourses.ts";
 import * as v from 'valibot';

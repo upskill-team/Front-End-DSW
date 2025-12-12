@@ -7,7 +7,7 @@ import { useSearchCourses } from '../../hooks/useCourses.ts';
 import { useCourseTypes } from '../../hooks/useCourseTypes.ts';
 import { useInstitutions } from '../../hooks/useInstitutionMutations.ts';
 import Input from '../../components/ui/Input/Input.tsx';
-import Select from '../../components/ui/Select.tsx';
+import Select from '../../components/ui/Select/Select.tsx';
 import Switch from '../../components/ui/Swtich/Switch.tsx';
 import Label from '../../components/ui/Label.tsx';
 import Button from '../../components/ui/Button/Button.tsx';

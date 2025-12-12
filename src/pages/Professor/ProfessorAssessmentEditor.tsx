@@ -10,7 +10,7 @@ import Button from '../../components/ui/Button/Button';
 import { Card } from '../../components/ui/Card';
 import Input from '../../components/ui/Input/Input';
 import TextArea from '../../components/ui/TextArea/TextArea';
-import Select from '../../components/ui/Select';
+import Select from '../../components/ui/Select/Select';
 import Switch from '../../components/ui/Swtich/Switch';
 import Label from '../../components/ui/Label';
 import QuestionSelector from '../../components/professor/assessments/QuestionSelector';
