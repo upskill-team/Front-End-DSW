@@ -9,7 +9,7 @@ import { useInstitutions } from '../../hooks/useInstitutionMutations.ts';
 import Input from '../../components/ui/Input/Input.tsx';
 import Select from '../../components/ui/Select/Select.tsx';
 import Switch from '../../components/ui/Swtich/Switch.tsx';
-import Label from '../../components/ui/Label.tsx';
+import Label from '../../components/ui/Label/Label.tsx';
 import Button from '../../components/ui/Button/Button.tsx';
 import { Search, LayoutGrid, List } from 'lucide-react';
 import { useDebounce } from '../../hooks/useDebounce.ts';

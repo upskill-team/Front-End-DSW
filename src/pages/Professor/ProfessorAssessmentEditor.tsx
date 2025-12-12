@@ -12,7 +12,7 @@ import Input from '../../components/ui/Input/Input';
 import TextArea from '../../components/ui/TextArea/TextArea';
 import Select from '../../components/ui/Select/Select';
 import Switch from '../../components/ui/Swtich/Switch';
-import Label from '../../components/ui/Label';
+import Label from '../../components/ui/Label/Label';
 import QuestionSelector from '../../components/professor/assessments/QuestionSelector';
 import { ArrowLeft, Save, Plus, Trash2 } from 'lucide-react';
 import type {
