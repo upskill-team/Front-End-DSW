@@ -1,5 +1,5 @@
 import { useTrendingCourses } from '../../hooks/useCourses.ts';
-import CoursePreviewCard from '../ui/CoursePreviewCard.tsx';
+import CoursePreviewCard from '../ui/CoursePreviewCard/CoursePreviewCard.tsx';
 import { useState, useEffect, useMemo } from 'react';
 
 export function TrendingCourses() {

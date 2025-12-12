@@ -6,7 +6,7 @@ import Button from "../../components/ui/Button/Button.tsx";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card.tsx";
 import Input from "../../components/ui/Input/Input.tsx";
 import Textarea from "../../components/ui/TextArea/TextArea.tsx";
-import CoursePreviewCard from "../../components/ui/CoursePreviewCard.tsx";
+import CoursePreviewCard from "../../components/ui/CoursePreviewCard/CoursePreviewCard.tsx";
 import Switch from "../../components/ui/Swtich/Switch.tsx";
 import Label from "../../components/ui/Label/Label.tsx";
 import Select from "../../components/ui/Select/Select.tsx";
