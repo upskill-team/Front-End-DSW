@@ -3,7 +3,7 @@ import type { Material } from '../../types/entities';
 import Button from '../ui/Button/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { useState } from 'react';
-import DocumentViewer from '../ui/DocumentViewer';
+import DocumentViewer from '../ui/DocumentViewer/DocumentViewer';
 
 interface MaterialsListProps {
   materials: Material[];

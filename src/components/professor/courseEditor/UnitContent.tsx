@@ -16,7 +16,7 @@ import {
   Eye,
   Edit2,
 } from 'lucide-react';
-import DocumentViewer from '../../ui/DocumentViewer';
+import DocumentViewer from '../../ui/DocumentViewer/DocumentViewer';
 import UnitEditor from '../../landing/UnitEditor';
 // import ActivityCard from '../../landing/professorCourseEdition/ActivityCard'; // Obsoleto, ahora usamos questions
 import type { Block } from '@blocknote/core';

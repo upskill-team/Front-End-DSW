@@ -1,11 +1,14 @@
-import Badge from './Badge/Badge';
+import Badge from '../Badge/Badge';
 import { Shield, GraduationCap } from 'lucide-react';
-import type { UserRole } from '../../types/entities';
+import type { UserRole } from '../../../types/entities';
 
 interface RoleBadgeProps {
   role: UserRole;
 }
 
+/**
+ * RoleBadge component to display user roles with specific styles and icons.
+ */
 const RoleBadge = ({ role }: RoleBadgeProps) => {
   switch (role) {
     case 'admin':

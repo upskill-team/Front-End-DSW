@@ -40,7 +40,7 @@ import {
 import { useAuth } from "../../hooks/useAuth";
 import { useUpdateProfile } from "../../hooks/useUserMutations";
 import { isAxiosError } from "axios";
-import RoleBadge from "../../components/ui/RoleBadge";
+import RoleBadge from "../../components/ui/RoleBadge/RoleBadge";
 import ProfessorProfileTab from "./ProfessorProfileTab";
 import StudentAppealsHistory from "../../components/student/StudentAppealsHistory";
 
