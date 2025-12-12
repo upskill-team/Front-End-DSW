@@ -34,7 +34,7 @@ export default function ManageInstitutionSection({
   const { mutate: removeProfessor, isPending: isRemoving } =
     useRemoveProfessor();
   const { data: pendingRequests = [], isLoading: isLoadingRequests } =
-    useGetPendingRequests(institution.institutionId);
+    useGetPendingRequests(institution.institutionId || institution.id || '');
   const { mutate: processRequest, isPending: isProcessingRequest } =
     useProcessJoinRequest();
   const [processingId, setProcessingId] = useState<string | null>(null);
@@ -70,7 +70,7 @@ export default function ManageInstitutionSection({
       )
     ) {
       removeProfessor(
-        { institutionId: institution.institutionId, professorId },
+        { institutionId: institution.institutionId || institution.id || '', professorId },
         {
           onSuccess: () => {
             // Silencioso en caso de éxito
