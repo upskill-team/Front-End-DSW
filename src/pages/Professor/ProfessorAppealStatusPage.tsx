@@ -5,7 +5,7 @@ import { Card } from '../../components/ui/Card';
 import StatusBadge from '../../components/ui/StatusBadge/StatusBadge';
 import Button from '../../components/ui/Button/Button';
 import { Dialog, DialogHeader, DialogTitle } from '../../components/ui/Dialog';
-import DocumentViewer from '../../components/ui/DocumentViewer';
+import DocumentViewer from '../../components/ui/DocumentViewer/DocumentViewer';
 import { ArrowLeft, Calendar, Eye, GraduationCap, ExternalLink, Info } from 'lucide-react';
 import type { Appeal } from '../../types/entities';
 

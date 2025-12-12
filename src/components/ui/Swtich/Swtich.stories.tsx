@@ -1,17 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import Button  from './Button';
+import Switch  from './Switch';
 
 const meta = {
-  component: Button,
-} satisfies Meta<typeof Button>;
+  component: Switch,
+} satisfies Meta<typeof Switch>;
  
 export default meta;
 type Story = StoryObj<typeof meta>;
  
 export const Primary: Story = {
   args: {
-    children:"Button",
-    isLoading: false
+    id: 'example-switch',
+    checked: false
   },
 };

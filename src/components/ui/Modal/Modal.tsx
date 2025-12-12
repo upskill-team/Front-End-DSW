@@ -9,6 +9,9 @@ interface ModalProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
+/**
+ * A reusable modal component with customizable size and close functionality.
+ */
 export default function Modal({ isOpen, onClose, title, children, size = 'lg' }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 

@@ -3,7 +3,7 @@ import Button from '../../components/ui/Button/Button';
 import Badge from '../../components/ui/Badge/Badge.tsx';
 import { Edit, Plus, Star } from 'lucide-react';
 import { useProfessorCourses } from '../../hooks/useCourses.ts';
-import CoursePreviewCard from '../../components/ui/CoursePreviewCard';
+import CoursePreviewCard from '../../components/ui/CoursePreviewCard/CoursePreviewCard.tsx';
 
 const ProfessorCoursesPage = () => {
   const { data: courses, isLoading, error } = useProfessorCourses();

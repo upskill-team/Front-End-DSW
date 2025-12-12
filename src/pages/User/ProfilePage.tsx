@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "../../components/ui/Card";
 import Button from "../../components/ui/Button/Button";
-import ProfileField from "../../components/ui/ProfileField";
+import ProfileField from "../../components/ui/ProfileField/ProfileField";
 import {
   Tabs,
   TabsContent,
@@ -40,7 +40,7 @@ import {
 import { useAuth } from "../../hooks/useAuth";
 import { useUpdateProfile } from "../../hooks/useUserMutations";
 import { isAxiosError } from "axios";
-import RoleBadge from "../../components/ui/RoleBadge";
+import RoleBadge from "../../components/ui/RoleBadge/RoleBadge";
 import ProfessorProfileTab from "./ProfessorProfileTab";
 import StudentAppealsHistory from "../../components/student/StudentAppealsHistory";
 

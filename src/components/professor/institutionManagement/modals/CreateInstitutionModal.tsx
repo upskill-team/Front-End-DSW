@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { valibotResolver } from '@hookform/resolvers/valibot';
 import * as v from 'valibot';
-import Modal from '../../../ui/Modal';
+import Modal from '../../../ui/Modal/Modal';
 import Button from '../../../ui/Button/Button';
 import Input from '../../../ui/Input/Input';
 import Textarea from '../../../ui/TextArea/TextArea';

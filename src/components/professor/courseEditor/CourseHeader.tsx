@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../ui/Button/Button';
 import SaveStatus from './SaveStatus';
-import Switch from '../../ui/Switch';
+import Switch from '../../ui/Swtich/Switch';
 import { ArrowLeft, Edit, Eye, FileText, HelpCircle } from 'lucide-react';
 
 interface CourseHeaderProps {
