@@ -3,7 +3,7 @@ import Input from '../../../ui/Input/Input';
 import Label from '../../../ui/Label';
 import Textarea from '../../../ui/TextArea/TextArea';
 import Select from '../../../ui/Select';
-import Switch from '../../../ui/Switch';
+import Switch from '../../../ui/Swtich/Switch';
 import Button from '../../../ui/Button/Button';
 
 interface CourseConfig {

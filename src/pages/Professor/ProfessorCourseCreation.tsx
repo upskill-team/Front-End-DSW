@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Ca
 import Input from "../../components/ui/Input/Input.tsx";
 import Textarea from "../../components/ui/TextArea/TextArea.tsx";
 import CoursePreviewCard from "../../components/ui/CoursePreviewCard.tsx";
-import Switch from "../../components/ui/Switch.tsx";
+import Switch from "../../components/ui/Swtich/Switch.tsx";
 import Label from "../../components/ui/Label.tsx";
 import Select from "../../components/ui/Select.tsx";
 import { useCourseTypes } from "../../hooks/useCourseTypes.ts";
