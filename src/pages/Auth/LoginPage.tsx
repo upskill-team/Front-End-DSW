@@ -12,6 +12,7 @@ import { isAxiosError } from 'axios';
 const LoginSchema = v.object({
   mail: v.pipe(v.string(), v.email('Debe ser un email válido.')),
   password: v.pipe(v.string(), v.minLength(1, 'La contraseña es requerida.')),
+  rememberMe: v.boolean(),
 });
 
 type LoginFormData = v.InferInput<typeof LoginSchema>;
@@ -31,6 +32,7 @@ const LoginPage = () => {
     const payload = {
       mail: data.mail,
       password_plaintext: data.password,
+      rememberMe: data.rememberMe,
     };
     login(payload);
   };
@@ -65,9 +67,9 @@ const LoginPage = () => {
           <div className="flex items-center gap-2">
             <input
               id="remember"
-              name="remember"
               type="checkbox"
               className="h-4 w-4 rounded border-slate-300 text-blue-500 focus:ring-blue-500"
+              {...formRegister('rememberMe')}
             />
             <label htmlFor="remember" className="text-slate-600 cursor-pointer">
               Recordarme
