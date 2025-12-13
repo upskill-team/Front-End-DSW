@@ -154,7 +154,7 @@ export default function ProfessorCourseEdition() {
 
     const currentUnit = units.find((u) => u.unitNumber === selectedUnitId);
     if (currentUnit && currentUnit.hasUnsavedChanges) {
-      performSave(selectedUnitId, currentUnit.detail);
+      performSave(selectedUnitId, currentUnit.detail || '');
     } else {
       setLastSavedAt(new Date());
       setSaveError(null);
@@ -206,7 +206,7 @@ export default function ProfessorCourseEdition() {
       const previousUnit = units.find((u) => u.unitNumber === previousUnitId);
 
       if (previousUnit && previousUnit.hasUnsavedChanges) {
-        performSave(previousUnitId, previousUnit.detail);
+        performSave(previousUnitId, previousUnit.detail || '');
       }
     }
     previousUnitRef.current = currentUnitId;
@@ -220,7 +220,7 @@ export default function ProfessorCourseEdition() {
       if (hasUnsavedChanges) {
         const unitWithChanges = units.find((unit) => unit.hasUnsavedChanges);
         if (unitWithChanges && courseId) {
-          performSave(unitWithChanges.unitNumber, unitWithChanges.detail);
+          performSave(unitWithChanges.unitNumber, unitWithChanges.detail || '');
         }
         event.preventDefault();
         event.returnValue = '';

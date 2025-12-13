@@ -118,18 +118,30 @@ export default function UnitSidebar({
 
                     {/* Indicadores adicionales */}
                     <div className="flex items-center gap-3 mt-2">
-                      {unit.materials.length > 0 && (
+                      {((unit.materials && unit.materials.length > 0) ||
+                        (unit.materialsCount && unit.materialsCount > 0)) && (
                         <span className="text-xs text-slate-500 flex items-center gap-1">
                           <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                          {unit.materials.length} material
-                          {unit.materials.length !== 1 ? 'es' : ''}
+                          {unit.materialsCount ?? unit.materials?.length ?? 0}{' '}
+                          material
+                          {(unit.materialsCount ??
+                            unit.materials?.length ??
+                            0) !== 1
+                            ? 'es'
+                            : ''}
                         </span>
                       )}
-                      {unit.questions.length > 0 && (
+                      {((unit.questions && unit.questions.length > 0) ||
+                        (unit.questionsCount && unit.questionsCount > 0)) && (
                         <span className="text-xs text-slate-500 flex items-center gap-1">
                           <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
-                          {unit.questions.length} pregunta
-                          {unit.questions.length !== 1 ? 's' : ''}
+                          {unit.questionsCount ?? unit.questions?.length ?? 0}{' '}
+                          pregunta
+                          {(unit.questionsCount ??
+                            unit.questions?.length ??
+                            0) !== 1
+                            ? 's'
+                            : ''}
                         </span>
                       )}
                     </div>

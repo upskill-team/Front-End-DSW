@@ -30,7 +30,7 @@ export default function JoinInstitutionModal({
     return institutions.filter(
       (inst) =>
         inst.name.toLowerCase().includes(query) ||
-        inst.description.toLowerCase().includes(query) ||
+        inst.description?.toLowerCase().includes(query) ||
         inst.aliases?.some((alias) => alias.toLowerCase().includes(query))
     );
   }, [institutions, searchQuery]);
@@ -42,7 +42,7 @@ export default function JoinInstitutionModal({
   const handleConfirmRequest = () => {
     if (!selectedInstitution) return;
 
-    createJoinRequest(selectedInstitution.institutionId, {
+    createJoinRequest(selectedInstitution.institutionId || selectedInstitution.id || '', {
       onSuccess: () => {
         handleClose();
       },
@@ -82,7 +82,7 @@ export default function JoinInstitutionModal({
                 <p className="text-sm text-slate-600 line-clamp-2">{selectedInstitution.description}</p>
                 <div className="flex items-center gap-2 mt-2">
                   <Users className="w-4 h-4 text-slate-400" />
-                  <span className="text-sm text-slate-500">{selectedInstitution.professors.length} profesores</span>
+                  <span className="text-sm text-slate-500">{selectedInstitution.professors?.length || 0} profesores</span>
                 </div>
               </div>
             </div>
