@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Search, Users } from 'lucide-react';
 import { lazy, Suspense } from 'react';
-import Button from '../ui/Button/Button';
 import { useStudentCount } from '../../hooks/useStudent.ts'
 
 const RobotModel = lazy(() => import('./RobotModel.tsx'))
@@ -36,13 +35,6 @@ export default function HeroSection() {
                 <Search className="w-5 h-5 mr-2" />
                 Explorar Cursos
               </Link>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-green-200 text-green-700 hover:bg-green-50 bg-transparent"
-              >
-                Ver Demo Gratuita
-              </Button>
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-y-3 sm:gap-x-6 text-sm text-slate-600 pt-4">

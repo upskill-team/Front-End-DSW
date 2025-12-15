@@ -104,20 +104,21 @@ export default function ProfessorApplication() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center p-4">
-      <div className="absolute top-6 left-6">
-        <Link to="/" className="flex items-center space-x-2 text-slate-700 hover:text-green-600 transition-colors">
-          <ArrowLeft className="w-5 h-5" />
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-green-400 rounded-lg flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-white" />
+    <div className="fixed inset-0 bg-gradient-to-br from-green-50 via-white to-blue-50 overflow-auto">
+      <div className="relative min-h-screen p-4">
+        <div className="absolute top-6 left-6">
+          <Link to="/" className="flex items-center space-x-2 text-slate-700 hover:text-green-600 transition-colors">
+            <ArrowLeft className="w-5 h-5" />
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-green-400 rounded-lg flex items-center justify-center">
+                <BookOpen className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xl font-bold">UpSkill</span>
             </div>
-            <span className="text-xl font-bold">UpSkill</span>
-          </div>
-        </Link>
-      </div>
+          </Link>
+        </div>
 
-      <div className="w-full max-w-5xl grid lg:grid-cols-2 gap-8 items-center">
+        <div className="w-full max-w-5xl mx-auto grid lg:grid-cols-2 gap-8 items-center min-h-screen">
         <div className="hidden lg:block">
           <div className="relative">
             <img
@@ -220,6 +221,7 @@ export default function ProfessorApplication() {
             </form>
           </CardContent>
         </Card>
+      </div>
       </div>
     </div>
   )

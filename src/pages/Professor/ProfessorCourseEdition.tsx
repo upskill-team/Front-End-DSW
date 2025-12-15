@@ -563,7 +563,6 @@ export default function ProfessorCourseEdition() {
           setNewImageFile(null);
           setSaveError(null);
           setLastSavedAt(new Date());
-          toast.success('Configuración guardada exitosamente');
         },
         onError: (error) => {
           setSaveError(error.message || 'Error al guardar configuración');

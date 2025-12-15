@@ -29,7 +29,7 @@ import { useMyAppeals } from '../../hooks/useAppeals';
 
 const MobileNavLink = ({ to, onClick, children }: { to: string; onClick: () => void; children: React.ReactNode }) => (
     <Link to={to} onClick={onClick} className="flex items-center w-full p-3 text-base font-medium text-slate-700 rounded-lg hover:bg-slate-100">
-        {children}
+      {children}
     </Link>
 );
 
