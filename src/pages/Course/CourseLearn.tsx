@@ -12,7 +12,7 @@ import MaterialsList from '../../components/student/MaterialsList';
 import QuestionsList from '../../components/student/QuestionsList';
 import Button from '../../components/ui/Button/Button';
 import ErrorBoundary from '../../components/ui/ErrorBoundary/ErrorBoundary';
-import { CheckCircle2, BookOpen, ArrowLeft } from 'lucide-react';
+import { CheckCircle2, BookOpen, ArrowLeft, AlertCircle } from 'lucide-react';
 import type { Unit } from '../../types/entities';
 import toast from 'react-hot-toast';
 import { getProfessorName } from '../../lib/professor';
@@ -166,6 +166,24 @@ export default function CourseLearn() {
           </div>
         </div>
       </div>
+
+      {course.status === 'en-desarrollo' && (
+        <div className="bg-amber-50 border-l-4 border-amber-400 p-4 my-4 sm:p-5">
+          <div className="container mx-auto px-3 sm:px-4 md:px-6">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm sm:text-base font-semibold text-amber-900 mb-1">
+                  Curso en Desarrollo
+                </h3>
+                <p className="text-xs sm:text-sm text-amber-800">
+                  Este curso fue marcado como en desarrollo por el profesor, ten en cuenta que la información es susceptible a cambios.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col lg:flex-row lg:h-[calc(100vh-88px)]">
         <div className="hidden lg:block lg:w-80 flex-shrink-0 bg-white border-r border-slate-200 shadow-sm lg:overflow-y-auto">

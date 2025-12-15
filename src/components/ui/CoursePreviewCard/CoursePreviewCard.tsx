@@ -76,9 +76,8 @@ const CoursePreviewCard = React.forwardRef<
       course?.priceInCents ??
       (price !== undefined ? Math.round(price * 100) : 0);
     const displayCourseType = course?.courseType ?? courseType;
-    const displayAmountStudents =
-      course?.studentsCount ?? course?.students?.length ?? 0;
-
+    const displayAmountStudents = course?.studentsCount ?? course?.students?.length ?? 0;
+    const displayAmountUnits = course?.unitsCount ?? course?.units?.length ?? 0;
     const instructorName = getProfessorName(course?.professor);
 
     return (
@@ -115,11 +114,9 @@ const CoursePreviewCard = React.forwardRef<
               {course && !hideInstructor && (
                 <div className="text-sm text-slate-500 mt-1 space-y-0.5">
                   <p>Por {instructorName}</p>
-                  {course.professor?.institution && (
-                    <p className="text-xs text-slate-400">
-                      {course.professor.institution.name}
-                    </p>
-                  )}
+                  <p className="text-xs text-slate-400">
+                    {course.professor?.institution?.name || '\u00A0'}
+                  </p>
                 </div>
               )}
             </CardHeader>
@@ -139,9 +136,8 @@ const CoursePreviewCard = React.forwardRef<
                     <div className="flex items-center space-x-1">
                       <BookOpen className="w-3 h-3" />
                       <span>
-                        {course?.unitsCount ?? course?.units?.length ?? 0}{' '}
-                        {(course?.unitsCount ?? course?.units?.length ?? 0) ===
-                        1
+                        {displayAmountUnits}{' '}
+                        {(displayAmountUnits ?? 0) === 1
                           ? 'Unidad'
                           : 'Unidades'}
                       </span>
