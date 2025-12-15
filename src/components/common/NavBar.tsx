@@ -29,7 +29,7 @@ import { useMyAppeals } from '../../hooks/useAppeals';
 
 const MobileNavLink = ({ to, onClick, children }: { to: string; onClick: () => void; children: React.ReactNode }) => (
     <Link to={to} onClick={onClick} className="flex items-center w-full p-3 text-base font-medium text-slate-700 rounded-lg hover:bg-slate-100">
-      {children}
+        {children}
     </Link>
 );
 
@@ -62,9 +62,7 @@ export function NavBar() {
       });
       navigate('/login');
     } else {
-      const hasPendingAppeal = appeals?.some(appeal => appeal.state === 'pending');
-      
-      if (hasPendingAppeal) {
+      if (appeals && appeals.length > 0) {
         navigate('/professor/applications');
       } else {
         navigate('/professor/apply');
@@ -122,7 +120,6 @@ export function NavBar() {
                 </Button>
               )}
 
-              {/* --- ENVOLTORIO CORRECTO PARA CONTROLES DE ROL --- */}
               <div className="flex items-center space-x-1 bg-slate-100 p-1 rounded-lg">
                 {user?.role === 'admin' && <AdminControls handleLinkClick={handleLinkClick} activeLinkClasses={activeLinkClasses} inactiveLinkClasses={inactiveLinkClasses} location={location} />}
                 {user?.role === 'professor' && <ProfessorControls handleLinkClick={handleLinkClick} activeLinkClasses={activeLinkClasses} inactiveLinkClasses={inactiveLinkClasses} location={location} />}
