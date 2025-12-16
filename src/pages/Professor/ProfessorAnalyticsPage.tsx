@@ -18,6 +18,12 @@ import {
 import { useProfessorAnalytics } from '../../hooks/useProfessor.ts';
 import { formatCurrency, toAmount } from '../../lib/currency';
 
+type MonthlyRevenuePoint = {
+  month: string;
+  revenue: number;
+  sales: number;
+};
+
 const ProfessorAnalyticsPage = () => {
   const { data: analyticsData, isLoading } = useProfessorAnalytics();
 
@@ -26,26 +32,27 @@ const ProfessorAnalyticsPage = () => {
   const totalEarningsInCents = analyticsData?.totalEarningsInCents ?? 0;
   const totalSales = analyticsData?.totalSales ?? 0;
 
-  // Transformar datos mensuales para el gráfico
-  const monthlyRevenueData =
+  const monthNames = [
+    'Ene',
+    'Feb',
+    'Mar',
+    'Abr',
+    'May',
+    'Jun',
+    'Jul',
+    'Ago',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dic',
+  ];
+
+  const monthlyRevenueData: MonthlyRevenuePoint[] =
     analyticsData?.monthlyEarnings?.map((item) => {
-      // Convertir formato "2025-10" a nombre de mes
-      const [, monthNum] = item.month.split('-');
-      const monthNames = [
-        'Ene',
-        'Feb',
-        'Mar',
-        'Abr',
-        'May',
-        'Jun',
-        'Jul',
-        'Ago',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dic',
-      ];
-      const monthName = monthNames[parseInt(monthNum) - 1];
+      const parts = item.month.split('-');
+      const monthNum = parts[1] ?? '01';
+      const monthIndex = Math.max(0, Math.min(11, parseInt(monthNum, 10) - 1));
+      const monthName = monthNames[monthIndex] ?? monthNum;
 
       return {
         month: monthName,
@@ -69,6 +76,7 @@ const ProfessorAnalyticsPage = () => {
             )}
           </CardHeader>
         </Card>
+
         <Card>
           <CardHeader>
             <CardDescription>Estudiantes totales</CardDescription>
@@ -81,6 +89,7 @@ const ProfessorAnalyticsPage = () => {
             )}
           </CardHeader>
         </Card>
+
         <Card>
           <CardHeader>
             <CardDescription>Cursos publicados</CardDescription>
@@ -91,6 +100,7 @@ const ProfessorAnalyticsPage = () => {
             )}
           </CardHeader>
         </Card>
+
         <Card>
           <CardHeader>
             <CardDescription>Ventas totales</CardDescription>
@@ -108,6 +118,7 @@ const ProfessorAnalyticsPage = () => {
           <CardTitle>Ingresos Mensuales</CardTitle>
           <CardDescription>Tus ingresos de los últimos meses</CardDescription>
         </CardHeader>
+
         <CardContent>
           {isLoading ? (
             <div className="h-[300px] bg-slate-200 rounded animate-pulse"></div>
@@ -128,8 +139,24 @@ const ProfessorAnalyticsPage = () => {
                     border: '1px solid #e2e8f0',
                     borderRadius: '0.5rem',
                   }}
-                  formatter={(value: number, name: string) => {
-                    if (name === 'revenue') {
+                  formatter={(
+                    value: number | string | Array<number | string> | undefined,
+                    name: string | number | undefined
+                  ) => {
+                    const safeName = String(name ?? '');
+
+                    if (value === undefined) {
+                      return ['-', safeName === 'sales' ? 'Ventas' : safeName];
+                    }
+
+                    if (Array.isArray(value)) {
+                      return [
+                        value,
+                        safeName === 'sales' ? 'Ventas' : safeName,
+                      ];
+                    }
+
+                    if (safeName === 'revenue' && typeof value === 'number') {
                       return [
                         '$' +
                           value.toLocaleString('es-AR', {
@@ -139,7 +166,8 @@ const ProfessorAnalyticsPage = () => {
                         'Ingresos',
                       ];
                     }
-                    return [value, name === 'sales' ? 'Ventas' : name];
+
+                    return [value, safeName === 'sales' ? 'Ventas' : safeName];
                   }}
                 />
                 <Legend />
