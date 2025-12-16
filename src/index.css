@@ -82,4 +82,10 @@
   }
 }
 
-/* BlockNote Editor Z-Index - Configuración nativa */
+.bn-suggestion-menu {
+  z-index: 99999 !important;
+}
+
+.blocknote-editor-wrapper {
+  overflow: visible !important;
+}
