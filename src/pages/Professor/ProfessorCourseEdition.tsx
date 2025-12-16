@@ -171,7 +171,6 @@ export default function ProfessorCourseEdition() {
           description: currentCourse.description,
           status: currentCourse.status || 'en-desarrollo',
           isFree: currentCourse.isFree,
-          // Convertir centavos a pesos para mostrar en el formulario
           price: currentCourse.priceInCents
             ? toAmount(currentCourse.priceInCents)
             : 0,
@@ -190,12 +189,12 @@ export default function ProfessorCourseEdition() {
 
         setUnits(unitsFromBackend);
 
-        if (unitsFromBackend.length > 0 && selectedUnitId === null) {
-          setSelectedUnitId(unitsFromBackend[0].unitNumber);
+        if (unitsFromBackend.length > 0) {
+          setSelectedUnitId((prev) => (prev === null ? unitsFromBackend[0].unitNumber : prev));
         }
       }
     }
-  }, [courses, courseId, selectedUnitId]); // selectedUnitId agregado a dependencias
+  }, [courses, courseId]);
 
   // Efecto para auto-guardar cuando cambias de unidad
   useEffect(() => {
@@ -231,7 +230,6 @@ export default function ProfessorCourseEdition() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [units, courseId, performSave]);
 
-  // ... (Handlers para unidades, preguntas, materiales igual que antes) ...
   const handleCreateUnit = () => {
     if (!courseId || !courses) return;
 
