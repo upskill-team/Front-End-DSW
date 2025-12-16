@@ -33,75 +33,80 @@ export default function CourseHeader({
 
   return (
     <div className="mb-8">
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex flex-wrap items-center gap-2 mb-4">
         <Link to="/professor/dashboard/courses">
           <Button
             variant="ghost"
             className="text-slate-600 hover:text-slate-800"
+            size="sm"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver a Mis Cursos
+            Volver
           </Button>
         </Link>
         {courseId && (
           <>
             <Button
               variant="outline"
+              size="sm"
               onClick={() => navigate(`/professor/dashboard/assessments?courseId=${courseId}`)}
               className="flex items-center gap-2"
             >
               <FileText className="w-4 h-4" />
-              Ver Evaluaciones del Curso
+              Evaluaciones
             </Button>
             {onOpenGeneralQuestions && (
               <Button
                 variant="outline"
+                size="sm"
                 onClick={onOpenGeneralQuestions}
                 className="flex items-center gap-2"
               >
                 <HelpCircle className="w-4 h-4" />
-                Preguntas Generales
+                Preguntas Gral.
               </Button>
             )}
           </>
         )}
       </div>
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-2">
+          <h1 className="text-2xl lg:text-4xl font-bold text-slate-800 mb-1">
             {courseName}
           </h1>
-          <p className="text-lg text-slate-600">
-            Edita el contenido, las actividades y la configuración de tu curso.
+          <p className="text-sm lg:text-lg text-slate-600">
+            Edita el contenido y configuración.
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-3">
           <SaveStatus
             hasUnsavedChanges={hasUnsavedChanges}
             isLoading={isSaving}
             error={saveError}
             lastSavedAt={lastSavedAt}
           />
+          
           <Button
             onClick={onSave}
             isLoading={isSaving}
             disabled={isSaving}
-            className="bg-green-500 hover:bg-green-600"
+            className="bg-green-500 hover:bg-green-600 whitespace-nowrap"
+            size="md"
           >
-            Guardar Cambios
+            Guardar
           </Button>
 
-          <div className="flex items-center gap-3 bg-slate-50 rounded-lg px-4 py-2 border border-slate-200">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2 border border-slate-200">
+            <div className="flex items-center gap-1.5">
               <Eye
                 className={`w-4 h-4 ${
                   !isEditMode ? 'text-blue-600' : 'text-slate-400'
                 }`}
               />
               <span
-                className={`text-sm font-medium ${
+                className={`text-xs font-medium uppercase ${
                   !isEditMode ? 'text-slate-700' : 'text-slate-400'
                 }`}
               >
@@ -113,18 +118,18 @@ export default function CourseHeader({
               checked={isEditMode}
               onChange={onToggleEdit}
             />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <Edit
                 className={`w-4 h-4 ${
                   isEditMode ? 'text-blue-600' : 'text-slate-400'
                 }`}
               />
               <span
-                className={`text-sm font-medium ${
+                className={`text-xs font-medium uppercase ${
                   isEditMode ? 'text-slate-700' : 'text-slate-400'
                 }`}
               >
-                Editar
+                Edit
               </span>
             </div>
           </div>

@@ -17,9 +17,14 @@ export interface User {
 
 export interface Professor {
   id: string;
-  user: User;
-  state: string;
-  courses: Course[];
+  // Cuando viene de la API completa (endpoints internos)
+  user?: User;
+  state?: string;
+  courses?: Course[];
+  // Cuando viene de la API pública (simplificado)
+  name?: string;
+  surname?: string;
+  profilePicture?: string;
   institution?: Institution;
   managedInstitution?: Institution;
 }
@@ -43,8 +48,9 @@ export interface Course {
   status: string;
   rating?: number;
   studentsCount?: number;
-  students: Student[];
-  units: Unit[];
+  unitsCount?: number; // Contador de unidades (para vistas públicas)
+  students?: Student[]; // Solo presente en vistas autorizadas
+  units?: Unit[]; // Solo presente para usuarios inscritos
 }
 
 export interface CourseType {
@@ -55,13 +61,14 @@ export interface CourseType {
 }
 
 export interface Institution {
-  institutionId: string;
+  institutionId?: string; // Opcional en respuestas públicas
+  id?: string; // Algunas respuestas usan 'id' en lugar de 'institutionId'
   name: string;
-  description: string;
-  normalizedName: string;
+  description?: string;
+  normalizedName?: string;
   aliases?: string[];
-  manager: Professor;
-  professors: Professor[];
+  manager?: Professor;
+  professors?: Professor[];
 }
 
 export type EnrollmentState = 'enrolled' | 'completed' | 'dropped';
@@ -155,9 +162,13 @@ export interface Unit {
   unitNumber: number; // Identificador único + orden
   name: string;
   description?: string;
-  detail: string; // Contenido principal (no description)
-  questions: string[]; // Referencias a Question IDs (no objetos completos)
-  materials: Material[]; // Materiales embebidos
+  // Para vista pública (no inscrito)
+  materialsCount?: number;
+  questionsCount?: number;
+  // Para vista inscrito (con contenido completo)
+  detail?: string; // Contenido principal
+  questions?: string[]; // Referencias a Question IDs
+  materials?: Material[]; // Materiales embebidos
 }
 
 // Tipos específicos para edición de cursos

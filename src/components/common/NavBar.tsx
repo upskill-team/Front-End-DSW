@@ -62,9 +62,7 @@ export function NavBar() {
       });
       navigate('/login');
     } else {
-      const hasPendingAppeal = appeals?.some(appeal => appeal.state === 'pending');
-      
-      if (hasPendingAppeal) {
+      if (appeals && appeals.length > 0) {
         navigate('/professor/applications');
       } else {
         navigate('/professor/apply');
@@ -122,7 +120,6 @@ export function NavBar() {
                 </Button>
               )}
 
-              {/* --- ENVOLTORIO CORRECTO PARA CONTROLES DE ROL --- */}
               <div className="flex items-center space-x-1 bg-slate-100 p-1 rounded-lg">
                 {user?.role === 'admin' && <AdminControls handleLinkClick={handleLinkClick} activeLinkClasses={activeLinkClasses} inactiveLinkClasses={inactiveLinkClasses} location={location} />}
                 {user?.role === 'professor' && <ProfessorControls handleLinkClick={handleLinkClick} activeLinkClasses={activeLinkClasses} inactiveLinkClasses={inactiveLinkClasses} location={location} />}

@@ -42,40 +42,60 @@ interface IndividualPropsPreview extends BasePreviewCardProps {
 
 type CoursePreviewCardProps = CourseObjectProps | IndividualPropsPreview;
 
-/**
- *This component displays a preview card for a course. It can accept either a full
- */
-const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProps>(
-  ({ course, name, description, imageUrl, isFree, price, courseType, hideButton = false, hideInstructor = false, className, ...props }, ref) => {
-    
+const CoursePreviewCard = React.forwardRef<
+  HTMLDivElement,
+  CoursePreviewCardProps
+>(
+  (
+    {
+      course,
+      name,
+      description,
+      imageUrl,
+      isFree,
+      price,
+      courseType,
+      hideButton = false,
+      hideInstructor = false,
+      onViewMore,
+      className,
+      ...props
+    },
+    ref
+  ) => {
     const displayName = course?.name ?? name;
     const displayDescription = course?.description ?? description;
     const displayImage = course?.imageUrl ?? imageUrl;
     const displayIsFree = course?.isFree ?? isFree;
+
+    const displayPriceInCents =
+      course?.priceInCents ??
+      (price !== undefined ? Math.round(price * 100) : 0);
     
-    // Manejar precio: si es un curso, usar priceInCents; si son props individuales, convertir price (pesos) a centavos
-    const displayPriceInCents = course?.priceInCents ?? (price !== undefined ? Math.round(price * 100) : 0);
     const displayCourseType = course?.courseType ?? courseType;
+    
     const displayAmountStudents = course?.studentsCount ?? course?.students?.length ?? 0;
+    
+    const displayAmountUnits = course?.unitsCount ?? course?.units?.length ?? 0;
 
     const instructorName = course?.professor?.user 
       ? `${course.professor.user.name} ${course.professor.user.surname}`
       : 'Instructor no disponible';
-      
+
     return (
       <Link to={course ? `/courses/${course.id}` : '#'} className="block">
         <Card
           ref={ref}
           className={cn(
-            "group transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:shadow-lg cursor-pointer h-full flex flex-col m-2",
+            'group transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:shadow-lg cursor-pointer h-full flex flex-col m-2',
             className
           )}
           {...props}
         >
           <div className="relative overflow-hidden rounded-t-lg">
             <img
-              src={displayImage || "/img/noImage.jpg"}
-              alt={displayName || "Vista previa del curso"}
+              src={displayImage || '/img/noImage.jpg'}
+              alt={displayName || 'Vista previa del curso'}
               className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
             />
           </div>
@@ -90,16 +110,15 @@ const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProp
                 {displayName || 'Nombre del curso'}
               </CardTitle>
               <CardDescription className="text-sm text-slate-600 min-h-[40px] line-clamp-2">
-                {displayDescription || 'La descripción del curso aparecerá aquí...'}
+                {displayDescription ||
+                  'La descripción del curso aparecerá aquí...'}
               </CardDescription>
               {course && !hideInstructor && (
                 <div className="text-sm text-slate-500 mt-1 space-y-0.5">
                   <p>Por {instructorName}</p>
-                  {course.professor?.institution && (
-                    <p className="text-xs text-slate-400">
-                      {course.professor.institution.name}
-                    </p>
-                  )}
+                  <p className="text-xs text-slate-400">
+                    {course.professor?.institution?.name || '\u00A0'}
+                  </p>
                 </div>
               )}
             </CardHeader>
@@ -109,11 +128,21 @@ const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProp
                   <div className="grid grid-cols-2 gap-4 text-sm text-slate-600">
                     <div className="flex items-center space-x-1">
                       <Users className="w-3 h-3" />
-                      <span>{displayAmountStudents} { (displayAmountStudents ?? 0) === 1 ? 'Estudiante' : 'Estudiantes'}</span>
+                      <span>
+                        {displayAmountStudents}{' '}
+                        {(displayAmountStudents ?? 0) === 1
+                          ? 'Estudiante'
+                          : 'Estudiantes'}
+                      </span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <BookOpen className="w-3 h-3" />
-                      <span>{course.units.length} {course.units.length === 1 ? 'Unidad' : 'Unidades'}</span>
+                      <span>
+                        {displayAmountUnits}{' '}
+                        {(displayAmountUnits ?? 0) === 1
+                          ? 'Unidad'
+                          : 'Unidades'}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -126,9 +155,15 @@ const CoursePreviewCard = React.forwardRef<HTMLDivElement, CoursePreviewCardProp
                     )}
                   </div>
                   {!hideButton && (
-                    <Button
-                      variant="primary"
+                    <Button 
+                      variant="primary" 
                       size="sm"
+                      onClick={(e) => {
+                        if (onViewMore) {
+                          e.preventDefault(); 
+                          onViewMore();
+                        }
+                      }}
                     >
                       Ver más
                     </Button>

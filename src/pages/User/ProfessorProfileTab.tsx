@@ -31,7 +31,7 @@ export default function InstructorProfileTab() {
 
   const handleLeaveInstitution = () => {
     if (professor?.institution && confirm('¿Estás seguro de que quieres abandonar esta institución?')) {
-      leaveInstitution(professor.institution.institutionId, {
+      leaveInstitution(professor.institution.institutionId || professor.institution.id || '', {
         onError: (error) => alert(`Error al abandonar la institución: ${error.message}`),
       });
     }

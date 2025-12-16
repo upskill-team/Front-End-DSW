@@ -2,7 +2,6 @@ import apiClient from '../apiClient';
 import type { Appeal } from '../../types/entities';
 import type { PaginatedAppealsResponse, SearchAppealsParams } from '../../types/shared.ts'
 
-
 type UpdateAppealPayload = {
   state: 'accepted' | 'rejected';
 };
@@ -14,8 +13,11 @@ interface ApiResponse<T> {
 }
 
 const createAppeal = async (formData: FormData): Promise<Appeal> => {
-
-  const response = await apiClient.post<ApiResponse<Appeal>>('/appeals', formData);
+  const response = await apiClient.post<ApiResponse<Appeal>>('/appeals', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 
   return response.data.data;
 };

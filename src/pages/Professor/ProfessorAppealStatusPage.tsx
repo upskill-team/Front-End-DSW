@@ -1,18 +1,19 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useMyAppeals } from '../../hooks/useAppeals';
 import { Card } from '../../components/ui/Card/Card';
 import StatusBadge from '../../components/ui/StatusBadge/StatusBadge';
 import Button from '../../components/ui/Button/Button';
 import { Dialog, DialogHeader, DialogTitle } from '../../components/ui/Dialog/Dialog';
 import DocumentViewer from '../../components/ui/DocumentViewer/DocumentViewer';
-import { ArrowLeft, Calendar, Eye, GraduationCap, ExternalLink, Info } from 'lucide-react';
+import { ArrowLeft, Calendar, Eye, GraduationCap, ExternalLink, Info, Plus } from 'lucide-react';
 import type { Appeal } from '../../types/entities';
 
 export default function ProfessorAppealStatusPage() {
   const { data: appeals, isLoading } = useMyAppeals();
   const [selectedAppeal, setSelectedAppeal] = useState<Appeal | null>(null);
   const [documentUrlToShow, setDocumentUrlToShow] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -26,6 +27,8 @@ export default function ProfessorAppealStatusPage() {
   }
 
   const sortedAppeals = appeals?.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) || [];
+  
+  const hasPendingAppeal = appeals?.some((appeal) => appeal.state === 'pending');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 py-12 px-4">
@@ -37,17 +40,28 @@ export default function ProfessorAppealStatusPage() {
           </Link>
         </div>
 
-        <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 flex gap-3 items-start">
-          <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-blue-800">
-            <p className="font-semibold mb-1">Solicitud en curso detectada</p>
-            <p>
-              Ya tienes una solicitud registrada en el sistema. Puedes ver el estado y los detalles de todas tus solicitudes a continuación.
-            </p>
+        {hasPendingAppeal && (
+          <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 flex gap-3 items-start">
+            <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-blue-800">
+              <p className="font-semibold mb-1">Solicitud en curso detectada</p>
+              <p>
+                Ya tienes una solicitud pendiente de revisión. Cuando sea procesada, recibirás una notificación.
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
-        <h1 className="text-2xl font-bold text-slate-800">Mis Solicitudes</h1>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h1 className="text-2xl font-bold text-slate-800">Mis Solicitudes</h1>
+          
+          {!hasPendingAppeal && (
+            <Button onClick={() => navigate('/professor/apply')} className="bg-green-600 hover:bg-green-700 text-white">
+              <Plus className="w-4 h-4 mr-2" />
+              Nueva Solicitud
+            </Button>
+          )}
+        </div>
 
         <div className="space-y-4">
           {sortedAppeals.map((appeal) => (

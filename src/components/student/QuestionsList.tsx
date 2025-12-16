@@ -13,6 +13,13 @@ interface QuestionsListProps {
 }
 
 /**
+ * Valida que un string sea un ObjectId válido de MongoDB
+ */
+function isValidObjectId(id: string): boolean {
+  return /^[0-9a-fA-F]{24}$/.test(id);
+}
+
+/**
  * Componente para mostrar las preguntas de una unidad.
  * Carga las preguntas individualmente y permite al estudiante responderlas.
  */
@@ -20,7 +27,10 @@ export default function QuestionsList({
   courseId,
   questionIds,
 }: QuestionsListProps) {
-  if (questionIds.length === 0) {
+  // Filtrar IDs inválidos
+  const validQuestionIds = questionIds?.filter(id => id && isValidObjectId(id)) ?? [];
+
+  if (validQuestionIds.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -43,12 +53,12 @@ export default function QuestionsList({
       <CardHeader>
         <CardTitle className="text-lg flex items-center">
           <HelpCircle className="w-5 h-5 mr-2 text-purple-600" />
-          Preguntas de Autoevaluación ({questionIds.length})
+          Preguntas de Autoevaluación ({validQuestionIds.length})
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {questionIds.map((questionId, index) => (
+          {validQuestionIds.map((questionId, index) => (
             <QuestionItem
               key={questionId}
               courseId={courseId}
@@ -83,6 +93,7 @@ function QuestionItem({
   } = useQuery<Question>({
     queryKey: ['question', courseId, questionId],
     queryFn: () => questionService.getById(courseId, questionId),
+    enabled: isValidObjectId(questionId), // Solo hacer query si el ID es válido
   });
 
   if (isLoading) {

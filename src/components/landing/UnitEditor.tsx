@@ -1,9 +1,13 @@
-import { useCreateBlockNote } from '@blocknote/react';
+import { 
+  useCreateBlockNote, 
+  getDefaultReactSlashMenuItems, 
+  SuggestionMenuController 
+} from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
+import { filterSuggestionItems } from '@blocknote/core';
 import '@blocknote/mantine/style.css';
 import '@blocknote/core/fonts/inter.css';
 import type { Block, PartialBlock } from '@blocknote/core';
-import { useUploadUnitFile } from '../../hooks/useUnits.ts';
 import { useEffect } from 'react';
 
 interface UnitEditorProps {
@@ -17,16 +21,8 @@ export default function UnitEditor({
   initialContent,
   onChange,
 }: UnitEditorProps) {
-  const { mutateAsync: uploadFileToServer } = useUploadUnitFile();
-
-  const uploadFile = async (file: File): Promise<string> => {
-    const url = await uploadFileToServer(file);
-    return url;
-  };
-
-  const editor = useCreateBlockNote({
-    uploadFile,
-  });
+  
+  const editor = useCreateBlockNote({});
 
   useEffect(() => {
     if (editor) {
@@ -52,8 +48,18 @@ export default function UnitEditor({
     }
   }, [editor, initialContent]);
 
+  const forbiddenItems = ['Image', 'Video', 'Audio', 'File'];
+
+  const getCustomSlashMenuItems = (query: string) => {
+    const defaultItems = getDefaultReactSlashMenuItems(editor);
+    const filteredItems = defaultItems.filter(
+      (item) => !forbiddenItems.includes(item.title)
+    );
+    return filterSuggestionItems(filteredItems, query);
+  };
+
   return (
-    <div className="blocknote-editor-wrapper relative">
+    <div className="blocknote-editor-wrapper relative z-10">
       <BlockNoteView
         theme="light"
         editable={editable}
@@ -61,7 +67,13 @@ export default function UnitEditor({
         onChange={() => {
           onChange(editor.document);
         }}
-      />
+        slashMenu={false} 
+      >
+        <SuggestionMenuController
+          triggerCharacter={'/'}
+          getItems={async (query) => getCustomSlashMenuItems(query)}
+        />
+      </BlockNoteView>
     </div>
   );
 }

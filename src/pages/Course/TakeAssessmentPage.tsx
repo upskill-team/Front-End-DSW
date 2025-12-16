@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { ArrowLeft, Clock, AlertCircle, CheckCircle, Send } from 'lucide-react';
 import Button from '../../components/ui/Button/Button';
 import {
@@ -35,15 +35,17 @@ export default function TakeAssessmentPage() {
     QuestionForStudent[]
   >([]);
 
+  const hasAutoSubmittedRef = useRef(false);
+
   const { data: assessment, isLoading } = useAssessment(assessmentId);
   const startAttemptMutation = useStartAttempt();
   const saveAnswersMutation = useSaveAnswers();
   const submitAttemptMutation = useSubmitAttempt();
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = useCallback(async (forceSubmit = false) => {
     if (!attemptId) return;
 
-    if (Object.keys(answers).length === 0) {
+    if (!forceSubmit && Object.keys(answers).length === 0) {
       alert('Debes responder al menos una pregunta para enviar la evaluación.');
       return;
     }
@@ -54,19 +56,29 @@ export default function TakeAssessmentPage() {
         answer,
       })
     );
-
+    
     try {
-      await submitAttemptMutation.mutateAsync({
-        attemptId,
-        submitData: { attemptId, answers: answersArray },
-      });
+      if (answersArray.length > 0) {
+        await submitAttemptMutation.mutateAsync({
+          attemptId,
+          submitData: { attemptId, answers: answersArray },
+        });
+        
+        navigate(
+          `/courses/${courseId}/assessments/${assessmentId}/results/${attemptId}`
+        );
+      } else if (forceSubmit) {
+        toast.error("El tiempo se agotó y no hubo respuestas registradas.");
+        navigate(`/courses/${courseId}/assessments`);
+      }
 
-      navigate(
-        `/courses/${courseId}/assessments/${assessmentId}/results/${attemptId}`
-      );
     } catch (error) {
       console.error('Error submitting attempt:', error);
-      alert('Hubo un error al enviar la evaluación.');
+      if (forceSubmit) {
+         navigate(`/courses/${courseId}/assessments`);
+      } else {
+         toast.error('Hubo un error al enviar la evaluación.');
+      }
     }
   }, [
     attemptId,
@@ -91,13 +103,12 @@ export default function TakeAssessmentPage() {
       });
       setAttemptId(attempt.id);
       setHasStarted(true);
+      hasAutoSubmittedRef.current = false;
 
-      // Guardamos las preguntas del intento (SIN respuestas correctas)
       if (attempt.assessment?.questions) {
         setAttemptQuestions(attempt.assessment.questions);
       }
 
-      // Si hay respuestas previas guardadas (auto-save), las cargamos
       if (attempt.answers && attempt.answers.length > 0) {
         const savedAnswers: Record<string, number | string> = {};
         attempt.answers.forEach((answer) => {
@@ -152,18 +163,27 @@ export default function TakeAssessmentPage() {
   }, [hasStarted, assessment, timeLeft]);
 
   useEffect(() => {
+    if (hasAutoSubmittedRef.current) return;
+
     if (timeLeft !== null && timeLeft > 0) {
       const timer = setInterval(() => {
-        setTimeLeft((prev) => (prev !== null ? prev - 1 : null));
+        setTimeLeft((prev) => {
+          if (prev !== null && prev <= 1) {
+             clearInterval(timer);
+             return 0;
+          }
+          return prev !== null ? prev - 1 : null;
+        });
       }, 1000);
       return () => clearInterval(timer);
     } else if (timeLeft === 0) {
-      handleSubmit();
+      hasAutoSubmittedRef.current = true;
+      handleSubmit(true);
     }
   }, [timeLeft, handleSubmit]);
 
   useEffect(() => {
-    if (hasStarted && attemptId && Object.keys(answers).length > 0) {
+    if (hasStarted && attemptId && Object.keys(answers).length > 0 && !hasAutoSubmittedRef.current) {
       const autoSave = setInterval(() => {
         const answersArray = Object.entries(answers).map(
           ([questionId, answer]) => ({
@@ -334,8 +354,8 @@ export default function TakeAssessmentPage() {
                 </div>
               )}
               <Button
-                onClick={handleSubmit}
-                disabled={submitAttemptMutation.isPending}
+                onClick={() => handleSubmit(false)} // Envío manual (no forzado)
+                disabled={submitAttemptMutation.isPending || hasAutoSubmittedRef.current}
                 size="sm"
                 className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 flex-1 sm:flex-initial"
               >
@@ -389,6 +409,7 @@ export default function TakeAssessmentPage() {
                                 parseInt(e.target.value, 10)
                               )
                             }
+                            disabled={hasAutoSubmittedRef.current}
                             className="w-5 h-5 text-purple-600 focus:ring-purple-500"
                           />
                           <span className="text-slate-700">{option.text}</span>
@@ -401,6 +422,7 @@ export default function TakeAssessmentPage() {
                       onChange={(e) =>
                         handleAnswerChange(question.id!, e.target.value)
                       }
+                      disabled={hasAutoSubmittedRef.current}
                       placeholder="Escribe tu respuesta aquí..."
                       className="w-full min-h-[150px] p-4 border-2 border-slate-200 rounded-lg focus:border-purple-400 focus:ring-2 focus:ring-purple-200 resize-none"
                     />
@@ -412,8 +434,8 @@ export default function TakeAssessmentPage() {
         </div>
         <div className="mt-8 flex justify-center">
           <Button
-            onClick={handleSubmit}
-            disabled={submitAttemptMutation.isPending}
+            onClick={() => handleSubmit(false)}
+            disabled={submitAttemptMutation.isPending || hasAutoSubmittedRef.current}
             size="lg"
             className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 px-8"
           >

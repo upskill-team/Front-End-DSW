@@ -58,8 +58,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       const trySilentRefresh = async () => {
         try {
-          const { data } = await apiClient.post('/auth/refresh');
-          const newToken = data.data.token;
+          const response = await apiClient.post('/auth/refresh');
+          
+          if (response.status === 204) {
+            return false;
+          }
+
+          const newToken = response.data.data.token;
           if (newToken) {
             await login(newToken);
             return true;

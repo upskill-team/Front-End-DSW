@@ -9,7 +9,11 @@ interface ApiResponse<T> {
 }
 
 // Types for login and register requests
-type LoginPayload = { mail: string; password_plaintext: string };
+type LoginPayload = { 
+  mail: string; 
+  password_plaintext: string; 
+  rememberMe: boolean; 
+};
 type RegisterPayload = Omit<
   User,
   | 'password'

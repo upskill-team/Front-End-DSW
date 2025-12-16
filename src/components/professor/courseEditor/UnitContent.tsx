@@ -18,13 +18,13 @@ import {
 } from 'lucide-react';
 import DocumentViewer from '../../ui/DocumentViewer/DocumentViewer';
 import UnitEditor from '../../landing/UnitEditor';
-// import ActivityCard from '../../landing/professorCourseEdition/ActivityCard'; // Obsoleto, ahora usamos questions
 import type { Block } from '@blocknote/core';
 import type {
   UnitEditorData,
   Question,
   Material,
 } from '../../../types/entities';
+import { cn } from '../../../lib/utils';
 
 interface UnitContentProps {
   selectedUnit: UnitEditorData | null;
@@ -75,7 +75,12 @@ export default function UnitContent({
 
   return (
     <div className="space-y-6">
-      <Card className={editable ? 'ring-2 ring-blue-200 ring-offset-2' : ''}>
+      <Card 
+        className={cn(
+          "relative z-20", 
+          editable && 'ring-2 ring-blue-200 ring-offset-2'
+        )}
+      >
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -115,7 +120,7 @@ export default function UnitContent({
         </CardContent>
       </Card>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-6 relative z-0">
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Preguntas de la Unidad</CardTitle>
@@ -238,7 +243,6 @@ export default function UnitContent({
         </Card>
       </div>
 
-      {/* Modal de previsualización de materiales */}
       {previewMaterial && (
         <DocumentViewer
           url={previewMaterial.url}

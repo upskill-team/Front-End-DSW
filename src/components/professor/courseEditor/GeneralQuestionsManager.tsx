@@ -47,7 +47,7 @@ export default function GeneralQuestionsManager({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-4xl max-h-[90vh] flex flex-col bg-white shadow-2xl">
+      <Card className="w-full max-w-4xl max-h-[90vh] flex flex-col bg-white shadow-2xl overflow-hidden">
         <div className="flex items-center justify-between p-6 border-b">
           <div>
             <h2 className="text-2xl font-bold flex items-center gap-2">

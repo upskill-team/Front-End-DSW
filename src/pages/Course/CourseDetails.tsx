@@ -12,6 +12,10 @@ import { useCreatePreference } from '../../hooks/usePayment.ts';
 import { formatCurrency } from '../../lib/currency';
 import { AxiosError } from 'axios';
 import { toast } from 'react-hot-toast';
+import {
+  getProfessorName,
+  getProfessorProfilePicture,
+} from '../../lib/professor';
 
 function CourseDetails() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -181,13 +185,18 @@ function CourseDetails() {
               <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 mb-6">
                 <div className="flex items-center space-x-1">
                   <Users className="w-4 h-4" />
-                  <span>{course.students?.length || 0} estudiantes</span>
+                  <span>
+                    {course.studentsCount ?? course.students?.length ?? 0}{' '}
+                    estudiantes
+                  </span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <BookOpen className="w-4 h-4" />
                   <span>
-                    {course.units?.length || 0}{' '}
-                    {course.units?.length === 1 ? 'lección' : 'lecciones'}
+                    {course.unitsCount ?? course.units?.length ?? 0}{' '}
+                    {(course.unitsCount ?? course.units?.length ?? 0) === 1
+                      ? 'lección'
+                      : 'lecciones'}
                   </span>
                 </div>
               </div>
@@ -195,36 +204,51 @@ function CourseDetails() {
               <div className="flex items-center space-x-4 p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-slate-200">
                 <img
                   src={
-                    course.professor?.user?.profile_picture ||
+                    getProfessorProfilePicture(course.professor) ||
                     '/img/noImage.jpg'
                   }
-                  alt={course.professor?.user?.name}
+                  alt={getProfessorName(course.professor)}
                   className="w-14 h-14 rounded-full object-cover"
                 />
-                <div>
+                <div className="flex-1">
                   <p className="text-sm text-slate-600">Creado por</p>
                   <Link
                     to={`/courses?professorId=${course.professor.id || ''}`}
                     className="font-semibold text-slate-800 hover:text-blue-600 transition-colors"
                   >
-                    {course.professor?.user?.name}{' '}
-                    {course.professor?.user?.surname}
+                    {getProfessorName(course.professor)}
                   </Link>
                 </div>
 
-                {course.institution?.institutionId ? (
-                  <div className="ml-6">
-                    <p className="text-sm text-slate-600">Institución</p>
-                    <Link
-                      to={`/courses?institutionId=${
-                        course.institution?.institutionId
-                      }`}
-                      className="font-semibold text-slate-800 hover:text-blue-600 transition-colors"
-                    >
-                      {course.institution?.name}
-                    </Link>
-                  </div>
-                ) : null}
+                {(course.institution?.name || course.professor?.institution?.name) && (
+                  <>
+                    <div className="h-10 w-px bg-slate-300" />
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center">
+                        <Globe className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-slate-600">Institución</p>
+                        {(course.institution?.id || course.institution?.institutionId || course.professor?.institution?.id) ? (
+                          <Link
+                            to={`/courses?institutionId=${
+                              course.institution?.id || 
+                              course.institution?.institutionId || 
+                              course.professor?.institution?.id
+                            }`}
+                            className="font-semibold text-slate-800 hover:text-blue-600 transition-colors"
+                          >
+                            {course.institution?.name || course.professor?.institution?.name}
+                          </Link>
+                        ) : (
+                          <span className="font-semibold text-slate-800">
+                            {course.institution?.name || course.professor?.institution?.name}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
@@ -251,18 +275,22 @@ function CourseDetails() {
                             {seccion.description}
                           </p>
                         ) : null}
-                        <p className="text-sm text-slate-600">
-                          {seccion.materials?.length > 0 && (
-                            <span>{seccion.materials.length} Recursos</span>
+                        <div className="flex items-center gap-2 text-sm text-slate-600 mt-1">
+                          {(seccion.materialsCount ?? 0) > 0 && (
+                            <span className="flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                              {seccion.materialsCount} Material
+                              {seccion.materialsCount !== 1 ? 'es' : ''}
+                            </span>
                           )}
-                          {seccion.materials?.length > 0 &&
-                            seccion.questions?.length > 0 && (
-                              <span className="mx-2">·</span>
-                            )}
-                          {seccion.questions?.length > 0 && (
-                            <span>{seccion.questions.length} Preguntas</span>
+                          {(seccion.questionsCount ?? 0) > 0 && (
+                            <span className="flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                              {seccion.questionsCount} Pregunta
+                              {seccion.questionsCount !== 1 ? 's' : ''}
+                            </span>
                           )}
-                        </p>
+                        </div>
                       </div>
                     </div>
                   </div>

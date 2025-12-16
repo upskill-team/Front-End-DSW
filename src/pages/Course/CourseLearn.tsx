@@ -12,9 +12,10 @@ import MaterialsList from '../../components/student/MaterialsList';
 import QuestionsList from '../../components/student/QuestionsList';
 import Button from '../../components/ui/Button/Button';
 import ErrorBoundary from '../../components/ui/ErrorBoundary/ErrorBoundary';
-import { CheckCircle2, BookOpen, ArrowLeft } from 'lucide-react';
+import { CheckCircle2, BookOpen, ArrowLeft, AlertCircle } from 'lucide-react';
 import type { Unit } from '../../types/entities';
 import toast from 'react-hot-toast';
+import { getProfessorName } from '../../lib/professor';
 
 export default function CourseLearn() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -41,13 +42,20 @@ export default function CourseLearn() {
   useEffect(() => {
     if (isErrorEnrollment && enrollmentError?.response?.status === 404) {
       navigate(`/courses/${courseId}`);
-      console.log("No enrollment found, redirecting to course details.");
+      console.log('No enrollment found, redirecting to course details.');
     }
 
     if (courseUnits.length > 0 && !currentUnit) {
       setCurrentUnit(courseUnits[0]);
     }
-  }, [isErrorEnrollment, enrollmentError, courseUnits, currentUnit, courseId, navigate]);
+  }, [
+    isErrorEnrollment,
+    enrollmentError,
+    courseUnits,
+    currentUnit,
+    courseId,
+    navigate,
+  ]);
 
   const handleSelectUnit = (unitNumber: number) => {
     const unit = courseUnits.find((u) => u.unitNumber === unitNumber);
@@ -56,15 +64,21 @@ export default function CourseLearn() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
-  
+
   const handleToggleCompleteUnit = () => {
     if (!currentUnit || !enrollment) return;
     const isCompleted = completedUnits.includes(currentUnit.unitNumber);
     if (isCompleted) {
-      uncompleteUnit({ enrollmentId: enrollment.id, unitNumber: currentUnit.unitNumber });
+      uncompleteUnit({
+        enrollmentId: enrollment.id,
+        unitNumber: currentUnit.unitNumber,
+      });
     } else {
-        toast.success("Unidad completada con éxito!")
-        completeUnit({ enrollmentId: enrollment.id, unitNumber: currentUnit.unitNumber });
+      toast.success('Unidad completada con éxito!');
+      completeUnit({
+        enrollmentId: enrollment.id,
+        unitNumber: currentUnit.unitNumber,
+      });
     }
   };
 
@@ -78,7 +92,7 @@ export default function CourseLearn() {
       </div>
     );
   }
-  
+
   if (!enrollment || !course) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
@@ -101,8 +115,8 @@ export default function CourseLearn() {
   const isCurrentUnitCompleted = currentUnit
     ? completedUnits.includes(currentUnit.unitNumber)
     : false;
-    
-  const instructorName = `${course.professor?.user?.name || ''} ${course.professor?.user?.surname || ''}`.trim() || 'Instructor';
+
+  const instructorName = getProfessorName(course?.professor);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
@@ -153,6 +167,24 @@ export default function CourseLearn() {
         </div>
       </div>
 
+      {course.status === 'en-desarrollo' && (
+        <div className="bg-amber-50 border-l-4 border-amber-400 p-4 my-4 sm:p-5">
+          <div className="container mx-auto px-3 sm:px-4 md:px-6">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm sm:text-base font-semibold text-amber-900 mb-1">
+                  Curso en Desarrollo
+                </h3>
+                <p className="text-xs sm:text-sm text-amber-800">
+                  Este curso fue marcado como en desarrollo por el profesor, ten en cuenta que la información es susceptible a cambios.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col lg:flex-row lg:h-[calc(100vh-88px)]">
         <div className="hidden lg:block lg:w-80 flex-shrink-0 bg-white border-r border-slate-200 shadow-sm lg:overflow-y-auto">
           <UnitSidebar
@@ -186,11 +218,11 @@ export default function CourseLearn() {
               </div>
 
               <div className="mb-4 sm:mb-6 bg-white/80 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-slate-200 shadow-sm">
-                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-2">
-                    {currentUnit.name}
-                 </h2>
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-2">
+                  {currentUnit.name}
+                </h2>
               </div>
-              
+
               <div className="mb-4 sm:mb-6 bg-white/90 backdrop-blur-sm rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                 <div className="p-4 sm:p-6">
                   <ErrorBoundary>
@@ -198,13 +230,13 @@ export default function CourseLearn() {
                   </ErrorBoundary>
                 </div>
               </div>
-              
-              {currentUnit.materials.length > 0 && (
+
+              {currentUnit.materials && currentUnit.materials.length > 0 && (
                 <div className="mb-6">
                   <MaterialsList materials={currentUnit.materials} />
                 </div>
               )}
-              {currentUnit.questions.length > 0 && (
+              {currentUnit.questions && currentUnit.questions.length > 0 && (
                 <div className="mb-4 sm:mb-6">
                   <QuestionsList
                     courseId={course.id}
@@ -214,25 +246,40 @@ export default function CourseLearn() {
               )}
 
               <div className="mt-4 sm:mt-6">
-                <div className={`rounded-xl p-4 sm:p-6 shadow-sm border-2 ${isCurrentUnitCompleted ? 'bg-green-50 border-green-300' : 'bg-white/80 border-blue-200'}`}>
-                    <Button
-                      onClick={handleToggleCompleteUnit}
-                      disabled={isCompletingUnit || isUncompletingUnit}
-                      className={`w-full py-4 sm:py-6 text-base sm:text-lg shadow-md transition-all duration-200 ${isCurrentUnitCompleted ? 'bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700' : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800'}`}
-                      size="lg"
-                    >
-                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                      <span className="text-sm sm:text-base">{isCurrentUnitCompleted ? 'Marcar como No Completada' : 'Marcar como Completada'}</span>
-                    </Button>
+                <div
+                  className={`rounded-xl p-4 sm:p-6 shadow-sm border-2 ${
+                    isCurrentUnitCompleted
+                      ? 'bg-green-50 border-green-300'
+                      : 'bg-white/80 border-blue-200'
+                  }`}
+                >
+                  <Button
+                    onClick={handleToggleCompleteUnit}
+                    disabled={isCompletingUnit || isUncompletingUnit}
+                    className={`w-full py-4 sm:py-6 text-base sm:text-lg shadow-md transition-all duration-200 ${
+                      isCurrentUnitCompleted
+                        ? 'bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700'
+                        : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800'
+                    }`}
+                    size="lg"
+                  >
+                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                    <span className="text-sm sm:text-base">
+                      {isCurrentUnitCompleted
+                        ? 'Marcar como No Completada'
+                        : 'Marcar como Completada'}
+                    </span>
+                  </Button>
                 </div>
               </div>
-              
             </div>
           ) : (
             <div className="flex items-center justify-center min-h-[50vh] p-4 sm:p-8">
               <div className="text-center max-w-md bg-white/80 backdrop-blur-sm rounded-xl p-6 sm:p-8 border border-slate-200 shadow-sm">
                 <BookOpen className="w-16 h-16 sm:w-20 sm:h-20 text-blue-300 mx-auto mb-4" />
-                <h3 className="text-lg sm:text-xl font-bold text-slate-800 mb-2">Comienza tu Aprendizaje</h3>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-800 mb-2">
+                  Comienza tu Aprendizaje
+                </h3>
                 <p className="text-sm sm:text-base text-slate-600">
                   {courseUnits.length > 0
                     ? 'Selecciona una unidad del menú para comenzar a ver el contenido.'

@@ -304,7 +304,7 @@ export default function ProfessorRequestsPage() {
                 <p className="text-sm font-medium text-slate-700">
                   Experiencia y Motivación
                 </p>
-                <p className="text-sm leading-relaxed bg-slate-50 p-3 rounded-md">
+                <p className="text-sm leading-relaxed bg-slate-50 p-3 rounded-md break-words whitespace-pre-wrap max-h-60 overflow-y-auto">
                   {selectedRequest.experienceMotivation}
                 </p>
               </div>

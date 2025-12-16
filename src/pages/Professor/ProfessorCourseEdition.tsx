@@ -154,7 +154,7 @@ export default function ProfessorCourseEdition() {
 
     const currentUnit = units.find((u) => u.unitNumber === selectedUnitId);
     if (currentUnit && currentUnit.hasUnsavedChanges) {
-      performSave(selectedUnitId, currentUnit.detail);
+      performSave(selectedUnitId, currentUnit.detail || '');
     } else {
       setLastSavedAt(new Date());
       setSaveError(null);
@@ -171,7 +171,6 @@ export default function ProfessorCourseEdition() {
           description: currentCourse.description,
           status: currentCourse.status || 'en-desarrollo',
           isFree: currentCourse.isFree,
-          // Convertir centavos a pesos para mostrar en el formulario
           price: currentCourse.priceInCents
             ? toAmount(currentCourse.priceInCents)
             : 0,
@@ -190,12 +189,12 @@ export default function ProfessorCourseEdition() {
 
         setUnits(unitsFromBackend);
 
-        if (unitsFromBackend.length > 0 && selectedUnitId === null) {
-          setSelectedUnitId(unitsFromBackend[0].unitNumber);
+        if (unitsFromBackend.length > 0) {
+          setSelectedUnitId((prev) => (prev === null ? unitsFromBackend[0].unitNumber : prev));
         }
       }
     }
-  }, [courses, courseId, selectedUnitId]); // selectedUnitId agregado a dependencias
+  }, [courses, courseId]);
 
   // Efecto para auto-guardar cuando cambias de unidad
   useEffect(() => {
@@ -206,7 +205,7 @@ export default function ProfessorCourseEdition() {
       const previousUnit = units.find((u) => u.unitNumber === previousUnitId);
 
       if (previousUnit && previousUnit.hasUnsavedChanges) {
-        performSave(previousUnitId, previousUnit.detail);
+        performSave(previousUnitId, previousUnit.detail || '');
       }
     }
     previousUnitRef.current = currentUnitId;
@@ -220,7 +219,7 @@ export default function ProfessorCourseEdition() {
       if (hasUnsavedChanges) {
         const unitWithChanges = units.find((unit) => unit.hasUnsavedChanges);
         if (unitWithChanges && courseId) {
-          performSave(unitWithChanges.unitNumber, unitWithChanges.detail);
+          performSave(unitWithChanges.unitNumber, unitWithChanges.detail || '');
         }
         event.preventDefault();
         event.returnValue = '';
@@ -231,7 +230,6 @@ export default function ProfessorCourseEdition() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [units, courseId, performSave]);
 
-  // ... (Handlers para unidades, preguntas, materiales igual que antes) ...
   const handleCreateUnit = () => {
     if (!courseId || !courses) return;
 
@@ -563,7 +561,6 @@ export default function ProfessorCourseEdition() {
           setNewImageFile(null);
           setSaveError(null);
           setLastSavedAt(new Date());
-          toast.success('Configuración guardada exitosamente');
         },
         onError: (error) => {
           setSaveError(error.message || 'Error al guardar configuración');
