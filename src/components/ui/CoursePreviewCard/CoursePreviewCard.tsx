@@ -13,7 +13,6 @@ import type { Course, CourseType } from '../../../types/entities';
 import { cn } from '../../../lib/utils';
 import { Link } from 'react-router-dom';
 import { formatCurrency } from '../../../lib/currency';
-import { getProfessorName } from '../../../lib/professor';
 
 interface BasePreviewCardProps extends React.HTMLAttributes<HTMLDivElement> {
   hideButton?: boolean;
@@ -43,9 +42,6 @@ interface IndividualPropsPreview extends BasePreviewCardProps {
 
 type CoursePreviewCardProps = CourseObjectProps | IndividualPropsPreview;
 
-/**
- *This component displays a preview card for a course. It can accept either a full
- */
 const CoursePreviewCard = React.forwardRef<
   HTMLDivElement,
   CoursePreviewCardProps
@@ -61,6 +57,7 @@ const CoursePreviewCard = React.forwardRef<
       courseType,
       hideButton = false,
       hideInstructor = false,
+      onViewMore,
       className,
       ...props
     },
@@ -71,14 +68,19 @@ const CoursePreviewCard = React.forwardRef<
     const displayImage = course?.imageUrl ?? imageUrl;
     const displayIsFree = course?.isFree ?? isFree;
 
-    // Manejar precio: si es un curso, usar priceInCents; si son props individuales, convertir price (pesos) a centavos
     const displayPriceInCents =
       course?.priceInCents ??
       (price !== undefined ? Math.round(price * 100) : 0);
+    
     const displayCourseType = course?.courseType ?? courseType;
+    
     const displayAmountStudents = course?.studentsCount ?? course?.students?.length ?? 0;
+    
     const displayAmountUnits = course?.unitsCount ?? course?.units?.length ?? 0;
-    const instructorName = getProfessorName(course?.professor);
+
+    const instructorName = course?.professor?.user 
+      ? `${course.professor.user.name} ${course.professor.user.surname}`
+      : 'Instructor no disponible';
 
     return (
       <Link to={course ? `/courses/${course.id}` : '#'} className="block">
@@ -153,7 +155,16 @@ const CoursePreviewCard = React.forwardRef<
                     )}
                   </div>
                   {!hideButton && (
-                    <Button variant="primary" size="sm">
+                    <Button 
+                      variant="primary" 
+                      size="sm"
+                      onClick={(e) => {
+                        if (onViewMore) {
+                          e.preventDefault(); 
+                          onViewMore();
+                        }
+                      }}
+                    >
                       Ver más
                     </Button>
                   )}
