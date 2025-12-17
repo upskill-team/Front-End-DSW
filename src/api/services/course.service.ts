@@ -36,10 +36,17 @@ const getTrendingCourses = async (): Promise<Course[]> => {
 }
 
 const create = async (payload: FormData): Promise<Course> => {
-  console.log(payload.get('useInstitution'));
+
+  console.log(payload.get('image'));
+
   const response = await apiClient.post<ApiResponse<Course>>(
     '/courses',
-    payload
+    payload,
+        {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
   );
   return response.data.data;
 };
