@@ -1,11 +1,8 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { NavBar } from '../common/NavBar';
 import { Footer } from '../common/Footer.tsx';
 
 const MainLayout = () => {
-  const location = useLocation();
-  const isLandingPage = location.pathname === '/';
-
   return (
     <div className="flex flex-col min-h-screen">
       <NavBar />

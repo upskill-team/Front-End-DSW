@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { valibotResolver } from '@hookform/resolvers/valibot';
 import * as v from 'valibot';
@@ -14,7 +14,7 @@ import {
 import Input from '../../components/ui/Input/Input';
 import Textarea from '../../components/ui/TextArea/TextArea';
 import Label from '../../components/ui/Label/Label';
-import { BookOpen, ArrowLeft, GraduationCap, Upload } from 'lucide-react';
+import { GraduationCap, Upload } from 'lucide-react';
 import { useCreateAppeal } from '../../hooks/useCreateAppeal';
 import { useMyAppeals } from '../../hooks/useAppeals';
 import { isAxiosError } from 'axios';

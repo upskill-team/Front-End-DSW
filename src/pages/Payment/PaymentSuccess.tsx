@@ -48,7 +48,7 @@ export default function PaymentSuccess() {
   }, [isSuccess, enrollment, courseId, navigate]);
 
   return (
-    <div className="flex items-center justify-center py-24 bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4 pt-24">
       <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center">
         {!isSuccess && (
           <>

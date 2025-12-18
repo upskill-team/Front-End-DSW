@@ -211,6 +211,7 @@ export default function ProfessorAssessmentAttemptsPage() {
       {selectedAttemptId && attemptDetails && (
         <AttemptDetailsModal attempt={attemptDetails} onClose={() => setSelectedAttemptId(null)} />
       )}
+      </div>
     </div>
   );
 }
