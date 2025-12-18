@@ -7,9 +7,9 @@ const MainLayout = () => {
   const isLandingPage = location.pathname === '/';
 
   return (
-    <div className="flex flex-col min-h-screen bg-neutral-50">
+    <div className="flex flex-col min-h-screen">
       <NavBar />
-      <main className={`flex-grow container mx-auto p-4 ${!isLandingPage ? 'pt-24' : ''}`}>
+      <main className="flex-grow">
         <Outlet />
       </main>
       <Footer />

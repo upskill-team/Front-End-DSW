@@ -9,11 +9,7 @@ import {
 } from 'lucide-react';
 import Button from '../../components/ui/Button/Button';
 import Badge from '../../components/ui/Badge/Badge';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from '../../components/ui/Card/Card';
+import { Card, CardContent, CardHeader } from '../../components/ui/Card/Card';
 import { useAttemptDetails } from '../../hooks/useAssessments';
 import { cn } from '../../lib/utils'; // <-- Importar la utilidad cn
 
@@ -72,14 +68,15 @@ export default function AssessmentResultsPage() {
   const score = attempt.score ?? 0;
   const passed = attempt.passed ?? false;
   const timeSpent = attempt.timeSpent ?? 0;
-  const correctAnswersCount = attempt.answers?.filter(a => a.isCorrect).length ?? 0;
+  const correctAnswersCount =
+    attempt.answers?.filter((a) => a.isCorrect).length ?? 0;
   const totalQuestions = attempt.answers?.length ?? 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 pt-16">
       {/* Header */}
       <div className="bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
-        <div className="container mx-auto px-6 py-6">
+        <div className="container mx-auto px-6 py-6 max-w-7xl">
           <Button
             variant="outline"
             size="sm"
@@ -99,7 +96,7 @@ export default function AssessmentResultsPage() {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-6 py-8 max-w-5xl">
+      <div className="container mx-auto px-6 py-8 max-w-7xl">
         {/* Resultado Principal */}
         <Card
           className={`mb-8 overflow-hidden border-2 ${
@@ -134,21 +131,31 @@ export default function AssessmentResultsPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
               <div className="bg-white p-4 rounded-lg shadow">
-                 <p className="text-sm text-slate-600">Tu Calificación</p>
-                 <p className={`text-3xl font-bold ${passed ? 'text-green-700' : 'text-red-700'}`}>{score}%</p>
+                <p className="text-sm text-slate-600">Tu Calificación</p>
+                <p
+                  className={`text-3xl font-bold ${
+                    passed ? 'text-green-700' : 'text-red-700'
+                  }`}
+                >
+                  {score}%
+                </p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow">
-                 <p className="text-sm text-slate-600">Respuestas Correctas</p>
-                 <p className="text-3xl font-bold text-slate-800">{correctAnswersCount} / {totalQuestions}</p>
+                <p className="text-sm text-slate-600">Respuestas Correctas</p>
+                <p className="text-3xl font-bold text-slate-800">
+                  {correctAnswersCount} / {totalQuestions}
+                </p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow">
-                 <p className="text-sm text-slate-600">Tiempo Utilizado</p>
-                 <p className="text-3xl font-bold text-slate-800">{timeSpent} min</p>
+                <p className="text-sm text-slate-600">Tiempo Utilizado</p>
+                <p className="text-3xl font-bold text-slate-800">
+                  {timeSpent} min
+                </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         {/* --- NUEVA SECCIÓN DE REVISIÓN DE RESPUESTAS --- */}
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-slate-800">
@@ -170,42 +177,53 @@ export default function AssessmentResultsPage() {
                 })}
               >
                 <CardHeader className="bg-white/80 border-b">
-                   <p className="text-sm font-semibold text-slate-800">Pregunta {index + 1}: <span className="font-normal">{question.text}</span></p>
+                  <p className="text-sm font-semibold text-slate-800">
+                    Pregunta {index + 1}:{' '}
+                    <span className="font-normal">{question.text}</span>
+                  </p>
                 </CardHeader>
 
                 <CardContent className="p-6">
                   {question.type === 'multiple_choice' && (
                     <div className="space-y-3">
-                      {question.options?.map(
-                        (option, optIndex) => {
-                          const isSelectedByStudent = answer.answer === optIndex;
-                          const isCorrectOption = question.payload.correctAnswer === optIndex;
+                      {question.options?.map((option, optIndex) => {
+                        const isSelectedByStudent = answer.answer === optIndex;
+                        const isCorrectOption =
+                          question.payload.correctAnswer === optIndex;
 
-                          return (
-                            <div
-                              key={option.id}
-                              className={cn(
-                                'p-3 rounded-lg border-2 flex items-center gap-3',
-                                {
-                                  'border-green-500 bg-green-100': isCorrectOption, // Resaltar siempre la correcta
-                                  'border-red-500 bg-red-100': isSelectedByStudent && !isCorrectOption, // Resaltar la incorrecta del usuario
-                                  'border-slate-200 bg-white': !isCorrectOption && !isSelectedByStudent,
-                                }
-                              )}
-                            >
-                              {isCorrectOption ? (
-                                <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
-                              ) : isSelectedByStudent ? (
-                                <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
-                              ) : (
-                                <div className="w-5 h-5 flex-shrink-0" /> // Espaciador
-                              )}
-                              <span className="text-slate-800 flex-1">{option.text}</span>
-                              {isSelectedByStudent && <Badge className="bg-blue-100 text-blue-700">Tu respuesta</Badge>}
-                            </div>
-                          );
-                        }
-                      )}
+                        return (
+                          <div
+                            key={option.id}
+                            className={cn(
+                              'p-3 rounded-lg border-2 flex items-center gap-3',
+                              {
+                                'border-green-500 bg-green-100':
+                                  isCorrectOption, // Resaltar siempre la correcta
+                                'border-red-500 bg-red-100':
+                                  isSelectedByStudent && !isCorrectOption, // Resaltar la incorrecta del usuario
+                                'border-slate-200 bg-white':
+                                  !isCorrectOption && !isSelectedByStudent,
+                              }
+                            )}
+                          >
+                            {isCorrectOption ? (
+                              <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+                            ) : isSelectedByStudent ? (
+                              <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                            ) : (
+                              <div className="w-5 h-5 flex-shrink-0" /> // Espaciador
+                            )}
+                            <span className="text-slate-800 flex-1">
+                              {option.text}
+                            </span>
+                            {isSelectedByStudent && (
+                              <Badge className="bg-blue-100 text-blue-700">
+                                Tu respuesta
+                              </Badge>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                   {/* Aquí se podría añadir la lógica para preguntas abiertas si las tuvieras */}
@@ -215,25 +233,33 @@ export default function AssessmentResultsPage() {
           })}
         </div>
         {/* --- FIN DE LA NUEVA SECCIÓN --- */}
-        
+
         {/* Botones Finales */}
         <div className="mt-8 flex justify-center gap-3">
+          <Button
+            variant="outline"
+            onClick={() =>
+              navigate(
+                `/courses/${courseId}/assessments/${assessmentId}/attempts`
+              )
+            }
+          >
+            <List className="w-4 h-4 mr-2" />
+            Ver Todos los Intentos
+          </Button>
+          {!passed && (
             <Button
-              variant="outline"
-              onClick={() => navigate(`/courses/${courseId}/assessments/${assessmentId}/attempts`)}
+              onClick={() =>
+                navigate(
+                  `/courses/${courseId}/assessments/${assessmentId}/take`
+                )
+              }
+              className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
             >
-              <List className="w-4 h-4 mr-2" />
-              Ver Todos los Intentos
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Reintentar
             </Button>
-            {!passed && (
-              <Button
-                onClick={() => navigate(`/courses/${courseId}/assessments/${assessmentId}/take`)}
-                className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
-              >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Reintentar
-              </Button>
-            )}
+          )}
         </div>
       </div>
     </div>

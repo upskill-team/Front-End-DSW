@@ -148,8 +148,8 @@ function CourseDetails() {
 
   console.log(course);
   return (
-    <div>
-      <div className="container mx-auto max-w-7xl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 px-4">
+      <div className="container mx-auto max-w-7xl pt-24 pb-8">
         <div className="flex items-center space-x-2 text-sm text-slate-600 mb-6">
           <Link to="/courses" className="hover:text-blue-600">
             Cursos
@@ -220,7 +220,8 @@ function CourseDetails() {
                   </Link>
                 </div>
 
-                {(course.institution?.name || course.professor?.institution?.name) && (
+                {(course.institution?.name ||
+                  course.professor?.institution?.name) && (
                   <>
                     <div className="h-10 w-px bg-slate-300" />
                     <div className="flex items-center space-x-3">
@@ -229,20 +230,24 @@ function CourseDetails() {
                       </div>
                       <div>
                         <p className="text-sm text-slate-600">Institución</p>
-                        {(course.institution?.id || course.institution?.institutionId || course.professor?.institution?.id) ? (
+                        {course.institution?.id ||
+                        course.institution?.institutionId ||
+                        course.professor?.institution?.id ? (
                           <Link
                             to={`/courses?institutionId=${
-                              course.institution?.id || 
-                              course.institution?.institutionId || 
+                              course.institution?.id ||
+                              course.institution?.institutionId ||
                               course.professor?.institution?.id
                             }`}
                             className="font-semibold text-slate-800 hover:text-blue-600 transition-colors"
                           >
-                            {course.institution?.name || course.professor?.institution?.name}
+                            {course.institution?.name ||
+                              course.professor?.institution?.name}
                           </Link>
                         ) : (
                           <span className="font-semibold text-slate-800">
-                            {course.institution?.name || course.professor?.institution?.name}
+                            {course.institution?.name ||
+                              course.professor?.institution?.name}
                           </span>
                         )}
                       </div>

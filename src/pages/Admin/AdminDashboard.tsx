@@ -8,12 +8,7 @@ import {
   CardTitle,
 } from '../../components/ui/Card/Card';
 import StatusBadge from '../../components/ui/StatusBadge/StatusBadge';
-import {
-  Users,
-  BookOpen,
-  GraduationCap,
-  DollarSign,
-} from 'lucide-react';
+import { Users, BookOpen, GraduationCap, DollarSign } from 'lucide-react';
 import { appealService } from '../../api/services/appeal.service';
 import { useAdminAnalytics } from '../../hooks/useAdmin';
 import { formatCurrency } from '../../lib/currency';
@@ -90,63 +85,64 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-800 mb-2">
-          Dashboard de Administrador
-        </h1>
-        <p className="text-slate-600">Resumen general de la plataforma.</p>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-2 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className="w-5 h-5 text-slate-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-800">
-                {stat.value}
-              </div>
-              <p
-                className={`text-xs mt-1 ${
-                  stat.isPositive ? 'text-green-600' : 'text-red-600'
-                }`}
-              >
-                {stat.change} desde el mes pasado
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {isLoadingAnalytics ? (
-        <div className="text-center p-8">
-          <p className="text-slate-600">Cargando estadísticas...</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50/100 px-4">
+      <div className="container mx-auto max-w-7xl space-y-6 pt-24 pb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">
+            Dashboard de Administrador
+          </h1>
+          <p className="text-slate-600">Resumen general de la plataforma.</p>
         </div>
-      ) : null}
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <GraduationCap className="w-5 h-5 mr-2" />
-            Solicitudes Recientes
-          </CardTitle>
-          <CardDescription>
-            Últimas solicitudes recibidas.{' '}
-            <Link
-              to="/admin/teacher-requests"
-              className="text-blue-600 hover:underline"
-            >
-              Ver todas
-            </Link>
-            .
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {stats.map((stat) => (
+            <Card key={stat.title}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-2 pb-2">
+                <CardTitle className="text-sm font-medium text-slate-600">
+                  {stat.title}
+                </CardTitle>
+                <stat.icon className="w-5 h-5 text-slate-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-slate-800">
+                  {stat.value}
+                </div>
+                <p
+                  className={`text-xs mt-1 ${
+                    stat.isPositive ? 'text-green-600' : 'text-red-600'
+                  }`}
+                >
+                  {stat.change} desde el mes pasado
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {isLoadingAnalytics ? (
+          <div className="text-center p-8">
+            <p className="text-slate-600">Cargando estadísticas...</p>
+          </div>
+        ) : null}
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <GraduationCap className="w-5 h-5 mr-2" />
+              Solicitudes Recientes
+            </CardTitle>
+            <CardDescription>
+              Últimas solicitudes recibidas.{' '}
+              <Link
+                to="/admin/teacher-requests"
+                className="text-blue-600 hover:underline"
+              >
+                Ver todas
+              </Link>
+              .
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
             <div className="space-y-4">
               {isLoading ? (
                 <p>Cargando...</p>
@@ -185,6 +181,7 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
+      </div>
     </div>
   );
 }
