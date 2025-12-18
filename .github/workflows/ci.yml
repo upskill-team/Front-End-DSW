@@ -77,8 +77,8 @@ jobs:
         with:
           install: false
           build: pnpm run build
-          start: pnpm run preview
-          wait-on: 'http://localhost:4173'
+          start: pnpm run preview --port 5173
+          wait-on: 'http://localhost:5173'
           browser: chrome
           record: ${{ secrets.CYPRESS_RECORD_KEY != '' }}
           parallel: false
@@ -86,4 +86,3 @@ jobs:
           CI: true
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.DSW_TOKEN }}
-          VITE_CI: true
