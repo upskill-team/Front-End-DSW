@@ -15,33 +15,34 @@ jobs:
     name: Code Quality & Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps
 
       - name: Run ESLint
         run: pnpm run lint
-
       - name: Run TypeScript Check
         run: pnpm run type-check
-
       - name: Run Security Audit
         run: pnpm run audit
-
       - name: Run Unit Tests
         run: pnpm run test:unit
 
@@ -50,16 +51,25 @@ jobs:
     runs-on: ubuntu-latest
     needs: quality-check
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
 
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v4
+      - name: Cache Cypress Binary
+        uses: actions/cache@v4
+        id: cypress-cache
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Install Cypress Binary
+        if: steps.cypress-cache.outputs.cache-hit != 'true'
         run: pnpm exec cypress install
 
       - name: Cypress Run
@@ -73,5 +83,7 @@ jobs:
           record: ${{ secrets.CYPRESS_RECORD_KEY != '' }}
           parallel: false
         env:
+          CI: true
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.DSW_TOKEN }}
+          VITE_CI: true
