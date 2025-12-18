@@ -56,18 +56,22 @@ jobs:
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
 
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Cypress Binary
+        run: pnpm exec cypress install
+
       - name: Cypress Run
         uses: cypress-io/github-action@v6
         with:
+          install: false
           build: pnpm run build
           start: pnpm run preview
           wait-on: 'http://localhost:4173'
           browser: chrome
-
           record: ${{ secrets.CYPRESS_RECORD_KEY != '' }}
-
           parallel: false
-
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.DSW_TOKEN }}
