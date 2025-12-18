@@ -218,8 +218,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-800 mb-1">Email</h3>
-                    <p className="text-slate-600">contacto@plataforma.com</p>
-                    <p className="text-slate-600">soporte@plataforma.com</p>
+                    <p className="text-slate-600">contacto.upskill@gmail.com</p>
                   </div>
                 </div>
               </CardContent>
@@ -235,7 +234,7 @@ export default function ContactPage() {
                     <h3 className="font-semibold text-slate-800 mb-1">
                       Teléfono
                     </h3>
-                    <p className="text-slate-600">+54 11 1234-5678</p>
+                    <p className="text-slate-600">+54 9 3417777777</p>
                     <p className="text-sm text-slate-500 mt-1">
                       Lunes a Viernes: 9:00 - 18:00
                     </p>
@@ -254,7 +253,7 @@ export default function ContactPage() {
                     <h3 className="font-semibold text-slate-800 mb-1">
                       Ubicación
                     </h3>
-                    <p className="text-slate-600">Buenos Aires, Argentina</p>
+                    <p className="text-slate-600">Rosario, Argentina</p>
                   </div>
                 </div>
               </CardContent>

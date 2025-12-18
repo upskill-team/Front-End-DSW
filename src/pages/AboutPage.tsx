@@ -42,7 +42,6 @@ export default function AboutPage() {
               <li>Cursos en diversas áreas del conocimiento</li>
               <li>Profesores calificados y expertos en sus campos</li>
               <li>Evaluaciones y seguimiento de progreso</li>
-              <li>Certificados de finalización</li>
               <li>Comunidad de aprendizaje activa</li>
             </ul>
           </CardContent>
