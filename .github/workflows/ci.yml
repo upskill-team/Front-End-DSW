@@ -84,5 +84,6 @@ jobs:
           parallel: false
         env:
           CI: true
+          CYPRESS_BASE_URL: 'http://localhost:5173'
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.DSW_TOKEN }}

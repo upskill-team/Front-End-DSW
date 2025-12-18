@@ -1,7 +1,7 @@
 describe('Landing Page & Navigation Flow', () => {
   beforeEach(() => {
-    // Visit the local development server
-    cy.visit('https://localhost:5173/');
+    // Visit the application (uses baseUrl from cypress.config.ts)
+    cy.visit('/');
   });
 
   it('Should display the hero section with correct title', () => {
