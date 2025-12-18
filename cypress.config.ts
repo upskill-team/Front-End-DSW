@@ -1,8 +1,9 @@
-import { defineConfig } from "cypress";
+import { defineConfig } from 'cypress';
 
 export default defineConfig({
-  e2e: {
-    setupNodeEvents() {
+  projectId: 'di6an5',
+
+  e2e: {    baseUrl: process.env.CYPRESS_BASE_URL || 'https://localhost:5173',    setupNodeEvents() {
       // implement node event listeners here
     },
   },

@@ -16,7 +16,10 @@
     "test:watch": "vitest",
     "test:e2e": "cypress open",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "cy:run": "cypress run",
+    "cy:open": "cypress open",
+    "test:e2e:local": "start-server-and-test preview http://localhost:4173 cy:run"
   },
   "dependencies": {
     "@blocknote/core": "^0.37.0",

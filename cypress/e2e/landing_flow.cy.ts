@@ -1,14 +1,14 @@
 describe('Landing Page & Navigation Flow', () => {
   beforeEach(() => {
-    // Visit the local development server
-    cy.visit('https://localhost:5173/');
+    // Visit the application (uses baseUrl from cypress.config.ts)
+    cy.visit('/');
   });
 
   it('Should display the hero section with correct title', () => {
     // Verify main title parts
     cy.contains('h1', 'Aprende sin').should('be.visible');
     cy.contains('span', 'límites').should('be.visible');
-    
+
     // Verify "Explore Courses" button exists with correct link
     cy.contains('a', 'Explorar Cursos')
       .should('be.visible')
