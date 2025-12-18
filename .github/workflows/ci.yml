@@ -9,7 +9,6 @@ on:
 
 env:
   NODE_VERSION: '22'
-  PNPM_VERSION: '10.10.0'
 
 jobs:
   quality-check:
@@ -21,8 +20,6 @@ jobs:
 
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -48,15 +45,13 @@ jobs:
   e2e-tests:
     name: E2E Tests (Cypress)
     runs-on: ubuntu-latest
-    needs: quality-check 
+    needs: quality-check
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - name: Cypress Run
         uses: cypress-io/github-action@v6
@@ -65,12 +60,11 @@ jobs:
           start: pnpm run preview
           wait-on: 'http://localhost:4173'
           browser: chrome
-          
-          record: ${{ secrets.CYPRESS_RECORD_KEY != '' }}
-          
-          parallel: false
-          
-        env:
 
+          record: ${{ secrets.CYPRESS_RECORD_KEY != '' }}
+
+          parallel: false
+
+        env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.DSW_TOKEN }}
