@@ -107,3 +107,17 @@ export const useDeleteQuestion = () => {
     },
   });
 };
+
+export const useValidateAnswer = () => {
+  return useMutation({
+    mutationFn: ({
+      courseId,
+      questionId,
+      answer,
+    }: {
+      courseId: string;
+      questionId: string;
+      answer: number | string;
+    }) => questionService.validateAnswer(courseId, questionId, answer),
+  });
+};

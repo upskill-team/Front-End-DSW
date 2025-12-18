@@ -16,10 +16,6 @@ const faqs = [
     answer: 'Una vez que encuentres un curso de tu interés, haz clic en él para ver los detalles. Si es gratuito, puedes inscribirte directamente. Si es de pago, deberás completar el proceso de pago.',
   },
   {
-    question: '¿Puedo obtener un certificado al completar un curso?',
-    answer: 'Sí, al completar exitosamente un curso y aprobar las evaluaciones requeridas, recibirás un certificado digital.',
-  },
-  {
     question: '¿Cómo me convierto en profesor?',
     answer: 'Debes registrarte como usuario y luego enviar una solicitud para convertirte en profesor desde tu perfil. Nuestro equipo revisará tu solicitud.',
   },
@@ -30,11 +26,7 @@ const faqs = [
   {
     question: '¿Qué métodos de pago aceptan?',
     answer: 'Aceptamos pagos con tarjetas de crédito y débito a través de nuestra plataforma segura de pagos.',
-  },
-  {
-    question: '¿Puedo solicitar un reembolso?',
-    answer: 'Ofrecemos reembolsos dentro de los primeros 7 días después de la compra si no has completado más del 20% del curso.',
-  },
+  }
 ];
 
 export default function FAQPage() {

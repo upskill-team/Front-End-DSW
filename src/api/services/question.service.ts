@@ -143,6 +143,31 @@ const remove = async (
   );
 };
 
+// Validar la respuesta de un estudiante a una pregunta
+const validateAnswer = async (
+  courseId: string,
+  questionId: string,
+  answer: number | string
+): Promise<{ isCorrect: boolean }> => {
+  try {
+    console.log('Validating answer:', { courseId, questionId, answer });
+    const response = await apiClient.post<ApiResponse<{ isCorrect: boolean }>>(
+      `/courses/${courseId}/questions/${questionId}/validate`,
+      { answer },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log('Validation result:', response.data.data);
+    return response.data.data;
+  } catch (error) {
+    console.error('Error validating answer:', error);
+    throw error;
+  }
+};
+
 export const questionService = {
   create,
   createGeneral,
@@ -151,4 +176,5 @@ export const questionService = {
   getById,
   update,
   delete: remove,
+  validateAnswer,
 };

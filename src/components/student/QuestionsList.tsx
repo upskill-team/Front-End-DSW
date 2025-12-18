@@ -6,6 +6,7 @@ import type { Question } from '../../types/entities';
 import { useState } from 'react';
 import Button from '../ui/Button/Button';
 import { cn } from '../../lib/utils';
+import { useValidateAnswer } from '../../hooks/useQuestions';
 
 interface QuestionsListProps {
   courseId: string;
@@ -85,6 +86,9 @@ function QuestionItem({
 }: QuestionItemProps) {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+
+  const validateAnswerMutation = useValidateAnswer();
 
   const {
     data: question,
@@ -119,18 +123,28 @@ function QuestionItem({
     );
   }
 
-  const handleSubmit = () => {
-    if (selectedAnswer !== null) {
-      setShowResult(true);
+  const handleSubmit = async () => {
+    if (selectedAnswer !== null && question?.id) {
+      try {
+        const result = await validateAnswerMutation.mutateAsync({
+          courseId,
+          questionId: question.id,
+          answer: selectedAnswer,
+        });
+        setIsCorrect(result.isCorrect);
+        setShowResult(true);
+      } catch (error) {
+        console.error('Error validating answer:', error);
+        // Mostrar error al usuario si es necesario
+      }
     }
   };
 
   const handleReset = () => {
     setSelectedAnswer(null);
     setShowResult(false);
+    setIsCorrect(false);
   };
-
-  const isCorrect = selectedAnswer === Number(question.payload.correctAnswer);
 
   return (
     <div className="p-4 border border-slate-200 rounded-lg bg-white">
@@ -146,8 +160,6 @@ function QuestionItem({
       <div className="space-y-2 mb-4">
         {question.payload.options.map((option, index) => {
           const isSelected = selectedAnswer === index;
-          const isCorrectOption =
-            index === Number(question.payload.correctAnswer);
 
           let borderColor = 'border-slate-200';
           let bgColor = 'bg-white hover:bg-slate-50';
@@ -160,9 +172,6 @@ function QuestionItem({
               borderColor = 'border-red-500';
               bgColor = 'bg-red-50';
             }
-          } else if (showResult && isCorrectOption) {
-            borderColor = 'border-green-500';
-            bgColor = 'bg-green-50';
           } else if (isSelected) {
             borderColor = 'border-blue-500';
             bgColor = 'bg-blue-50';
@@ -192,9 +201,6 @@ function QuestionItem({
                     )}
                   </>
                 )}
-                {showResult && !isSelected && isCorrectOption && (
-                  <CheckCircle2 className="w-5 h-5 text-green-600" />
-                )}
               </div>
             </button>
           );
@@ -217,8 +223,8 @@ function QuestionItem({
             )}
           >
             {isCorrect
-              ? '¡Correcto! Has seleccionado la respuesta correcta.'
-              : 'Incorrecto. Revisa la respuesta correcta marcada arriba.'}
+              ? '¡Correcto! Has seleccionado la respuesta correcta'
+              : 'Incorrecto. Intenta de nuevo.'}
           </p>
         </div>
       )}
@@ -227,11 +233,37 @@ function QuestionItem({
         {!showResult ? (
           <Button
             onClick={handleSubmit}
-            disabled={selectedAnswer === null}
+            disabled={selectedAnswer === null || validateAnswerMutation.isPending}
             size="sm"
             className="flex-1"
           >
-            Verificar Respuesta
+            {validateAnswerMutation.isPending ? (
+              <>
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Validando...
+              </>
+            ) : (
+              'Verificar Respuesta'
+            )}
           </Button>
         ) : (
           <Button

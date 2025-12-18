@@ -104,7 +104,7 @@ export interface JoinRequest {
 
 export interface QuestionPayload {
   options: string[];
-  correctAnswer: number | string;
+  correctAnswer?: number | string; // Opcional - solo disponible para profesores
 }
 
 export const QuestionType = {
