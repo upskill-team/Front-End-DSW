@@ -84,7 +84,7 @@ export default function MaterialsList({ materials }: MaterialsListProps) {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => window.open(material.url, '_blank')}
+                    onClick={() => window.open(material.url, '_blank', 'noopener,noreferrer')}
                     title="Abrir en nueva pestaña"
                   >
                     <ExternalLink className="w-4 h-4" />
