@@ -1,71 +1,215 @@
-# Proyecto Frontend - UpSkill Courses Website
+﻿# UpSkill Frontend
 
-## 1. Introducción
+## Table of Contents
 
-Este espacio contiene todo el código fuente de la interfaz de usuario. El objetivo de este documento es establecer un marco de trabajo claro y organizado que nos permita colaborar de manera eficiente, mantener la calidad del código y agilizar el proceso de desarrollo. A medida que avance el proyecto se añadirán secciones para suplir los requisitos solicitados.
-
----
-
-## 2. Organización y Flujo de Trabajo (Git Workflow)
-
-Para mantener el orden y la estabilidad del código, utilizaremos un flujo de trabajo basado en ramas. Este sistema asegura que la rama principal (`main`) siempre contenga una versión estable y lista para producción, mientras que el desarrollo se realiza de forma aislada y segura.
-
-### Ramas Principales
-
-Existen dos ramas principales:
-
-- `main`: Esta rama es el reflejo fiel del código en **producción**. Nadie debe hacer `push` directamente a esta rama. El código solo llega a `main` a través de Pull Requests desde la rama `develop`, una vez que una versión ha sido probada y está lista para ser lanzada.
-- `develop`: Esta es nuestra rama de **integración y desarrollo**. Es la rama principal de trabajo. Todas las nuevas funcionalidades y correcciones se fusionan aquí. Sirve como la base para el trabajo diario y siempre debe contener los últimos cambios aprobados. **Esta es la rama por defecto del repositorio.**
-
-### Flujo de Trabajo Básico
-
-El ciclo de vida de cualquier cambio en el código es el siguiente:
-
-1.  **Sincronizar:** Antes de empezar cualquier tarea, asegúrate de tener la última versión de la rama `develop`.
-    ```bash
-    git checkout develop
-    git pull origin develop
-    ```
-2.  **Crear Rama de Soporte:** Crea una nueva rama a partir de `develop` siguiendo la nomenclatura especificada más abajo.
-3.  **Desarrollar:** Realiza tus cambios, haciendo commits pequeños y descriptivos.
-4.  **Publicar (`Push`):** Sube tu rama a GitHub.
-    ```bash
-    git push -u origin nombre-de-tu-rama
-    ```
-5.  **Pull Request (PR) Automático:** Al hacer `push`, una GitHub Action creará automáticamente un Pull Request dirigido a `develop`.
-6.  **Revisión de Código:** El resto del equipo revisará el código, dejará comentarios y finalmente lo aprobará. Se requiere al menos **una aprobación** para poder continuar. En general, la Pull Request no deberia ser aprobada por la misma persona que la solicito.
-7.  **Fusión (`Merge`):** Una vez aprobado, el PR se fusiona en `develop`. Tu trabajo ya es parte de la línea principal de desarrollo.
+- [English](#english)
+- [Español](#español)
+- [Documentation](#documentation)
+- [Project Structure](#project-structure)
 
 ---
 
-## 3. Nomenclatura de Ramas de Soporte
-
-Para mantener un historial claro y legible, es **obligatorio** nombrar las ramas de soporte utilizando los siguientes prefijos. Esto, además, es necesario para que la automatización de Pull Requests funcione correctamente.
-
-| Prefijo de Rama                     | Propósito                                                                            | Ejemplo                          | ¿Cuándo crearla?                                                                             |
-| ----------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------- | -------------------------------------------------------------------------------------------- |
-| **`feature/`**                      | Para desarrollar una **nueva funcionalidad** o una nueva sección del proyecto.       | `feature/login-form`             | Al iniciar el desarrollo de una nueva característica que no existe en la aplicación.         |
-| **`bugfix/`**                       | Para corregir un **error (bug)** que existe en la rama `develop`.                    | `bugfix/header-alignment-mobile` | Cuando se ha identificado un error en el código existente que necesita ser solucionado.      |
-| **`hotfix/`** _(Raro - No auto PR)_ | Para corregir un **error crítico en `main` (producción)**. **Se crea desde `main`.** | `hotfix/critical-payment-error`  | **SOLO** cuando hay un bug urgente en producción que no puede esperar al próximo ciclo.      |
-| **`refactor/`** _(Opc.)_            | Para mejorar código existente sin añadir nueva funcionalidad ni corregir un bug.     | `refactor/optimize-api-calls`    | Cuando se va a reestructurar una parte del código para mejorar su rendimiento o legibilidad. |
+<a name="english"></a>
 
 ---
 
-## 4. Guía Rápida de Comandos
+## English
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- pnpm (v10.9.0 or higher)
+- Backend API running on http://localhost:3000
+
+### Environment Setup
+
+1. Clone the repository:
 
 ```bash
-# 1. Asegurarse de estar en develop y tener la última versión
-git checkout develop
-git pull
+git clone https://github.com/upskill-team/Front-End-DSW.git
+cd Front-End-DSW
+```
 
-# 2. Crear una nueva rama para una nueva funcionalidad
-git checkout -b feature/user-profile
+2. Install dependencies:
 
-# 3. Trabajar y hacer commits
-# ... (haces cambios en el código) ...
-git add .
-git commit -m "feat: Add basic structure for user profile page"
+```bash
+pnpm install
+```
 
-# 4. Subir la rama a GitHub (esto creará el PR automáticamente)
-git push -u origin feature/user-profile
+3. Create a .env file in the root directory with the following variables:
+
+```env
+VITE_API_BASE_URL=http://localhost:3000/api
+```
+
+### Running the Development Server
+
+**Development mode:**
+
+```bash
+pnpm dev
+```
+
+The application will be available at http://localhost:5173
+
+**Build for production:**
+
+```bash
+pnpm build
+pnpm preview
+```
+
+### Running Tests
+
+**Unit and integration tests:**
+
+```bash
+pnpm test
+```
+
+**E2E tests with Cypress:**
+
+```bash
+pnpm cypress:open
+```
+
+**Test coverage:**
+
+```bash
+pnpm test:coverage
+```
+
+### Available Scripts
+
+- pnpm dev - Start development server with hot reload
+- pnpm build - Build application for production
+- pnpm preview - Preview production build locally
+- pnpm lint - Run ESLint
+- pnpm test - Run unit and integration tests
+- pnpm test:coverage - Run tests with coverage report
+- pnpm cypress:open - Open Cypress test runner
+- pnpm cypress:run - Run Cypress tests in headless mode
+
+---
+
+<a name="español"></a>
+
+## Español
+
+### Requisitos Previos
+
+- Node.js (v18 o superior)
+- pnpm (v10.9.0 o superior)
+- Backend API ejecutándose en http://localhost:3000
+
+### Configuración del Entorno
+
+1. Clonar el repositorio:
+
+```bash
+git clone https://github.com/upskill-team/Front-End-DSW.git
+cd Front-End-DSW
+```
+
+2. Instalar dependencias:
+
+```bash
+pnpm install
+```
+
+3. Crear un archivo .env en el directorio raíz con las siguientes variables:
+
+```env
+VITE_API_BASE_URL=http://localhost:3000/api
+```
+
+### Ejecutar el Servidor de Desarrollo
+
+**Modo desarrollo:**
+
+```bash
+pnpm dev
+```
+
+La aplicación estará disponible en http://localhost:5173
+
+**Compilación para producción:**
+
+```bash
+pnpm build
+pnpm preview
+```
+
+### Ejecutar las Pruebas
+
+**Pruebas unitarias e integración:**
+
+```bash
+pnpm test
+```
+
+**Pruebas E2E con Cypress:**
+
+```bash
+pnpm cypress:open
+```
+
+**Cobertura de pruebas:**
+
+```bash
+pnpm test:coverage
+```
+
+### Scripts Disponibles
+
+- pnpm dev - Iniciar servidor de desarrollo con recarga automática
+- pnpm build - Compilar aplicación para producción
+- pnpm preview - Vista previa de la compilación de producción
+- pnpm lint - Ejecutar ESLint
+- pnpm test - Ejecutar pruebas unitarias e integración
+- pnpm test:coverage - Ejecutar pruebas con reporte de cobertura
+- pnpm cypress:open - Abrir ejecutor de pruebas Cypress
+- pnpm cypress:run - Ejecutar pruebas Cypress en modo headless
+
+
+---
+
+## Documentation
+
+If you want to see the updated documentation you can go to https://upskill-team.github.io/Front-End-DSW/?path=/docs/configure-your-project--docs
+
+Si deseas ver la documentación actualizada puedes ir a https://upskill-team.github.io/Front-End-DSW/?path=/docs/configure-your-project--docs
+
+---
+
+## Project Structure
+
+```
+Front-End-DSW/
+ src/
+    components/         # Componentes React reutilizables
+       common/         # Componentes compartidos
+       landing/        # Componentes de página de inicio
+       layouts/        # Componentes de estructura
+       professor/      # Componentes para profesores
+       student/        # Componentes para estudiantes
+       admin/          # Componentes para administradores
+       ui/             # Componentes UI base
+    pages/              # Páginas de la aplicación
+    contexts/           # Contextos de React
+    hooks/              # Hooks personalizados
+    api/                # Servicios y cliente API
+       services/       # Servicios específicos de cada dominio
+    lib/                # Utilidades y funciones auxiliares
+    types/              # Definiciones de tipos TypeScript
+    router/             # Configuración de rutas
+    App.tsx             # Componente principal
+    main.tsx            # Punto de entrada
+ cypress/                # Pruebas E2E
+ public/                 # Archivos estáticos
+ index.html              # HTML principal
+ vite.config.ts          # Configuración de Vite
+ tsconfig.json           # Configuración de TypeScript
+ tailwind.config.js      # Configuración de Tailwind CSS
+ cypress.config.ts       # Configuración de Cypress
 ```
