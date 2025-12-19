@@ -33,7 +33,6 @@ const DocumentViewer = ({ url, onClose }: DocumentViewerProps) => {
           src={url}
           title="Visor de Documento"
           className="w-full h-full border-0 rounded-b-lg"
-          sandbox="allow-scripts allow-forms allow-popups"
           referrerPolicy="no-referrer"
         />
       </div>

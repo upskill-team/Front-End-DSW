@@ -81,17 +81,7 @@ export default function AnalyticsPage() {
       name: 'En Desarrollo',
       value: analytics.courseStats.byStatus['en-desarrollo'],
       color: '#f59e0b',
-    },
-    {
-      name: 'Pausados',
-      value: analytics.courseStats.byStatus.pausado,
-      color: '#6b7280',
-    },
-    {
-      name: 'Bloqueados',
-      value: analytics.courseStats.byStatus.bloqueado,
-      color: '#ef4444',
-    },
+    }
   ];
 
   return (
