@@ -110,9 +110,9 @@ export default function MyLearningPage() {
     enrollments?.filter((e) => e.state === 'completed') || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 overflow-x-hidden w-full">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 pt-16">
       <div className="bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm w-full">
-        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-full">
+        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-7xl">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="w-full sm:w-auto">
               <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 flex items-center mb-2">
@@ -129,13 +129,17 @@ export default function MyLearningPage() {
                   <p className="text-2xl sm:text-3xl font-bold text-blue-600">
                     {enrollments?.length || 0}
                   </p>
-                  <p className="text-xs sm:text-sm text-slate-600 whitespace-nowrap">Total Cursos</p>
+                  <p className="text-xs sm:text-sm text-slate-600 whitespace-nowrap">
+                    Total Cursos
+                  </p>
                 </div>
                 <div className="text-center">
                   <p className="text-2xl sm:text-3xl font-bold text-green-600">
                     {completedEnrollments.length}
                   </p>
-                  <p className="text-xs sm:text-sm text-slate-600 whitespace-nowrap">Completados</p>
+                  <p className="text-xs sm:text-sm text-slate-600 whitespace-nowrap">
+                    Completados
+                  </p>
                 </div>
               </div>
             </div>
@@ -143,7 +147,7 @@ export default function MyLearningPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-full w-full box-border">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-7xl w-full box-border">
         {activeEnrollments.length > 0 && (
           <div className="mb-8 sm:mb-12 w-full">
             <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4 sm:mb-6 flex items-center flex-wrap gap-2">
@@ -276,8 +280,12 @@ function EnrollmentCard({
 
         <div className="mb-3 sm:mb-4">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-xs sm:text-sm font-medium text-slate-700">Progreso</span>
-            <span className="text-xs sm:text-sm font-bold text-blue-600">{progress}%</span>
+            <span className="text-xs sm:text-sm font-medium text-slate-700">
+              Progreso
+            </span>
+            <span className="text-xs sm:text-sm font-bold text-blue-600">
+              {progress}%
+            </span>
           </div>
           <div className="w-full bg-slate-200 rounded-full h-2 sm:h-2.5 overflow-hidden">
             <div

@@ -190,7 +190,9 @@ export default function ProfessorCourseEdition() {
         setUnits(unitsFromBackend);
 
         if (unitsFromBackend.length > 0) {
-          setSelectedUnitId((prev) => (prev === null ? unitsFromBackend[0].unitNumber : prev));
+          setSelectedUnitId((prev) =>
+            prev === null ? unitsFromBackend[0].unitNumber : prev
+          );
         }
       }
     }
@@ -383,9 +385,7 @@ export default function ProfessorCourseEdition() {
       deleteUnitMutation.mutate({ courseId, unitNumber });
 
       if (selectedUnitId === unitNumber) {
-        const remainingUnits = units.filter(
-          (u) => u.unitNumber !== unitNumber
-        );
+        const remainingUnits = units.filter((u) => u.unitNumber !== unitNumber);
         setSelectedUnitId(
           remainingUnits.length > 0 ? remainingUnits[0].unitNumber : null
         );
@@ -621,117 +621,119 @@ export default function ProfessorCourseEdition() {
   }
 
   return (
-    <div className="container mx-auto max-w-7xl">
-      <CourseHeader
-        courseId={courseId}
-        courseName={courseConfig.name}
-        onSave={handleGlobalSave}
-        onToggleEdit={() => setEditable(!editable)}
-        isSaving={quickSaveMutation.isPending}
-        hasUnsavedChanges={units.some((unit) => unit.hasUnsavedChanges)}
-        saveError={saveError}
-        isEditMode={editable}
-        lastSavedAt={lastSavedAt || undefined}
-        onOpenGeneralQuestions={() => setIsGeneralQuestionsOpen(true)}
-      />
-
-      <div className="grid lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-1">
-          <CourseSidebar
-            units={units}
-            selectedUnitId={selectedUnitId}
-            onUnitSelect={setSelectedUnitId}
-            onCreateUnit={handleOpenCreateUnitModal}
-            onEditUnit={handleEditUnit}
-            onDeleteUnit={handleDeleteUnit}
-            onOpenConfig={handleOpenConfigModal}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-          />
-        </div>
-
-        <div className="lg:col-span-3">
-          <UnitContent
-            selectedUnit={selectedUnit || null}
-            questions={questions}
-            materials={selectedUnit?.materials || []}
-            editable={editable}
-            onUnitDetailChange={handleUnitDetailChange}
-            onCreateQuestion={() => setIsQuestionModalOpen(true)}
-            onEditQuestion={handleEditQuestion}
-            onDeleteQuestion={handleDeleteQuestion}
-            onUploadMaterial={() => setIsMaterialModalOpen(true)}
-            onDeleteMaterial={handleDeleteMaterial}
-            onCreateUnit={handleOpenCreateUnitModal}
-          />
-        </div>
-      </div>
-
-      <CourseConfigModal
-        isOpen={isConfigModalOpen}
-        onClose={() => setIsConfigModalOpen(false)}
-        config={tempConfig}
-        onConfigChange={setTempConfig}
-        onSave={handleSaveConfig}
-        onImageChange={handleImageChange}
-      />
-
-      <UnitModal
-        isOpen={isUnitModalOpen}
-        onClose={handleCloseUnitModal}
-        editingUnit={editingUnit}
-        unitName={newUnitName}
-        unitDescription={newUnitDescription}
-        onNameChange={setNewUnitName}
-        onDescriptionChange={setNewUnitDescription}
-        onSave={handleSaveUnit}
-      />
-
-      <QuestionEditor
-        isOpen={isQuestionModalOpen}
-        onClose={handleCloseQuestionModal}
-        question={newQuestion}
-        onChange={setNewQuestion}
-        onSave={handleSaveQuestion}
-        readonly={!editable}
-      />
-
-      <UnitModalUpload
-        isMaterialModalOpen={isMaterialModalOpen}
-        setIsMaterialModalOpen={setIsMaterialModalOpen}
-        stagedMaterials={stagedMaterials}
-        setStagedMaterials={setStagedMaterials}
-        handleFileSelect={(e) => {
-          const files = e.target.files;
-          if (files) {
-            const newMaterials = Array.from(files).map((file) => ({
-              id: Date.now() + Math.random(),
-              name: file.name.replace(/\.[^/.]+$/, ''),
-              url: '',
-              file: file,
-            }));
-            setStagedMaterials((prev) => [...prev, ...newMaterials]);
-          }
-        }}
-        handleRemoveStagedFile={(id) => {
-          setStagedMaterials((prev) => prev.filter((m) => m.id !== id));
-        }}
-        handleTitleChange={(id, newTitle) => {
-          setStagedMaterials((prev) =>
-            prev.map((m) => (m.id === id ? { ...m, name: newTitle } : m))
-          );
-        }}
-        handleAddMaterials={handleUploadMaterial}
-      />
-
-      {courseId && (
-        <GeneralQuestionsManager
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 px-4">
+      <div className="container mx-auto max-w-7xl pt-24 pb-8">
+        <CourseHeader
           courseId={courseId}
-          isOpen={isGeneralQuestionsOpen}
-          onClose={() => setIsGeneralQuestionsOpen(false)}
+          courseName={courseConfig.name}
+          onSave={handleGlobalSave}
+          onToggleEdit={() => setEditable(!editable)}
+          isSaving={quickSaveMutation.isPending}
+          hasUnsavedChanges={units.some((unit) => unit.hasUnsavedChanges)}
+          saveError={saveError}
+          isEditMode={editable}
+          lastSavedAt={lastSavedAt || undefined}
+          onOpenGeneralQuestions={() => setIsGeneralQuestionsOpen(true)}
         />
-      )}
+
+        <div className="grid lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-1">
+            <CourseSidebar
+              units={units}
+              selectedUnitId={selectedUnitId}
+              onUnitSelect={setSelectedUnitId}
+              onCreateUnit={handleOpenCreateUnitModal}
+              onEditUnit={handleEditUnit}
+              onDeleteUnit={handleDeleteUnit}
+              onOpenConfig={handleOpenConfigModal}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+            />
+          </div>
+
+          <div className="lg:col-span-3">
+            <UnitContent
+              selectedUnit={selectedUnit || null}
+              questions={questions}
+              materials={selectedUnit?.materials || []}
+              editable={editable}
+              onUnitDetailChange={handleUnitDetailChange}
+              onCreateQuestion={() => setIsQuestionModalOpen(true)}
+              onEditQuestion={handleEditQuestion}
+              onDeleteQuestion={handleDeleteQuestion}
+              onUploadMaterial={() => setIsMaterialModalOpen(true)}
+              onDeleteMaterial={handleDeleteMaterial}
+              onCreateUnit={handleOpenCreateUnitModal}
+            />
+          </div>
+        </div>
+
+        <CourseConfigModal
+          isOpen={isConfigModalOpen}
+          onClose={() => setIsConfigModalOpen(false)}
+          config={tempConfig}
+          onConfigChange={setTempConfig}
+          onSave={handleSaveConfig}
+          onImageChange={handleImageChange}
+        />
+
+        <UnitModal
+          isOpen={isUnitModalOpen}
+          onClose={handleCloseUnitModal}
+          editingUnit={editingUnit}
+          unitName={newUnitName}
+          unitDescription={newUnitDescription}
+          onNameChange={setNewUnitName}
+          onDescriptionChange={setNewUnitDescription}
+          onSave={handleSaveUnit}
+        />
+
+        <QuestionEditor
+          isOpen={isQuestionModalOpen}
+          onClose={handleCloseQuestionModal}
+          question={newQuestion}
+          onChange={setNewQuestion}
+          onSave={handleSaveQuestion}
+          readonly={!editable}
+        />
+
+        <UnitModalUpload
+          isMaterialModalOpen={isMaterialModalOpen}
+          setIsMaterialModalOpen={setIsMaterialModalOpen}
+          stagedMaterials={stagedMaterials}
+          setStagedMaterials={setStagedMaterials}
+          handleFileSelect={(e) => {
+            const files = e.target.files;
+            if (files) {
+              const newMaterials = Array.from(files).map((file) => ({
+                id: Date.now() + Math.random(),
+                name: file.name.replace(/\.[^/.]+$/, ''),
+                url: '',
+                file: file,
+              }));
+              setStagedMaterials((prev) => [...prev, ...newMaterials]);
+            }
+          }}
+          handleRemoveStagedFile={(id) => {
+            setStagedMaterials((prev) => prev.filter((m) => m.id !== id));
+          }}
+          handleTitleChange={(id, newTitle) => {
+            setStagedMaterials((prev) =>
+              prev.map((m) => (m.id === id ? { ...m, name: newTitle } : m))
+            );
+          }}
+          handleAddMaterials={handleUploadMaterial}
+        />
+
+        {courseId && (
+          <GeneralQuestionsManager
+            courseId={courseId}
+            isOpen={isGeneralQuestionsOpen}
+            onClose={() => setIsGeneralQuestionsOpen(false)}
+          />
+        )}
+      </div>
     </div>
   );
 }

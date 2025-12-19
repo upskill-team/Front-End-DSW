@@ -71,12 +71,17 @@ export default function CourseAssessmentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 pt-16">
       <div className="bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
-        <div className="container mx-auto px-4 sm:px-6 py-6">
+        <div className="container mx-auto px-4 sm:px-6 py-6 max-w-7xl">
           <div className="flex items-center justify-between">
             <div>
-              <Button variant="outline" size="sm" onClick={() => navigate(`/courses/learn/${courseId}`)} className="mb-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/courses/learn/${courseId}`)}
+                className="mb-3"
+              >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Volver al Curso
               </Button>
@@ -84,15 +89,17 @@ export default function CourseAssessmentsPage() {
                 <FileText className="w-6 h-6 sm:w-8 sm:h-8 mr-3 text-purple-600" />
                 Evaluaciones del Curso
               </h1>
-              <p className="text-slate-600 mt-1">Completa las evaluaciones para demostrar tu conocimiento</p>
+              <p className="text-slate-600 mt-1">
+                Completa las evaluaciones para demostrar tu conocimiento
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 py-8">
+      <div className="container mx-auto px-4 sm:px-6 py-8 max-w-7xl">
         {assessments && assessments.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {assessments.map((assessment) => (
               <AssessmentCard
                 key={assessment.id}
