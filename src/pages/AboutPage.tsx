@@ -1,9 +1,14 @@
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card/Card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/Card/Card';
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 py-12">
-      <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 px-4">
+      <div className="container mx-auto max-w-7xl pt-24 pb-12">
         <h1 className="text-4xl font-bold text-slate-800 mb-8 text-center">
           Acerca de Nosotros
         </h1>
@@ -14,8 +19,10 @@ export default function AboutPage() {
           </CardHeader>
           <CardContent>
             <p className="text-slate-700">
-              Somos una plataforma educativa dedicada a democratizar el acceso a la educación de calidad.
-              Nuestro objetivo es conectar a estudiantes con profesores expertos en diversas áreas del conocimiento.
+              Somos una plataforma educativa dedicada a democratizar el acceso a
+              la educación de calidad. Nuestro objetivo es conectar a
+              estudiantes con profesores expertos en diversas áreas del
+              conocimiento.
             </p>
           </CardContent>
         </Card>
@@ -26,9 +33,9 @@ export default function AboutPage() {
           </CardHeader>
           <CardContent>
             <p className="text-slate-700">
-              Aspiramos a ser la plataforma de aprendizaje en línea líder, donde cada persona pueda
-              desarrollar sus habilidades y alcanzar su máximo potencial a través de cursos accesibles
-              y de alta calidad.
+              Aspiramos a ser la plataforma de aprendizaje en línea líder, donde
+              cada persona pueda desarrollar sus habilidades y alcanzar su
+              máximo potencial a través de cursos accesibles y de alta calidad.
             </p>
           </CardContent>
         </Card>

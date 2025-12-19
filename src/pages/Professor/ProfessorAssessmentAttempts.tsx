@@ -45,14 +45,15 @@ export default function ProfessorAssessmentAttemptsPage() {
 
   if (!assessment) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
         <p className="text-center text-gray-600">Evaluación no encontrada</p>
       </div>
     );
   }
   
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 px-4">
+      <div className="container mx-auto max-w-7xl pt-24 pb-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
         <Button
           variant="outline"
@@ -210,6 +211,7 @@ export default function ProfessorAssessmentAttemptsPage() {
       {selectedAttemptId && attemptDetails && (
         <AttemptDetailsModal attempt={attemptDetails} onClose={() => setSelectedAttemptId(null)} />
       )}
+      </div>
     </div>
   );
 }

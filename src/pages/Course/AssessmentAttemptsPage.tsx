@@ -86,10 +86,10 @@ export default function AssessmentAttemptsPage() {
       : undefined;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 pt-16">
       {/* Header */}
       <div className="bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
-        <div className="container mx-auto px-6 py-6">
+        <div className="container mx-auto px-6 py-6 max-w-7xl">
           <Button
             variant="outline"
             size="sm"
@@ -108,7 +108,7 @@ export default function AssessmentAttemptsPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-8 max-w-6xl">
+      <div className="container mx-auto px-6 py-8 max-w-7xl">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
             <CardContent className="p-6 text-center">

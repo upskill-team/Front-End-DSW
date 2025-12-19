@@ -42,57 +42,63 @@ export default function TakeAssessmentPage() {
   const saveAnswersMutation = useSaveAnswers();
   const submitAttemptMutation = useSubmitAttempt();
 
-  const handleSubmit = useCallback(async (forceSubmit = false) => {
-    if (!attemptId) return;
+  const handleSubmit = useCallback(
+    async (forceSubmit = false) => {
+      if (!attemptId) return;
 
-    if (!forceSubmit && Object.keys(answers).length === 0) {
-      alert('Debes responder al menos una pregunta para enviar la evaluación.');
-      return;
-    }
-
-    const answersArray = Object.entries(answers).map(
-      ([questionId, answer]) => ({
-        questionId,
-        answer,
-      })
-    );
-    
-    try {
-      if (answersArray.length > 0) {
-        await submitAttemptMutation.mutateAsync({
-          attemptId,
-          submitData: { attemptId, answers: answersArray },
-        });
-        
-        navigate(
-          `/courses/${courseId}/assessments/${assessmentId}/results/${attemptId}`
+      if (!forceSubmit && Object.keys(answers).length === 0) {
+        alert(
+          'Debes responder al menos una pregunta para enviar la evaluación.'
         );
-      } else if (forceSubmit) {
-        toast.error("El tiempo se agotó y no hubo respuestas registradas.");
-        navigate(`/courses/${courseId}/assessments`);
+        return;
       }
 
-    } catch (error) {
-      console.error('Error submitting attempt:', error);
-      if (forceSubmit) {
-         navigate(`/courses/${courseId}/assessments`);
-      } else {
-         toast.error('Hubo un error al enviar la evaluación.');
+      const answersArray = Object.entries(answers).map(
+        ([questionId, answer]) => ({
+          questionId,
+          answer,
+        })
+      );
+
+      try {
+        if (answersArray.length > 0) {
+          await submitAttemptMutation.mutateAsync({
+            attemptId,
+            submitData: { attemptId, answers: answersArray },
+          });
+
+          navigate(
+            `/courses/${courseId}/assessments/${assessmentId}/results/${attemptId}`
+          );
+        } else if (forceSubmit) {
+          toast.error('El tiempo se agotó y no hubo respuestas registradas.');
+          navigate(`/courses/${courseId}/assessments`);
+        }
+      } catch (error) {
+        console.error('Error submitting attempt:', error);
+        if (forceSubmit) {
+          navigate(`/courses/${courseId}/assessments`);
+        } else {
+          toast.error('Hubo un error al enviar la evaluación.');
+        }
       }
-    }
-  }, [
-    attemptId,
-    answers,
-    submitAttemptMutation,
-    navigate,
-    courseId,
-    assessmentId,
-  ]);
+    },
+    [
+      attemptId,
+      answers,
+      submitAttemptMutation,
+      navigate,
+      courseId,
+      assessmentId,
+    ]
+  );
 
   const handleStartAttempt = async () => {
     const studentId = user?.studentProfile?.id;
     if (!studentId || !assessmentId) {
-      toast.error('No se pudo iniciar el intento: falta información del estudiante o de la evaluación.');
+      toast.error(
+        'No se pudo iniciar el intento: falta información del estudiante o de la evaluación.'
+      );
       return;
     }
 
@@ -120,24 +126,29 @@ export default function TakeAssessmentPage() {
       }
     } catch (error) {
       console.error('Error starting attempt:', error);
-      
+
       if (isAxiosError(error)) {
         const errorMsg = error.response?.data?.errors;
-        
-        if (typeof errorMsg === 'string' && 
-           (errorMsg.includes('no longer available') || errorMsg.includes('not yet available'))) {
-          
-          toast.error('El tiempo para realizar esta evaluación ha finalizado.', {
-            duration: 5000,
-          });
-          
+
+        if (
+          typeof errorMsg === 'string' &&
+          (errorMsg.includes('no longer available') ||
+            errorMsg.includes('not yet available'))
+        ) {
+          toast.error(
+            'El tiempo para realizar esta evaluación ha finalizado.',
+            {
+              duration: 5000,
+            }
+          );
+
           navigate(`/courses/${courseId}/assessments`);
           return;
         }
-        
+
         if (typeof errorMsg === 'string') {
-             toast.error(errorMsg);
-             return;
+          toast.error(errorMsg);
+          return;
         }
       }
 
@@ -169,8 +180,8 @@ export default function TakeAssessmentPage() {
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev !== null && prev <= 1) {
-             clearInterval(timer);
-             return 0;
+            clearInterval(timer);
+            return 0;
           }
           return prev !== null ? prev - 1 : null;
         });
@@ -183,7 +194,12 @@ export default function TakeAssessmentPage() {
   }, [timeLeft, handleSubmit]);
 
   useEffect(() => {
-    if (hasStarted && attemptId && Object.keys(answers).length > 0 && !hasAutoSubmittedRef.current) {
+    if (
+      hasStarted &&
+      attemptId &&
+      Object.keys(answers).length > 0 &&
+      !hasAutoSubmittedRef.current
+    ) {
       const autoSave = setInterval(() => {
         const answersArray = Object.entries(answers).map(
           ([questionId, answer]) => ({
@@ -208,7 +224,7 @@ export default function TakeAssessmentPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 pt-16">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mx-auto mb-4"></div>
           <p className="text-slate-700 font-medium">Cargando evaluación...</p>
@@ -219,7 +235,7 @@ export default function TakeAssessmentPage() {
 
   if (!assessment) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 p-6">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 p-6 pt-16">
         <Card className="max-w-md w-full">
           <CardContent className="text-center py-12">
             <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
@@ -242,7 +258,7 @@ export default function TakeAssessmentPage() {
 
   if (!hasStarted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 flex items-center justify-center p-4 sm:p-6">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 flex items-center justify-center p-4 sm:p-6 pt-20 sm:pt-24">
         <Card className="max-w-2xl w-full">
           <CardHeader>
             <CardTitle className="text-2xl">{assessment.title}</CardTitle>
@@ -328,9 +344,9 @@ export default function TakeAssessmentPage() {
   const totalQuestions = attemptQuestions.length || assessment.questionsCount;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 pt-16">
       <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
-        <div className="container mx-auto px-4 sm:px-6 py-4">
+        <div className="container mx-auto px-4 sm:px-6 py-4 max-w-7xl">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="w-full sm:w-auto">
               <h1 className="text-lg sm:text-xl font-bold text-slate-800 truncate">
@@ -355,7 +371,9 @@ export default function TakeAssessmentPage() {
               )}
               <Button
                 onClick={() => handleSubmit(false)} // Envío manual (no forzado)
-                disabled={submitAttemptMutation.isPending || hasAutoSubmittedRef.current}
+                disabled={
+                  submitAttemptMutation.isPending || hasAutoSubmittedRef.current
+                }
                 size="sm"
                 className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 flex-1 sm:flex-initial"
               >
@@ -367,7 +385,7 @@ export default function TakeAssessmentPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 sm:px-6 py-8 max-w-7xl">
         <div className="space-y-6">
           {attemptQuestions.map((question, index) => {
             if (!question.id) return null;
@@ -435,7 +453,9 @@ export default function TakeAssessmentPage() {
         <div className="mt-8 flex justify-center">
           <Button
             onClick={() => handleSubmit(false)}
-            disabled={submitAttemptMutation.isPending || hasAutoSubmittedRef.current}
+            disabled={
+              submitAttemptMutation.isPending || hasAutoSubmittedRef.current
+            }
             size="lg"
             className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 px-8"
           >

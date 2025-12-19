@@ -4,15 +4,29 @@ import { useMyAppeals } from '../../hooks/useAppeals';
 import { Card } from '../../components/ui/Card/Card';
 import StatusBadge from '../../components/ui/StatusBadge/StatusBadge';
 import Button from '../../components/ui/Button/Button';
-import { Dialog, DialogHeader, DialogTitle } from '../../components/ui/Dialog/Dialog';
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+} from '../../components/ui/Dialog/Dialog';
 import DocumentViewer from '../../components/ui/DocumentViewer/DocumentViewer';
-import { ArrowLeft, Calendar, Eye, GraduationCap, ExternalLink, Info, Plus } from 'lucide-react';
+import {
+  ArrowLeft,
+  Calendar,
+  Eye,
+  GraduationCap,
+  ExternalLink,
+  Info,
+  Plus,
+} from 'lucide-react';
 import type { Appeal } from '../../types/entities';
 
 export default function ProfessorAppealStatusPage() {
   const { data: appeals, isLoading } = useMyAppeals();
   const [selectedAppeal, setSelectedAppeal] = useState<Appeal | null>(null);
-  const [documentUrlToShow, setDocumentUrlToShow] = useState<string | null>(null);
+  const [documentUrlToShow, setDocumentUrlToShow] = useState<string | null>(
+    null
+  );
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -26,15 +40,23 @@ export default function ProfessorAppealStatusPage() {
     );
   }
 
-  const sortedAppeals = appeals?.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) || [];
-  
-  const hasPendingAppeal = appeals?.some((appeal) => appeal.state === 'pending');
+  const sortedAppeals =
+    appeals?.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    ) || [];
+
+  const hasPendingAppeal = appeals?.some(
+    (appeal) => appeal.state === 'pending'
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 py-12 px-4">
-      <div className="container mx-auto max-w-4xl space-y-6">
+      <div className="container mx-auto max-w-7xl space-y-6">
         <div className="flex items-center justify-between">
-          <Link to="/" className="inline-flex items-center text-slate-600 hover:text-slate-900 transition-colors">
+          <Link
+            to="/"
+            className="inline-flex items-center text-slate-600 hover:text-slate-900 transition-colors"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Volver al inicio
           </Link>
@@ -46,7 +68,8 @@ export default function ProfessorAppealStatusPage() {
             <div className="text-sm text-blue-800">
               <p className="font-semibold mb-1">Solicitud en curso detectada</p>
               <p>
-                Ya tienes una solicitud pendiente de revisión. Cuando sea procesada, recibirás una notificación.
+                Ya tienes una solicitud pendiente de revisión. Cuando sea
+                procesada, recibirás una notificación.
               </p>
             </div>
           </div>
@@ -54,9 +77,12 @@ export default function ProfessorAppealStatusPage() {
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h1 className="text-2xl font-bold text-slate-800">Mis Solicitudes</h1>
-          
+
           {!hasPendingAppeal && (
-            <Button onClick={() => navigate('/professor/apply')} className="bg-green-600 hover:bg-green-700 text-white">
+            <Button
+              onClick={() => navigate('/professor/apply')}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
               <Plus className="w-4 h-4 mr-2" />
               Nueva Solicitud
             </Button>
@@ -65,29 +91,37 @@ export default function ProfessorAppealStatusPage() {
 
         <div className="space-y-4">
           {sortedAppeals.map((appeal) => (
-            <Card key={appeal.id} className="overflow-hidden hover:shadow-md transition-shadow border border-slate-200 bg-white">
+            <Card
+              key={appeal.id}
+              className="overflow-hidden hover:shadow-md transition-shadow border border-slate-200 bg-white"
+            >
               <div className="p-5 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-                
                 <div className="space-y-2 flex-1 min-w-0">
                   <div className="flex items-center gap-3 flex-wrap">
                     <StatusBadge status={appeal.state} />
                     <span className="text-xs text-slate-500 flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
-                      {new Date(appeal.date).toLocaleDateString('es-ES', { 
-                        year: 'numeric', month: 'long', day: 'numeric' 
+                      {new Date(appeal.date).toLocaleDateString('es-ES', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
                       })}
                     </span>
                   </div>
-                  
+
                   <div>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Especialización</p>
-                    <h4 className="font-semibold text-slate-800 text-lg leading-tight truncate">{appeal.expertise}</h4>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
+                      Especialización
+                    </p>
+                    <h4 className="font-semibold text-slate-800 text-lg leading-tight truncate">
+                      {appeal.expertise}
+                    </h4>
                   </div>
                 </div>
 
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setSelectedAppeal(appeal)}
                   className="w-full sm:w-auto mt-2 sm:mt-0 flex items-center justify-center gap-2"
                 >
@@ -100,7 +134,10 @@ export default function ProfessorAppealStatusPage() {
         </div>
       </div>
 
-      <Dialog open={!!selectedAppeal} onOpenChange={() => setSelectedAppeal(null)}>
+      <Dialog
+        open={!!selectedAppeal}
+        onOpenChange={() => setSelectedAppeal(null)}
+      >
         {selectedAppeal && (
           <>
             <DialogHeader>
@@ -122,12 +159,18 @@ export default function ProfessorAppealStatusPage() {
 
               <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 space-y-4 text-sm">
                 <div>
-                  <h5 className="text-[10px] font-bold text-slate-500 uppercase mb-1 tracking-wide">Área de Especialización</h5>
-                  <p className="text-slate-900 font-medium break-words">{selectedAppeal.expertise}</p>
+                  <h5 className="text-[10px] font-bold text-slate-500 uppercase mb-1 tracking-wide">
+                    Área de Especialización
+                  </h5>
+                  <p className="text-slate-900 font-medium break-words">
+                    {selectedAppeal.expertise}
+                  </p>
                 </div>
 
                 <div>
-                  <h5 className="text-[10px] font-bold text-slate-500 uppercase mb-1 tracking-wide">Experiencia y Motivación</h5>
+                  <h5 className="text-[10px] font-bold text-slate-500 uppercase mb-1 tracking-wide">
+                    Experiencia y Motivación
+                  </h5>
                   <div className="text-slate-700 whitespace-pre-wrap leading-relaxed bg-white p-3 rounded border border-slate-200 break-words max-h-32 overflow-y-auto shadow-inner">
                     {selectedAppeal.experienceMotivation}
                   </div>
@@ -135,10 +178,12 @@ export default function ProfessorAppealStatusPage() {
 
                 {selectedAppeal.documentUrl && (
                   <div className="pt-1">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => setDocumentUrlToShow(selectedAppeal.documentUrl!)} 
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setDocumentUrlToShow(selectedAppeal.documentUrl!)
+                      }
                       className="w-full flex items-center justify-center gap-2 text-blue-600 border-blue-200 hover:bg-blue-50 h-8 text-xs"
                     >
                       <ExternalLink className="w-3 h-3" />
@@ -150,7 +195,11 @@ export default function ProfessorAppealStatusPage() {
             </div>
 
             <div className="flex justify-end pt-2 border-t border-slate-100">
-              <Button onClick={() => setSelectedAppeal(null)} size="sm" className="w-full sm:w-auto">
+              <Button
+                onClick={() => setSelectedAppeal(null)}
+                size="sm"
+                className="w-full sm:w-auto"
+              >
                 Cerrar
               </Button>
             </div>
@@ -159,7 +208,10 @@ export default function ProfessorAppealStatusPage() {
       </Dialog>
 
       {documentUrlToShow && (
-        <DocumentViewer url={documentUrlToShow} onClose={() => setDocumentUrlToShow(null)} />
+        <DocumentViewer
+          url={documentUrlToShow}
+          onClose={() => setDocumentUrlToShow(null)}
+        />
       )}
     </div>
   );

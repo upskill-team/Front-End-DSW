@@ -54,7 +54,12 @@ const create = async (payload: FormData): Promise<Course> => {
 const update = async (courseId: string, data: FormData): Promise<Course> => {
   const response = await apiClient.put<ApiResponse<Course>>(
     `/courses/${courseId}`,
-    data
+    data,
+     {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
   );
   return response.data.data;
 };

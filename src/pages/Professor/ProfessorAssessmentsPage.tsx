@@ -196,14 +196,24 @@ function AssessmentCard({
       <div className="flex-grow">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
-            <h3 className="text-xl font-bold text-gray-900 mb-1">{assessment.title}</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-1">
+              {assessment.title}
+            </h3>
             <p className="text-sm text-gray-600">{assessment.course.name}</p>
           </div>
           <div className="flex items-center gap-1">
-            {isAvailable ? ( <CheckCircle className="w-5 h-5 text-green-500" /> ) : ( <XCircle className="w-5 h-5 text-red-500" /> )}
+            {isAvailable ? (
+              <CheckCircle className="w-5 h-5 text-green-500" />
+            ) : (
+              <XCircle className="w-5 h-5 text-red-500" />
+            )}
           </div>
         </div>
-        {assessment.description && <p className="text-gray-600 text-sm mb-4 line-clamp-2">{assessment.description}</p>}
+        {assessment.description && (
+          <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+            {assessment.description}
+          </p>
+        )}
         <div className="grid grid-cols-3 gap-4 mb-4">
           <div className="flex items-center gap-2">
             <FileText className="w-4 h-4 text-gray-400" />
@@ -216,32 +226,53 @@ function AssessmentCard({
             <Clock className="w-4 h-4 text-gray-400" />
             <div>
               <p className="text-xs text-gray-500">Duración</p>
-              <p className="font-semibold">{assessment.durationMinutes ? `${assessment.durationMinutes} min` : 'Ilimitado'}</p>
+              <p className="font-semibold">
+                {assessment.durationMinutes
+                  ? `${assessment.durationMinutes} min`
+                  : 'Ilimitado'}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-gray-400" />
             <div>
               <p className="text-xs text-gray-500">Intentos</p>
-              <p className="font-semibold">{assessment.maxAttempts ?? 'Ilimitados'}</p>
+              <p className="font-semibold">
+                {assessment.maxAttempts ?? 'Ilimitados'}
+              </p>
             </div>
           </div>
         </div>
       </div>
       <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t mt-auto">
-        <Button variant="outline" size="sm" onClick={onViewAttempts} className="flex-1 flex items-center justify-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onViewAttempts}
+          className="flex-1 flex items-center justify-center gap-2"
+        >
           <BarChart3 className="w-4 h-4" />
           Ver Intentos
         </Button>
         <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={onEdit} className="flex-1 flex items-center justify-center gap-2">
-                <Edit className="w-4 h-4" />
-                <span className="sm:hidden">Editar</span>
-            </Button>
-            <Button variant="outline" size="sm" onClick={onDelete} className="flex-1 flex items-center justify-center gap-2 text-red-600 hover:text-red-700 hover:border-red-300">
-                <Trash2 className="w-4 h-4" />
-                <span className="sm:hidden">Borrar</span>
-            </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onEdit}
+            className="flex-1 flex items-center justify-center gap-2"
+          >
+            <Edit className="w-4 h-4" />
+            <span className="sm:hidden">Editar</span>
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onDelete}
+            className="flex-1 flex items-center justify-center gap-2 text-red-600 hover:text-red-700 hover:border-red-300"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span className="sm:hidden">Borrar</span>
+          </Button>
         </div>
       </div>
     </Card>

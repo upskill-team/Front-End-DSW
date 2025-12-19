@@ -43,7 +43,7 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const response = await contactMutation.mutateAsync(formData);
       setTicketId(response.ticketId);
@@ -57,8 +57,8 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 py-12">
-      <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 px-4">
+      <div className="container mx-auto max-w-7xl pt-24 pb-12">
         <h1 className="text-4xl font-bold text-slate-800 mb-4 text-center">
           Contáctanos
         </h1>
@@ -104,7 +104,11 @@ export default function ContactPage() {
                           Error al Enviar el Mensaje
                         </h4>
                         <p className="text-sm text-red-700">
-                          {(isAxiosError(contactMutation.error) && (contactMutation.error.response?.data as ApiErrorData)?.message) ||
+                          {(isAxiosError(contactMutation.error) &&
+                            (
+                              contactMutation.error.response
+                                ?.data as ApiErrorData
+                            )?.message) ||
                             'Ocurrió un error al enviar tu mensaje. Por favor, intenta nuevamente.'}
                         </p>
                       </div>
