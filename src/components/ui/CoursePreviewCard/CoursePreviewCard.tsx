@@ -78,8 +78,8 @@ const CoursePreviewCard = React.forwardRef<
     
     const displayAmountUnits = course?.unitsCount ?? course?.units?.length ?? 0;
 
-    const instructorName = course?.professor?.user 
-      ? `${course.professor.user.name} ${course.professor.user.surname}`
+    const instructorName = course?.professor 
+      ? `${course.professor.name} ${course.professor.surname}`
       : 'Instructor no disponible';
 
     return (
