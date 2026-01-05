@@ -174,7 +174,6 @@ const CourseListPage = () => {
               label="Ordenar por"
               value={`${filters.sortBy}-${filters.sortOrder}`}
               onChange={(e) => {
-                // Update both sortBy and sortOrder
                 const [sortBy, sortOrder] = e.target.value.split('-');
 
                 setSearchParams(

@@ -2,12 +2,11 @@ import type { ProfessorDTO, User, Institution } from '../types/entities';
 
 export class Professor {
     public id: string;
-    public user: Partial<User>; // More flexible
+    public user: Partial<User>;
     public institution?: Institution;
 
     constructor(data: ProfessorDTO) {
         if (!data) {
-            // Handle cases where data might be null or undefined
             this.id = '';
             this.user = {};
             return;
@@ -19,7 +18,6 @@ export class Professor {
         if (data.user) {
             this.user = data.user;
         } else {
-            // Reconstruct a partial user from DTO's top-level properties
             this.user = {
                 name: data.name,
                 surname: data.surname,
@@ -37,7 +35,7 @@ export class Professor {
     }
 
     get email(): string {
-        return this.user.mail || ''; // Return empty string if mail is not available
+        return this.user.mail || '';
     }
 
     get initials(): string {
