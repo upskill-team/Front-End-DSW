@@ -13,6 +13,9 @@ export default function PaymentSuccess() {
 
   const courseId = searchParams.get('course_id');
 
+  console.log("Usuario actual:", user);
+  console.log("Student ID:", user?.studentProfile?.id);
+
   const { data: enrollment, isSuccess } = useExistingEnrollment(
     user?.studentProfile?.id,
     courseId ?? undefined,

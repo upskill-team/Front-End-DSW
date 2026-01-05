@@ -11,14 +11,14 @@ export interface User {
   birthdate?: string;
   role: UserRole;
   studentProfile?: Student;
-  professorProfile?: Professor;
+  professorProfile?: ProfessorDTO;
   password?: string;
 }
 
-export interface Professor {
+export interface ProfessorDTO {
   id: string;
   // Cuando viene de la API completa (endpoints internos)
-  user?: User;
+  user: User;
   state?: string;
   courses?: Course[];
   // Cuando viene de la API pública (simplificado)
@@ -42,7 +42,7 @@ export interface Course {
   institution?: Institution;
   imageUrl: string;
   courseType: CourseType;
-  professor: Professor;
+  professor: ProfessorDTO;
   isFree: boolean;
   priceInCents?: number; // Precio en centavos (ej: 10050 = $100.50)
   status: string;
@@ -67,8 +67,8 @@ export interface Institution {
   description?: string;
   normalizedName?: string;
   aliases?: string[];
-  manager?: Professor;
-  professors?: Professor[];
+  manager?: ProfessorDTO;
+  professors?: ProfessorDTO[];
 }
 
 export type EnrollmentState = 'enrolled' | 'completed' | 'dropped';
@@ -96,7 +96,7 @@ export interface Appeal {
 
 export interface JoinRequest {
   id: string;
-  professor: Professor;
+  professor: ProfessorDTO;
   institution: Institution | string;
   requestDate: string;
   status: 'pending' | 'accepted' | 'rejected';
