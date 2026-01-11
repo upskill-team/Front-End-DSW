@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import Modal from '../../../ui/Modal/Modal';
 import Button from '../../../ui/Button/Button';
 import Input from '../../../ui/Input/Input';
-import { Building2, Search, Users, AlertCircle, Send } from 'lucide-react';
+import { Building2, Search, AlertCircle, Send } from 'lucide-react';
 import type { Institution } from '../../../../types/entities';
 import { useCreateJoinRequest } from '../../../../hooks/useJoinRequests';
 
@@ -80,10 +80,6 @@ export default function JoinInstitutionModal({
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-slate-800 mb-1">{selectedInstitution.name}</h3>
                 <p className="text-sm text-slate-600 line-clamp-2">{selectedInstitution.description}</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <Users className="w-4 h-4 text-slate-400" />
-                  <span className="text-sm text-slate-500">{selectedInstitution.professors?.length || 0} profesores</span>
-                </div>
               </div>
             </div>
           </div>
@@ -134,19 +130,15 @@ export default function JoinInstitutionModal({
           ) : (
             (filteredInstitutions || []).map((institution) => (
               <div key={institution.institutionId} className="border border-slate-200 rounded-lg p-4 hover:border-blue-300 hover:bg-blue-50/50 transition-colors">
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center justify-between gap-3">
                   <div className="flex items-start gap-3 flex-1 min-w-0">
                     <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
                       <Building2 className="w-5 h-5 text-purple-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-slate-800 mb-1">{institution.name}</h4>
-                      <p className="text-sm text-slate-600 line-clamp-2 mb-2">{institution.description}</p>
+                      <h4 className="font-semibold text-slate-800">{institution.name}</h4>
+                      <p className="text-sm text-slate-600 line-clamp-2">{institution.description}</p>
                       <div className="flex items-center gap-4 text-xs text-slate-500">
-                        <div className="flex items-center gap-1">
-                          <Users className="w-3 h-3" />
-                          <span>{institution.professors?.length || 0} profesores</span>
-                        </div>
                         {institution.aliases && institution.aliases.length > 0 && (
                           <div className="flex items-center gap-1">
                             <span className="text-slate-400">•</span>

@@ -15,7 +15,7 @@ import ErrorBoundary from '../../components/ui/ErrorBoundary/ErrorBoundary';
 import { CheckCircle2, BookOpen, ArrowLeft, AlertCircle } from 'lucide-react';
 import type { Unit } from '../../types/entities';
 import toast from 'react-hot-toast';
-import { getProfessorName } from '../../lib/professor';
+import { Professor } from '../../models/Professor';
 
 export default function CourseLearn() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -116,7 +116,8 @@ export default function CourseLearn() {
     ? completedUnits.includes(currentUnit.unitNumber)
     : false;
 
-  const instructorName = getProfessorName(course?.professor);
+  const profInstance = new Professor(course?.professor);
+  const instructorName = profInstance.fullName;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 pt-16">

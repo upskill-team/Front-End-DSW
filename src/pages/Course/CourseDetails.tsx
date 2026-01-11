@@ -12,10 +12,7 @@ import { useCreatePreference } from '../../hooks/usePayment.ts';
 import { formatCurrency } from '../../lib/currency';
 import { AxiosError } from 'axios';
 import { toast } from 'react-hot-toast';
-import {
-  getProfessorName,
-  getProfessorProfilePicture,
-} from '../../lib/professor';
+import { Professor } from '../../models/Professor';
 
 function CourseDetails() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -30,6 +27,8 @@ function CourseDetails() {
   const { enroll, isPending: isEnrolling } = useEnrollInCourse();
   const { mutate: createPreference, isPending: isCreatingPreference } =
     useCreatePreference();
+
+  const professor = course?.professor ? new Professor(course.professor) : null;
 
   const handleEnroll = () => {
     if (!isAuthenticated || !user) {
@@ -204,10 +203,10 @@ function CourseDetails() {
               <div className="flex items-center space-x-4 p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-slate-200">
                 <img
                   src={
-                    getProfessorProfilePicture(course.professor) ||
+                    professor?.profilePicture ||
                     '/img/noImage.jpg'
                   }
-                  alt={getProfessorName(course.professor)}
+                  alt={professor?.fullName}
                   className="w-14 h-14 rounded-full object-cover"
                 />
                 <div className="flex-1">
@@ -216,7 +215,7 @@ function CourseDetails() {
                     to={`/courses?professorId=${course.professor.id || ''}`}
                     className="font-semibold text-slate-800 hover:text-blue-600 transition-colors"
                   >
-                    {getProfessorName(course.professor)}
+                    {professor?.fullName}
                   </Link>
                 </div>
 

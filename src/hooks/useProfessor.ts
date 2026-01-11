@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../api/apiClient';
-import type { Professor } from '../types/entities';
+import type { ProfessorDTO } from '../types/entities';
+import { Professor } from '../models/Professor';
 import type { AxiosError } from 'axios';
 import type { ApiResponse } from '../types/shared.ts';
 
@@ -29,9 +30,9 @@ export const useProfessorProfile = () => {
       const response = await apiClient.get<{
         status: number;
         message: string;
-        data: Professor;
+        data: ProfessorDTO;
       }>('/professors/me');
-      return response.data.data;
+      return new Professor(response.data.data);
     },
     // Only run this query if user is authenticated and is a professor
     enabled: true,
@@ -48,10 +49,10 @@ export const useProfessors = () => {
     queryKey: ['professors', 'all'],
 
     queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<Professor[]>>('/professors');
-      return response.data.data;
+      const response =
+        await apiClient.get<ApiResponse<ProfessorDTO[]>>('/professors');
+      return response.data.data.map((p) => new Professor(p));
     },
-
   });
 };
 

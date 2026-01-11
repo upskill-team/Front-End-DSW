@@ -191,9 +191,6 @@ export default function CourseTypesPage() {
                       {type.name}
                     </h3>
                     <p className="text-sm text-slate-600">{type.description}</p>
-                    <p className="text-xs text-slate-500 mt-1">
-                      {(type.courses || []).length} cursos asociados
-                    </p>
                   </div>
                   <div className="flex items-center space-x-2 self-end sm:self-center">
                     <Button

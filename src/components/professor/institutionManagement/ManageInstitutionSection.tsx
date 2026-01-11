@@ -17,12 +17,7 @@ import {
   useGetPendingRequests,
   useProcessJoinRequest,
 } from '../../../hooks/useJoinRequests';
-import {
-  getProfessorName,
-  getProfessorEmail,
-  getProfessorProfilePicture,
-  getProfessorInitials,
-} from '../../../lib/professor';
+import { Professor } from '../../../models/Professor';
 
 interface ManageInstitutionSectionProps {
   institution: Institution;
@@ -142,25 +137,28 @@ export default function ManageInstitutionSection({
                 </p>
               </div>
             ) : (
-              pendingRequests.map((req) => (
+              pendingRequests.map((req) => {
+                const profInstance = new Professor(req.professor);
+
+                return (
                 <div key={req.id} className="p-3 border rounded-lg bg-slate-50">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       <Avatar className="h-10 w-10 flex-shrink-0">
                         <AvatarImage
-                          src={getProfessorProfilePicture(req.professor)}
-                          alt={getProfessorName(req.professor)}
+                          src={profInstance.profilePicture}
+                          alt={profInstance.fullName}
                         />
                         <AvatarFallback className="bg-slate-400 text-white font-semibold">
-                          {getProfessorInitials(req.professor)}
+                          {profInstance.initials}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-slate-800 truncate">
-                          {getProfessorName(req.professor)}
+                          {profInstance.fullName}
                         </p>
                         <p className="text-sm text-slate-600 truncate">
-                          {getProfessorEmail(req.professor) ||
+                          {profInstance.email ||
                             'Email no disponible'}
                         </p>
                       </div>
@@ -192,8 +190,8 @@ export default function ManageInstitutionSection({
                     </div>
                   </div>
                 </div>
-              ))
-            )}
+              )}
+            ))}
           </div>
         </div>
 
@@ -231,7 +229,9 @@ export default function ManageInstitutionSection({
               </div>
             )}
             {otherProfessors.length > 0 ? (
-              otherProfessors.map((professor) => (
+              otherProfessors.map((professor) => {
+                const otherProfessorsInstance = new Professor(professor);
+                return (
                 <div
                   key={professor.id}
                   className="border rounded-lg p-3 hover:bg-slate-50"
@@ -240,19 +240,19 @@ export default function ManageInstitutionSection({
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       <Avatar className="h-10 w-10 flex-shrink-0 hidden sm:flex">
                         <AvatarImage
-                          src={getProfessorProfilePicture(professor)}
-                          alt={getProfessorName(professor)}
+                          src={otherProfessorsInstance.profilePicture}
+                          alt={otherProfessorsInstance.fullName}
                         />
                         <AvatarFallback className="bg-gradient-to-br from-blue-400 to-green-400 text-white font-semibold">
-                          {getProfessorInitials(professor)}
+                          {otherProfessorsInstance.initials}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-slate-800 truncate">
-                          {getProfessorName(professor)}
+                          {otherProfessorsInstance.fullName}
                         </p>
                         <p className="text-sm text-slate-600 truncate">
-                          {getProfessorEmail(professor) ||
+                          {otherProfessorsInstance.email ||
                             'Email no disponible'}
                         </p>
                       </div>
@@ -265,7 +265,7 @@ export default function ManageInstitutionSection({
                       onClick={() =>
                         handleRemoveProfessor(
                           professor.id,
-                          getProfessorName(professor)
+                          otherProfessorsInstance.fullName
                         )
                       }
                       disabled={isRemoving}
@@ -274,8 +274,8 @@ export default function ManageInstitutionSection({
                     </Button>
                   </div>
                 </div>
-              ))
-            ) : (
+              )}
+            )) : (
               <div className="text-center py-8 border-2 border-dashed rounded-lg">
                 <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                 <p className="text-slate-500 text-sm">

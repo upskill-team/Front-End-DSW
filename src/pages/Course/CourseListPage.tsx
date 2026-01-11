@@ -14,7 +14,6 @@ import Button from '../../components/ui/Button/Button.tsx';
 import { Search, LayoutGrid, List } from 'lucide-react';
 import { useDebounce } from '../../hooks/useDebounce.ts';
 import { useProfessors } from '../../hooks/useProfessor.ts';
-import { getProfessorName } from '../../lib/professor';
 
 const CourseListPage = () => {
   const navigate = useNavigate();
@@ -175,7 +174,6 @@ const CourseListPage = () => {
               label="Ordenar por"
               value={`${filters.sortBy}-${filters.sortOrder}`}
               onChange={(e) => {
-                // Update both sortBy and sortOrder
                 const [sortBy, sortOrder] = e.target.value.split('-');
 
                 setSearchParams(
@@ -206,7 +204,7 @@ const CourseListPage = () => {
               <option value="">Todos los profesores</option>
               {professors.map((professor) => (
                 <option key={professor.id} value={professor.id}>
-                  {getProfessorName(professor)}
+                  {professor.fullName}
                 </option>
               ))}
             </Select>

@@ -5,12 +5,7 @@ import AuthLayout from '../components/layouts/AuthLayout';
 import ScrollToTop from '../components/layouts/ScrollToTop';
 import ProtectedRoute from './ProtectedRoute';
 import EnrollmentProtectedRoute from './EnrollmentProtectedRoute';
-
-const PageLoader = () => (
-  <div className="flex justify-center items-center h-screen">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-  </div>
-);
+import PageLoader from '../components/ui/PageLoader/PageLoader'; 
 
 const LandingPage = lazy(() => import('../pages/LandingPage'));
 const LoginPage = lazy(() => import('../pages/Auth/LoginPage'));
@@ -45,6 +40,7 @@ const TakeAssessmentPage = lazy(() => import('../pages/Course/TakeAssessmentPage
 const AssessmentResultsPage = lazy(() => import('../pages/Course/AssessmentResultsPage'));
 const AssessmentAttemptsPage = lazy(() => import('../pages/Course/AssessmentAttemptsPage'));
 const MyLearningPage = lazy(() => import('../pages/User/MyLearningPage'));
+
 
 const AppRouter = () => {
   return (

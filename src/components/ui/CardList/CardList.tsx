@@ -7,7 +7,7 @@ import { Card, CardContent, CardTitle, CardDescription } from '../Card/Card';
 import { Link } from 'react-router-dom';
 import type { Course } from '../../../types/entities';
 import { formatCurrency } from '../../../lib/currency';
-import { getProfessorName } from '../../../lib/professor';
+import * as ProfessorModel from '../../../models/Professor';
 
 interface CourseCardListProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
@@ -27,8 +27,8 @@ interface CourseCardListProps extends React.HTMLAttributes<HTMLDivElement> {
  */
 const CardList = React.forwardRef<HTMLDivElement, CourseCardListProps>(
   ({ course, className, onViewMore, ...props }, ref) => {
-    const instructorName = getProfessorName(course.professor);
-
+    const professor = new ProfessorModel.Professor(course.professor);
+    const instructorName = professor.fullName;
     const displayAmountStudents =
       course?.studentsCount ?? course?.students?.length ?? 0;
 
