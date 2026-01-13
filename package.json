@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "prebuild": "node scripts/generate-sitemap.js",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "tailwind:init": "tailwindcss init -p",
@@ -19,7 +20,8 @@
     "build-storybook": "storybook build",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
-    "test:e2e:local": "start-server-and-test preview http://localhost:4173 cy:run"
+    "test:e2e:local": "start-server-and-test preview http://localhost:4173 cy:run",
+    "sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "@blocknote/core": "^0.37.0",
@@ -33,9 +35,10 @@
     "lucide-react": "^0.534.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-helmet-async": "^2.0.5",
     "react-hook-form": "^7.62.0",
     "react-hot-toast": "^2.6.0",
-    "react-router-dom": "^7.7.0",
+    "react-router-dom": "^7.12.0",
     "recharts": "^3.1.2",
     "tailwind-merge": "^3.3.1",
     "three": "^0.179.1",

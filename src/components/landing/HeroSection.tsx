@@ -16,7 +16,7 @@ export default function HeroSection() {
           <div className="space-y-6 text-center lg:text-left">
             <div className="space-y-4">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-poppins font-bold text-slate-800 leading-tight">
-                Aprende sin{' '}
+                Cursos Online - Aprende sin{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500">
                   límites
                 </span>

@@ -95,7 +95,8 @@ const CoursePreviewCard = React.forwardRef<
           <div className="relative overflow-hidden rounded-t-lg">
             <img
               src={displayImage || '/img/noImage.jpg'}
-              alt={displayName || 'Vista previa del curso'}
+              alt={`Curso de ${displayName || 'Vista previa del curso'} - ${displayCourseType?.name || 'Categoría'}`}
+              loading="lazy"
               className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
             />
           </div>
