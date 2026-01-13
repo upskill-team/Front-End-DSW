@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/Card/Card';
+import { SEO } from '../components/common/SEO';
 
 const faqs = [
   {
@@ -44,6 +45,11 @@ export default function FAQPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 px-4">
+      <SEO 
+        title="Preguntas Frecuentes - Ayuda y Soporte"
+        description="Encuentra respuestas a las preguntas más frecuentes sobre registro, cursos, inscripciones, métodos de pago y cómo convertirte en profesor en UpSkill."
+        keywords="preguntas frecuentes, faq, ayuda, soporte, cursos online, inscripción, métodos de pago"
+      />
       <div className="container mx-auto max-w-7xl pt-24 pb-12">
         <h1 className="text-4xl font-bold text-slate-800 mb-4 text-center">
           Preguntas Frecuentes

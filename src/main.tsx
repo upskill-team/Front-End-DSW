@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider, MutationCache } from '@tanstack/react-query';
+import { HelmetProvider } from 'react-helmet-async';
 import App from './App.tsx';
 import './index.css';
 import { toast } from 'react-hot-toast';
@@ -57,22 +58,24 @@ const queryClient = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-      {import.meta.env.DEV && (
-        <React.Suspense fallback={null}>
-           {React.createElement(
-             React.lazy(() => 
-               import('@tanstack/react-query-devtools').then(res => ({ 
-                 default: res.ReactQueryDevtools 
-               }))
-             ), 
-             { initialIsOpen: false }
-           )}
-        </React.Suspense>
-      )}
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+        {import.meta.env.DEV && (
+          <React.Suspense fallback={null}>
+             {React.createElement(
+               React.lazy(() => 
+                 import('@tanstack/react-query-devtools').then(res => ({ 
+                   default: res.ReactQueryDevtools 
+                 }))
+               ), 
+               { initialIsOpen: false }
+             )}
+          </React.Suspense>
+        )}
+      </QueryClientProvider>
+    </HelmetProvider>
   </React.StrictMode>,
 );

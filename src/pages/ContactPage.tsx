@@ -17,6 +17,7 @@ import Button from '../components/ui/Button/Button';
 import { useContact } from '../hooks/useContact';
 import { toast } from 'react-hot-toast';
 import { isAxiosError } from 'axios';
+import { SEO } from '../components/common/SEO';
 
 interface ApiErrorData {
   message?: string;
@@ -58,6 +59,11 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 px-4">
+      <SEO 
+        title="Contacto - Estamos Aquí para Ayudarte"
+        description="¿Tienes preguntas sobre nuestros cursos online? Contáctanos y nuestro equipo te responderá pronto. Estamos disponibles para ayudarte en lo que necesites."
+        keywords="contacto, soporte, ayuda, atención al cliente, consultas, info, información, comunicación"
+      />
       <div className="container mx-auto max-w-7xl pt-24 pb-12">
         <h1 className="text-4xl font-bold text-slate-800 mb-4 text-center">
           Contáctanos

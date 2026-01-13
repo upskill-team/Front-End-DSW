@@ -4,10 +4,16 @@ import {
   CardHeader,
   CardTitle,
 } from '../components/ui/Card/Card';
+import { SEO } from '../components/common/SEO';
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 px-4">
+      <SEO 
+        title="Sobre Nosotros - Nuestra Misión y Visión"
+        description="Conoce nuestra misión de democratizar el acceso a la educación de calidad. Conectamos estudiantes con profesores expertos en diversas áreas del conocimiento."
+        keywords="sobre nosotros, plataforma educativa, misión, visión, educación online, about us, info"
+      />
       <div className="container mx-auto max-w-7xl pt-24 pb-12">
         <h1 className="text-4xl font-bold text-slate-800 mb-8 text-center">
           Acerca de Nosotros
