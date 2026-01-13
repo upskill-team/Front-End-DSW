@@ -29,7 +29,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = useCallback(
     async (token: string) => {
       localStorage.setItem(TOKEN_STORAGE_KEY, token);
-      apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       await fetchProfileAndSetUser();
     },
     [fetchProfileAndSetUser]
@@ -46,7 +45,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       ['jwt_token', 'token', 'authToken'].forEach((k) => localStorage.removeItem(k));
 
-      delete apiClient.defaults.headers.common['Authorization'];
       setUser(null);
       setIsLoading(false);
     }
@@ -76,7 +74,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       };
 
       if (token) {
-        apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         try {
           await fetchProfileAndSetUser();
         } catch {

@@ -82,7 +82,6 @@ apiClient.interceptors.response.use(
         const newToken = data.data.token;
 
         localStorage.setItem(TOKEN_STORAGE_KEY, newToken);
-        apiClient.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
         
         processQueue(null, newToken);
         

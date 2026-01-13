@@ -22,7 +22,7 @@ export function BenefitsSection() {
             return (
               <div key={index} className="p-6 text-center space-y-4 rounded-lg bg-white/70 backdrop-blur-sm border border-slate-200 hover:border-blue-200 hover:shadow-md transition-all duration-300">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-green-400 rounded-full flex items-center justify-center mx-auto shadow-lg">
-                  <IconComponent className="w-6 h-6 text-white" />
+                  <IconComponent className="w-6 h-6 text-white" aria-hidden="true" />
                 </div>
                 <h3 className="text-lg font-poppins font-semibold text-slate-800">{benefit.title}</h3>
                 <p className="text-sm text-slate-600 leading-relaxed">{benefit.description}</p>
