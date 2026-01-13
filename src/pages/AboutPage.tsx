@@ -15,11 +15,14 @@ export default function AboutPage() {
         keywords="sobre nosotros, plataforma educativa, misión, visión, educación online, about us, info"
       />
       <div className="container mx-auto max-w-7xl pt-24 pb-12">
-        <h1 className="text-4xl font-bold text-slate-800 mb-8 text-center">
-          Acerca de Nosotros
-        </h1>
+        <header>
+          <h1 className="text-4xl font-bold text-slate-800 mb-8 text-center">
+            Acerca de Nosotros
+          </h1>
+        </header>
 
-        <Card className="mb-6">
+        <article>
+          <Card className="mb-6">
           <CardHeader>
             <CardTitle>Nuestra Misión</CardTitle>
           </CardHeader>
@@ -59,6 +62,7 @@ export default function AboutPage() {
             </ul>
           </CardContent>
         </Card>
+        </article>
       </div>
     </div>
   );
