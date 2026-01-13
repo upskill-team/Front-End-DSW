@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "prebuild": "node scripts/generate-sitemap.js",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "tailwind:init": "tailwindcss init -p",
@@ -19,7 +20,8 @@
     "build-storybook": "storybook build",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
-    "test:e2e:local": "start-server-and-test preview http://localhost:4173 cy:run"
+    "test:e2e:local": "start-server-and-test preview http://localhost:4173 cy:run",
+    "sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "@blocknote/core": "^0.37.0",
