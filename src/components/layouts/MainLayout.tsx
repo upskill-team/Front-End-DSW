@@ -7,7 +7,7 @@ const MainLayout = () => {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
-    "name": "UpSkill",
+    "name": "Up-Skill",
     "url": "https://up-skill.app",
     "logo": "https://up-skill.app/favicon.svg",
     "description": "Plataforma de cursos online para aprender nuevas habilidades con profesores expertos",

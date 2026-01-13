@@ -17,7 +17,7 @@ export function SEO({
   ogImage = '/img/og-default.png',
   canonical,
 }: SEOProps) {
-  const fullTitle = `${title} | UpSkill`;
+  const fullTitle = `${title} | Up-Skill`;
   const siteUrl = 'https://up-skill.app';
   const canonicalUrl = canonical || typeof window !== 'undefined' ? window.location.href : siteUrl;
 
